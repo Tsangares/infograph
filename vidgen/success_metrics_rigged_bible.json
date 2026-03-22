@@ -1,0 +1,20 @@
+{
+  "topic": "success_metrics_rigged",
+  "filename": "success_metrics_rigged_manim.py",
+  "arc": {
+    "scene1_hook": "A game board fills the screen \u2014 chess-like, with pieces already mid-game. A new piece (small, bright) appears at the edge, ready to play. But as it steps onto the board, we see the squares underneath glow \u2014 some squares boost you forward, others drag you back. The squares were painted before this piece existed. Title pill: \"THE GAME WAS RIGGED\". The new piece doesn't know the rules were written by the pieces already winning.",
+    "scene2_mystery": "Zoom into the board's rules. A gold \"SUCCESS\" trophy sits at the center. Three paths lead to it: WEALTH (coins stacking), PRESTIGE (diploma icon), PROFESSION (briefcase). Each path has a measuring ruler alongside it. These rulers look neutral, objective \u2014 just measurement tools. A \"MERIT\" label glows above each ruler. The audience assumes these are fair instruments measuring who's best. The visual establishes metrics as seemingly impartial judges.",
+    "scene3_wrong_answer": "The assumption: metrics are neutral measurement tools. A scale/balance icon at center \u2014 perfectly level. On one side, effort; on the other, reward. It looks fair. Numbers float upward \u2014 GPA, salary, title \u2014 each one a clean data point. A \"MERITOCRACY\" banner unfurls. If you work hard and measure up, you win. The system simply reflects who performed best. Clean, logical, trustworthy.",
+    "scene4_contradiction": "The balanced scale tilts. One side was heavier all along \u2014 it just wasn't visible. The \"WEALTH\" ruler morphs: its tick marks stretch wider for some and compress for others. A river visual appears \u2014 water carving into a channel. The deeper the channel, the harder for water to flow elsewhere. Success metrics are like rivers: they carve deeper into channels that already exist. The \"MERIT\" label cracks, and underneath it reads \"INHERITANCE.\" The rulers were built by the people who already measured well on them.",
+    "scene5_proof": "Three bars rise from the bottom. Bar 1: \"WEALTH MEASURES SUCCESS\" \u2014 but a family tree icon shows wealth accruing to those who already had it. Bar 2: \"PRESTIGE MARKS ACHIEVEMENT\" \u2014 but channel lines show prestige flowing through class grooves carved generations ago. Bar 3: \"PROFESSIONS THAT COUNT\" \u2014 defined by people already in them. Each bar has a feedback loop arrow curving from its top back to its base. A label at the bottom: \"Self-perpetuating.\" The metrics don't just measure who wins \u2014 they reproduce the conditions that let their creators keep winning.",
+    "scene6_betrayal": "The game board from Scene 1 returns, but now transparent. Underneath: layers of older game boards, stacked \u2014 each generation's rules built on the last. The new piece that arrived to play realizes: the rules, the board, the scoring, the definition of winning \u2014 all of it was architecture, not measurement. A \"YOU CAN WIN\" label appears, then gets a quiet asterisk: \"*within a framework designed by others, using metrics defined by others, climbing a ladder leaned against a wall that others chose.\" The victory is real. But it deserves to be named honestly."
+  },
+  "shapes": [
+    "game_piece",
+    "measuring_ruler",
+    "river_channel",
+    "stacked_boards"
+  ],
+  "tts_script": "If success metrics are collective, who shapes the collective? Not everyone equally. Wealth measures success, and wealth accrues to those whose families already had it. Educational prestige marks achievement, and prestige flows through channels carved along class lines generations ago. The professions that count were defined by the people already occupying them. This isn't conspiracy. It's something more mundane and more durable. Success metrics reproduce the conditions of their own creation. They are self-perpetuating, like rivers carving deeper into channels that already exist. The game was set up before you sat down. And the rules happen to favor the people who set it up.",
+  "word_count": 104
+}

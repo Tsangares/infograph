@@ -1,0 +1,713 @@
+{% extends "base.html" %}
+{% set active_page = 'studio' %}
+
+{% block title %}clips — studio{% endblock %}
+
+{% block head %}
+<style>
+  /* Override main padding — studio manages its own full-height layout */
+  main {
+    padding-bottom: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .studio-layout {
+    display: flex;
+    height: calc(100vh - 70px);
+    height: calc(100dvh - 70px);
+    overflow: hidden;
+  }
+
+  /* --- Sidebar --- */
+  .studio-sidebar {
+    width: 240px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+
+  .sidebar-header {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .new-session-btn {
+    width: 100%;
+    padding: 10px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-subtle);
+    border: 1px solid rgba(232, 131, 74, 0.2);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+  .new-session-btn:hover { opacity: 0.85; }
+
+  .session-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+  }
+
+  .session-item {
+    display: block;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--text-dim);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    margin-bottom: 2px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .session-item:hover { background: var(--surface); color: var(--text); }
+  .session-item.active { background: var(--accent-subtle); color: var(--accent); }
+
+  .session-time {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* --- Chat area --- */
+  .chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .msg {
+    max-width: 85%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .msg-user {
+    align-self: flex-end;
+    background: var(--accent);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+
+  .msg-assistant {
+    align-self: flex-start;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg-assistant code {
+    background: rgba(0,0,0,0.3);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  .msg-assistant pre {
+    background: rgba(0,0,0,0.3);
+    padding: 10px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    margin: 8px 0;
+  }
+
+  .msg-tool {
+    align-self: flex-start;
+    background: rgba(232, 131, 74, 0.08);
+    border: 1px solid rgba(232, 131, 74, 0.2);
+    color: var(--text-dim);
+    font-size: 12px;
+    font-family: var(--font-mono);
+    padding: 8px 12px;
+    border-radius: 8px;
+  }
+
+  .msg-error {
+    align-self: center;
+    background: rgba(220, 50, 50, 0.1);
+    border: 1px solid rgba(220, 50, 50, 0.2);
+    color: #e55;
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+
+  .msg-error-border {
+    border: 1px solid rgba(220, 50, 50, 0.4) !important;
+  }
+
+  .typing-indicator {
+    align-self: flex-start;
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 8px 16px;
+    display: none;
+  }
+  .typing-indicator.active { display: flex; align-items: center; gap: 8px; }
+
+  .session-running {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-right: 6px;
+    animation: pulse-dot 1.5s infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .typing-dots span {
+    animation: dot-pulse 1.4s infinite;
+    opacity: 0.3;
+    font-size: 10px;
+    margin-right: 2px;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dot-pulse {
+    0%, 80%, 100% { opacity: 0.3; }
+    40% { opacity: 1; }
+  }
+
+  .msg-assistant { white-space: normal; }
+  .msg-assistant pre code { background: none; padding: 0; }
+  .msg-assistant ul { margin: 4px 0; padding-left: 20px; }
+  .msg-assistant li { list-style: disc; }
+
+  .msg-error { position: relative; }
+  .retry-btn {
+    display: inline-block;
+    margin-left: 12px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-family: var(--font-body);
+    color: #e55;
+    background: rgba(220, 50, 50, 0.1);
+    border: 1px solid rgba(220, 50, 50, 0.3);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+  .retry-btn:hover { background: rgba(220, 50, 50, 0.2); }
+
+  .empty-state {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 15px;
+    text-align: center;
+    padding: 40px;
+  }
+  .empty-state p { margin: 8px 0; }
+  .empty-state .hint { font-size: 13px; color: var(--text-dim); }
+
+  /* --- Input --- */
+  .chat-input-wrap {
+    padding: 12px 20px 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+
+  .chat-input {
+    flex: 1;
+    resize: none;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    min-height: 44px;
+    max-height: 120px;
+    line-height: 1.4;
+  }
+  .chat-input:focus { outline: none; border-color: var(--accent); }
+
+  .send-btn {
+    padding: 10px 20px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+    height: 44px;
+  }
+  .send-btn:hover { opacity: 0.9; }
+  .send-btn:disabled { opacity: 0.5; cursor: default; }
+
+  .stop-btn {
+    padding: 10px 20px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    color: #e55;
+    background: rgba(220, 50, 50, 0.1);
+    border: 1px solid rgba(220, 50, 50, 0.2);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    height: 44px;
+    display: none;
+  }
+
+  .attach-btn {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text-dim);
+    transition: all 0.15s;
+  }
+  .attach-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  .attach-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .attached-files {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 0 20px;
+  }
+  .attached-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    background: var(--accent-subtle);
+    border: 1px solid rgba(232, 131, 74, 0.2);
+    color: var(--accent);
+  }
+  .attached-file .remove-file {
+    cursor: pointer;
+    opacity: 0.6;
+    font-size: 14px;
+    line-height: 1;
+  }
+  .attached-file .remove-file:hover { opacity: 1; }
+
+  /* --- Mobile --- */
+  @media (max-width: 767px) {
+    main {
+      padding: 0 !important;
+    }
+    .studio-layout {
+      height: calc(100vh - var(--bottom-nav-h) - var(--safe-bottom));
+      height: calc(100dvh - var(--bottom-nav-h) - var(--safe-bottom));
+    }
+    .studio-sidebar { display: none; }
+    .chat-messages { padding: 12px; }
+    .chat-input-wrap {
+      padding: 8px 12px;
+      padding-bottom: calc(8px + var(--safe-bottom));
+    }
+    .msg { max-width: 95%; font-size: 14px; }
+    .chat-input { font-size: 16px; } /* prevent iOS zoom on focus */
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="studio-layout">
+  <div class="studio-sidebar">
+    <div class="sidebar-header">
+      <button class="new-session-btn" onclick="newSession()">+ New Session</button>
+    </div>
+    <div class="session-list" id="session-list"></div>
+  </div>
+
+  <div class="chat-area">
+    <div class="chat-messages" id="chat-messages">
+      <div class="empty-state" id="empty-state">
+        <div>
+          <p><strong>TKK Studio</strong></p>
+          <p class="hint">Chat with Claude to write screenplays, generate TTS, render videos, and run QA.</p>
+          <p class="hint">Try: "Write a screenplay about the Library of Alexandria"</p>
+        </div>
+      </div>
+    </div>
+    <div class="typing-indicator" id="typing"><span class="typing-dots"><span>●</span><span>●</span><span>●</span></span> Claude is working<span id="typing-time"></span></div>
+    <div class="attached-files" id="attached-files"></div>
+    <div class="chat-input-wrap">
+      <input type="file" id="file-input" accept=".md,.txt,.markdown" multiple style="display:none" onchange="handleFileSelect(this)">
+      <button class="attach-btn" onclick="document.getElementById('file-input').click()" title="Attach .md file">
+        <svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+      </button>
+      <textarea class="chat-input" id="chat-input" placeholder="Describe a video idea, or attach a .md topic file..." rows="1"
+                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendMessage()">Send</button>
+      <button class="stop-btn" id="stop-btn" onclick="stopSession()">Stop</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let currentSessionId = null;
+  let isStreaming = false;
+  let lastUserMessage = null;
+  let userAtBottom = true;
+  let attachedFiles = []; // [{name, content}]
+  let pollTimer = null;
+  let assistantDiv = null;
+
+  // --- Markdown rendering ---
+
+  function renderMarkdown(text) {
+    let html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    html = html.replace(/^[\-\*]\s+(.+)$/gm, '<li>$1</li>');
+    html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+    html = html.replace(/\n/g, '<br>');
+    html = html.replace(/<pre><code>([\s\S]*?)<\/code><\/pre>/g, (m, code) => {
+      return '<pre><code>' + code.replace(/<br>/g, '\n') + '</code></pre>';
+    });
+    return html;
+  }
+
+  // --- Auto-scroll helpers ---
+
+  function isNearBottom() {
+    const el = document.getElementById('chat-messages');
+    return el.scrollHeight - el.scrollTop - el.clientHeight < 100;
+  }
+
+  function scrollToBottom() {
+    const el = document.getElementById('chat-messages');
+    el.scrollTop = el.scrollHeight;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('chat-messages').addEventListener('scroll', () => {
+      userAtBottom = isNearBottom();
+    });
+  });
+
+  // --- Session management ---
+
+  async function loadSessions() {
+    const res = await fetch('/api/studio/sessions');
+    const data = await res.json();
+    const list = document.getElementById('session-list');
+    list.innerHTML = '';
+
+    // Check if Claude is currently running (for sidebar indicator)
+    let runningSessionId = null;
+    if (isStreaming && currentSessionId) {
+      runningSessionId = currentSessionId;
+    }
+
+    for (const s of data.sessions) {
+      const el = document.createElement('div');
+      el.className = 'session-item' + (s.id === currentSessionId ? ' active' : '');
+      if (s.id === runningSessionId) {
+        el.innerHTML = '<span class="session-running"></span>' + escapeHtml(s.name || 'Untitled');
+      } else {
+        el.textContent = s.name || 'Untitled';
+      }
+      el.onclick = () => loadSession(s.id);
+      list.appendChild(el);
+    }
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  async function newSession() {
+    // Stop any active polling
+    stopPolling();
+
+    const res = await fetch('/api/studio/sessions', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name: 'New session'}),
+    });
+    const data = await res.json();
+    currentSessionId = data.id;
+    document.getElementById('chat-messages').innerHTML =
+      '<div class="empty-state" id="empty-state"><div><p><strong>TKK Studio</strong></p><p class="hint">Chat with Claude to write screenplays, generate TTS, render videos, and run QA.</p></div></div>';
+    loadSessions();
+    document.getElementById('chat-input').focus();
+  }
+
+  async function loadSession(id) {
+    // Stop any active polling before switching
+    stopPolling();
+    setStreaming(false);
+
+    currentSessionId = id;
+    const res = await fetch(`/api/studio/sessions/${id}/messages`);
+    const data = await res.json();
+    const container = document.getElementById('chat-messages');
+    container.innerHTML = '';
+
+    if (data.messages.length === 0) {
+      container.innerHTML =
+        '<div class="empty-state"><div><p><strong>TKK Studio</strong></p><p class="hint">Start chatting to produce videos.</p></div></div>';
+    } else {
+      for (const msg of data.messages) {
+        appendMessage(msg.role, msg.content);
+      }
+    }
+
+    // Check if Claude is currently working on this session
+    const pollRes = await fetch(`/api/studio/sessions/${id}/poll`);
+    const pollData = await pollRes.json();
+    if (pollData.status === 'running') {
+      assistantDiv = appendMessage('assistant', pollData.content || '');
+      startPolling();
+    }
+
+    loadSessions();
+  }
+
+  // --- Polling ---
+
+  function startPolling() {
+    setStreaming(true);
+    if (!assistantDiv) {
+      assistantDiv = appendMessage('assistant', '');
+    }
+    pollTimer = setInterval(pollForResponse, 1500);
+  }
+
+  function stopPolling() {
+    if (pollTimer) {
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
+    assistantDiv = null;
+  }
+
+  async function pollForResponse() {
+    if (!currentSessionId) return;
+    try {
+      const res = await fetch(`/api/studio/sessions/${currentSessionId}/poll`);
+      const data = await res.json();
+
+      if (data.content && assistantDiv) {
+        assistantDiv.innerHTML = renderMarkdown(data.content);
+        if (userAtBottom) scrollToBottom();
+      }
+
+      // Update elapsed time
+      const timeEl = document.getElementById('typing-time');
+      if (data.elapsed && timeEl) {
+        timeEl.textContent = ` ${data.elapsed}s`;
+      }
+
+      if (data.status !== 'running') {
+        stopPolling();
+        setStreaming(false);
+        if (data.status === 'error' || data.status === 'timeout') {
+          if (assistantDiv) assistantDiv.classList.add('msg-error-border');
+        }
+        loadSessions();
+      }
+    } catch (err) {
+      // Network error during poll — keep trying
+    }
+  }
+
+  // --- Chat ---
+
+  function appendMessage(role, content) {
+    const container = document.getElementById('chat-messages');
+    const empty = document.getElementById('empty-state');
+    if (empty) empty.remove();
+
+    const div = document.createElement('div');
+    div.className = 'msg msg-' + role;
+
+    if (role === 'assistant') {
+      div.innerHTML = renderMarkdown(content);
+    } else if (role === 'error') {
+      div.textContent = content;
+      if (lastUserMessage) {
+        const btn = document.createElement('button');
+        btn.className = 'retry-btn';
+        btn.textContent = 'Retry';
+        btn.onclick = () => {
+          div.remove();
+          const input = document.getElementById('chat-input');
+          input.value = lastUserMessage;
+          sendMessage();
+        };
+        div.appendChild(btn);
+      }
+    } else {
+      div.textContent = content;
+    }
+
+    container.appendChild(div);
+    scrollToBottom();
+    return div;
+  }
+
+  function handleFileSelect(input) {
+    for (const file of input.files) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        attachedFiles.push({name: file.name, content: e.target.result});
+        renderAttachedFiles();
+      };
+      reader.readAsText(file);
+    }
+    input.value = '';
+  }
+
+  function removeFile(idx) {
+    attachedFiles.splice(idx, 1);
+    renderAttachedFiles();
+  }
+
+  function renderAttachedFiles() {
+    const container = document.getElementById('attached-files');
+    container.innerHTML = attachedFiles.map((f, i) =>
+      `<span class="attached-file">${escapeHtml(f.name)} <span class="remove-file" onclick="removeFile(${i})">&times;</span></span>`
+    ).join('');
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById('chat-input');
+    let message = input.value.trim();
+
+    // Prepend attached file contents
+    if (attachedFiles.length > 0) {
+      const fileBlock = attachedFiles.map(f =>
+        `--- ${f.name} ---\n${f.content}\n--- end ${f.name} ---`
+      ).join('\n\n');
+      message = fileBlock + (message ? '\n\n' + message : '\n\nPlease review the attached topic notes and write a screenplay based on them.');
+    }
+
+    if (!message || isStreaming) return;
+
+    // Create session if needed
+    if (!currentSessionId) {
+      const res = await fetch('/api/studio/sessions', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name: message.slice(0, 60)}),
+      });
+      const data = await res.json();
+      currentSessionId = data.id;
+    }
+
+    lastUserMessage = message;
+    let displayMsg = input.value.trim();
+    if (attachedFiles.length > 0) {
+      const names = attachedFiles.map(f => f.name).join(', ');
+      displayMsg = (displayMsg ? displayMsg + '\n' : '') + '[Attached: ' + names + ']';
+    }
+    appendMessage('user', displayMsg || message);
+    input.value = '';
+    input.style.height = 'auto';
+    attachedFiles = [];
+    renderAttachedFiles();
+
+    try {
+      const res = await fetch(`/api/studio/sessions/${currentSessionId}/message`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message}),
+      });
+
+      const data = await res.json();
+
+      if (res.status === 409) {
+        appendMessage('error', data.error || 'Claude is already working');
+        return;
+      }
+
+      if (data.status === 'started') {
+        assistantDiv = null;
+        startPolling();
+      }
+    } catch (err) {
+      appendMessage('error', 'Connection error: ' + err.message);
+    }
+  }
+
+  async function stopSession() {
+    if (!currentSessionId) return;
+    await fetch(`/api/studio/sessions/${currentSessionId}/stop`, {method: 'POST'});
+    // Polling will detect the status change and clean up
+  }
+
+  function setStreaming(active) {
+    isStreaming = active;
+    document.getElementById('send-btn').style.display = active ? 'none' : '';
+    document.getElementById('stop-btn').style.display = active ? '' : 'none';
+    document.getElementById('typing').className = 'typing-indicator' + (active ? ' active' : '');
+    document.getElementById('chat-input').disabled = active;
+    if (!active) {
+      const timeEl = document.getElementById('typing-time');
+      if (timeEl) timeEl.textContent = '';
+    }
+  }
+
+  // Auto-resize textarea
+  document.getElementById('chat-input').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+  });
+
+  // Init
+  loadSessions();
+</script>
+{% endblock %}

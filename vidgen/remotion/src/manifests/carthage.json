@@ -1,0 +1,285 @@
+{
+  "topic": "carthage",
+  "ttsScript": "Rome destroyed Carthage so completely that we only know Carthage through Roman eyes. Rome said Carthage was barbaric. They sacrificed children. They could not be trusted. Every Roman schoolboy learned this. But Carthage controlled the Mediterranean for 700 years. They invented the alphabet we use today. Their trade routes reached Britain. After the third war, Rome burned Carthage for 17 days. They sold 50,000 people into slavery. Then they plowed the ruins into the earth. Rome rewrote every Carthaginian text. Every treaty. Every history. The losers didn't write the history. The winners erased it.",
+  "colors": {
+    "bg": "#080A10",
+    "accent": "#C0532A",
+    "secondary": "#D4A017"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "label": "THE HOOK",
+      "type": "illustration",
+      "scene_anchor": "Rome",
+      "scene_end_anchor": "eyes.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "CARTHAGE",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#E8734A",
+          "anchor": "Rome",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "figureWithShield",
+          "zone": "MID",
+          "anchor": "destroyed",
+          "attack": 0.0,
+          "enter": "slideLeft",
+          "hold": "until_scene_end",
+          "size": 90,
+          "color": "#C0532A",
+          "position": {"x": -80, "y": 0},
+          "holdMotion": "none"
+        },
+        {
+          "type": "svg",
+          "svg": "figureWithShield",
+          "zone": "MID",
+          "anchor": "Carthage",
+          "attack": 0.1,
+          "enter": "slideRight",
+          "hold": "until_scene_end",
+          "size": 90,
+          "color": "#D4A017",
+          "position": {"x": 80, "y": 0},
+          "holdMotion": "none"
+        },
+        {
+          "type": "text",
+          "content": "Only Roman accounts survive",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "Roman",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "wrong_answer",
+      "label": "THE WRONG ANSWER",
+      "type": "scaleComparison",
+      "scene_anchor": "said",
+      "scene_end_anchor": "Britain.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Invented our alphabet",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#D4A017",
+          "anchor": "said",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "scale_comparison",
+          "zone": "MID",
+          "anchor": "controlled",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "left": {
+            "label": "Carthage",
+            "icon": "ship",
+            "value": 700,
+            "color": "#D4A017"
+          },
+          "right": {
+            "label": "Rome (rising)",
+            "icon": "sword",
+            "value": 200,
+            "color": "#C0532A"
+          },
+          "unit": "years"
+        },
+        {
+          "type": "text",
+          "content": "Trade routes reached Britain",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#94A3B8",
+          "anchor": "Britain.",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "contradiction",
+      "label": "THE CONTRADICTION",
+      "type": "timeline",
+      "scene_anchor": "After",
+      "scene_end_anchor": "slavery.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Three wars, one outcome",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "After",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "264 BC",
+          "label": "First Punic War",
+          "color": "#D4A017",
+          "anchor": "third",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "218 BC",
+          "label": "Hannibal invades",
+          "color": "#D4A017",
+          "anchor": "burned",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "149 BC",
+          "label": "Third War begins",
+          "color": "#EF4444",
+          "anchor": "17",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "146 BC",
+          "label": "Carthage falls",
+          "color": "#EF4444",
+          "anchor": "sold",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "proof",
+      "label": "THE PROOF",
+      "type": "barChart",
+      "scene_anchor": "ploughed",
+      "scene_end_anchor": "earth.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "146 BC — Total destruction",
+          "zone": "UPPER",
+          "style": "stat",
+          "color": "#EF4444",
+          "anchor": "ploughed",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "bar",
+          "label": "Days burned",
+          "value": 17,
+          "color": "#EF4444",
+          "anchor": "ruins",
+          "attack": 0.0
+        },
+        {
+          "type": "bar",
+          "label": "Thousands enslaved",
+          "value": 50,
+          "color": "#C0532A",
+          "anchor": "earth.",
+          "attack": 0.0
+        }
+      ]
+    },
+    {
+      "id": "betrayal",
+      "label": "THE BETRAYAL",
+      "type": "populationDrop",
+      "scene_anchor": "rewrote",
+      "scene_end_anchor": "history.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Every record rewritten",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#E8734A",
+          "anchor": "rewrote",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "population_drop",
+          "startValue": 500000,
+          "endValue": 0,
+          "unit": "people",
+          "label": "Population of Carthage",
+          "color": "#EF4444",
+          "zone": "MID",
+          "anchor": "Carthaginian",
+          "attack": 0.2,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "Ruins plowed into earth",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#EF4444",
+          "anchor": "history.",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "punch",
+      "label": "THE PUNCH",
+      "type": "textEffect",
+      "scene_anchor": "losers",
+      "scene_end_anchor": "it.",
+      "elements": [
+        {
+          "type": "text_effect",
+          "text": "HISTORY ERASED",
+          "effect": "redacted",
+          "color": "#E8734A",
+          "zone": "MID",
+          "anchor": "losers",
+          "attack": 0.0,
+          "hold": "until_scene_end",
+          "effectDuration": 0.4
+        },
+        {
+          "type": "text",
+          "content": "Winners erased the record",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#D4A017",
+          "anchor": "erased",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    }
+  ]
+}

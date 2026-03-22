@@ -1,0 +1,16 @@
+{
+  "studio_model": "opus",
+  "studio_budget": "5.00",
+  "meta_model": "sonnet",
+  "meta_budget": "0.50",
+  "render_crf": "23",
+  "render_preset": "fast",
+  "max_concurrent_renders": "1",
+  "fish_bitrate": "192",
+  "short_max_duration": "30",
+  "short_fade_duration": "1.5",
+  "silence_threshold_db": "-30",
+  "silence_min_duration": "0.3",
+  "fish_voice_id": "dc74574cfe664e93bd4179fe28542524",
+  "fish_voice_name": "Him-phm"
+}

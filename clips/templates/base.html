@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#1a1714">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  {% block meta %}
+  <meta property="og:title" content="clips — TKK Video Library">
+  <meta property="og:description" content="Short-form educational videos for TikTok">
+  <meta property="og:type" content="website">
+  <meta name="description" content="TKK video pipeline dashboard — browse, review, and manage educational TikTok videos">
+  {% endblock %}
+  <title>{% block title %}clips{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1a1714;
+      --bg-raised: #232019;
+      --bg-warm: #2a2620;
+      --surface: rgba(255, 245, 230, 0.04);
+      --surface-hover: rgba(255, 245, 230, 0.07);
+      --border: rgba(255, 245, 230, 0.08);
+      --border-hover: rgba(255, 245, 230, 0.16);
+      --text: #f0ece4;
+      --text-dim: #a89f90;
+      --text-muted: #6d6458;
+      --accent: #e8834a;
+      --accent-glow: rgba(232, 131, 74, 0.15);
+      --accent-hover: #f09560;
+      --accent-subtle: rgba(232, 131, 74, 0.1);
+      --success: #6cc070;
+      --warn: #e8c44a;
+      --fail: #d15a50;
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-xs: 6px;
+      --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'Space Mono', monospace;
+      --bottom-nav-h: 60px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    *, *::before, *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+
+    html, body {
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.55;
+      min-height: 100vh;
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* --- CARD --- */
+    .card {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .card-interactive {
+      transition: transform 0.12s, border-color 0.2s;
+    }
+    .card-interactive:active {
+      transform: scale(0.98);
+    }
+
+    /* --- BOTTOM NAV --- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      display: flex;
+      align-items: stretch;
+      justify-content: space-around;
+      height: calc(var(--bottom-nav-h) + var(--safe-bottom));
+      padding-bottom: var(--safe-bottom);
+      background: rgba(26, 23, 20, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      gap: 2px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      transition: color 0.15s;
+      padding: 8px 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .nav-item.active {
+      color: var(--accent);
+    }
+
+    .nav-item:not(.active):active {
+      color: var(--text-dim);
+    }
+
+    /* --- LAYOUT --- */
+    main {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px 16px calc(var(--bottom-nav-h) + var(--safe-bottom) + 24px);
+    }
+
+    /* --- PAGE HEADER --- */
+    .page-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .page-head h1 {
+      font-family: var(--font-heading);
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: -0.3px;
+      color: var(--text);
+    }
+
+    .page-head .count {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    /* --- BUTTONS --- */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      text-decoration: none;
+      color: var(--text);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+
+    .btn-ghost {
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--border-hover); background: var(--surface-hover); }
+
+    .btn-sm { font-size: 12px; padding: 8px 14px; border-radius: var(--radius-xs); }
+    .btn-xs { font-size: 11px; padding: 5px 10px; border-radius: var(--radius-xs); }
+
+    /* --- INPUTS --- */
+    .input, textarea.input {
+      width: 100%;
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--text);
+      background: var(--bg-warm);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.15s;
+      -webkit-appearance: none;
+    }
+
+    .input:focus, textarea.input:focus {
+      border-color: var(--accent);
+    }
+
+    .input::placeholder, textarea.input::placeholder {
+      color: var(--text-muted);
+    }
+
+    textarea.input {
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    /* --- HEADINGS --- */
+    h1, h2, h3 {
+      font-family: var(--font-heading);
+      font-weight: 400;
+      letter-spacing: -0.3px;
+    }
+    h1 { font-size: 28px; }
+    h2 { font-size: 20px; }
+    h3 { font-size: 17px; }
+
+    /* --- UTILITY --- */
+    .text-dim { color: var(--text-dim); }
+    .text-muted { color: var(--text-muted); }
+    .text-accent { color: var(--accent); }
+    .mono { font-family: var(--font-mono); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-pass { background: rgba(108, 192, 112, 0.14); color: var(--success); }
+    .badge-warn { background: rgba(232, 196, 74, 0.14); color: var(--warn); }
+    .badge-fail { background: rgba(209, 90, 80, 0.14); color: var(--fail); }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+
+    /* --- SPINNER --- */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+    }
+
+    /* --- RESPONSIVE --- */
+    @media (min-width: 768px) {
+      main { padding: 28px 24px 40px; }
+      h1 { font-size: 32px; }
+      .page-head { margin-bottom: 28px; }
+
+      .bottom-nav {
+        position: sticky;
+        top: 0;
+        bottom: auto;
+        height: 56px;
+        padding-bottom: 0;
+        border-top: none;
+        border-bottom: 1px solid var(--border);
+        justify-content: flex-start;
+        gap: 4px;
+        padding: 0 24px;
+      }
+
+      .nav-item {
+        flex: none;
+        flex-direction: row;
+        gap: 8px;
+        padding: 8px 16px;
+        font-size: 13px;
+        border-radius: var(--radius-sm);
+      }
+
+      .nav-item svg { width: 18px; height: 18px; }
+
+      .nav-item.active {
+        background: var(--accent-subtle);
+      }
+
+      .nav-logo {
+        display: flex;
+        align-items: center;
+        font-family: var(--font-heading);
+        font-size: 22px;
+        color: var(--accent);
+        text-decoration: none;
+        margin-right: 20px;
+        letter-spacing: -0.5px;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .nav-logo { display: none; }
+    }
+    /* --- TOAST NOTIFICATIONS --- */
+    #toast-container {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      pointer-events: auto;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      animation: toast-in 0.25s ease forwards;
+      max-width: 340px;
+      word-break: break-word;
+    }
+    .toast.success { background: rgba(108, 192, 112, 0.92); }
+    .toast.error { background: rgba(209, 90, 80, 0.92); }
+    .toast.info { background: rgba(232, 131, 74, 0.92); }
+    .toast.out { animation: toast-out 0.25s ease forwards; }
+    @keyframes toast-in { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes toast-out { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(40px); } }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <nav class="bottom-nav">
+    <a href="/" class="nav-logo">clips</a>
+    <a href="/" class="nav-item {% if active_page == 'dashboard' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
+      Library
+    </a>
+    <a href="/workbench" class="nav-item {% if active_page == 'workbench' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Workbench
+    </a>
+    <a href="/chat" class="nav-item {% if active_page == 'chat' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Chat
+    </a>
+    <a href="/intake" class="nav-item {% if active_page == 'intake' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Intake
+    </a>
+    <a href="/about" class="nav-item {% if active_page == 'about' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      About
+    </a>
+    <a href="/settings" class="nav-item {% if active_page == 'settings' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </a>
+  </nav>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <div id="toast-container"></div>
+  <script>
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast ' + type;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.add('out');
+        setTimeout(() => toast.remove(), 250);
+      }, 3000);
+    }
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 300" fill="#C4A882">
+  <!-- Head -->
+  <circle cx="60" cy="30" r="22"/>
+  <!-- Hair -->
+  <path d="M38 25 C38 10 82 10 82 25 C85 35 80 45 75 40 C70 50 50 50 45 40 C40 45 35 35 38 25Z" fill="#5A4030"/>
+  <!-- Torso -->
+  <path d="M40 52 L35 140 L85 140 L80 52Z"/>
+  <!-- Arms -->
+  <path d="M40 60 L15 120 L22 125 L45 75Z"/>
+  <path d="M80 60 L105 120 L98 125 L75 75Z"/>
+  <!-- Skirt (1920s style) -->
+  <path d="M30 140 L20 260 L100 260 L90 140Z" fill="#8B7355"/>
+  <!-- Legs -->
+  <rect x="38" y="255" width="16" height="40" rx="4"/>
+  <rect x="66" y="255" width="16" height="40" rx="4"/>
+</svg>

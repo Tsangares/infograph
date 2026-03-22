@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+{% set active_page = 'about' %}
+
+{% block title %}clips — Pipeline{% endblock %}
+
+{% block head %}
+<style>
+  .about-nav {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .about-nav::-webkit-scrollbar { display: none; }
+  .about-nav-item {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 100px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .about-nav-item:hover { border-color: var(--border-hover); color: var(--text); }
+  .about-nav-item.active { background: var(--accent-subtle); border-color: var(--accent); color: var(--accent); }
+
+  .about-section {
+    margin-bottom: 32px;
+  }
+  .about-section h2 {
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+  .about-section p, .about-section li {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .about-section p + p {
+    margin-top: 10px;
+  }
+  .about-section ul {
+    list-style: none;
+    margin-top: 8px;
+  }
+  .about-section ul li {
+    padding-left: 16px;
+    position: relative;
+    margin-bottom: 4px;
+  }
+  .about-section ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--surface);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .pipeline-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 16px 0;
+  }
+  .pipeline-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 16px;
+    position: relative;
+  }
+  .pipeline-step::before {
+    content: '';
+    position: absolute;
+    left: 30px;
+    top: 42px;
+    bottom: -14px;
+    width: 2px;
+    background: var(--border);
+  }
+  .pipeline-step:last-child::before {
+    display: none;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--accent-subtle);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+  .step-body h3 {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .step-body p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .step-body .step-detail {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .step-body .step-detail strong {
+    color: var(--text-dim);
+  }
+
+  .tech-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  @media (min-width: 520px) {
+    .tech-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .tech-card {
+    padding: 14px 16px;
+  }
+  .tech-card .tech-name {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .tech-card .tech-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .mcp-tools {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  @media (min-width: 520px) {
+    .mcp-tools { grid-template-columns: 1fr 1fr; }
+  }
+  .mcp-tool {
+    padding: 8px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+  }
+  .mcp-tool .tool-name {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .mcp-tool .tool-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Pipeline</h1>
+</div>
+
+<div class="about-nav">
+  <a href="/about" class="about-nav-item">Overview</a>
+  <a href="/about/engines" class="about-nav-item">Engines</a>
+  <a href="/about/pipeline" class="about-nav-item active">Pipeline</a>
+  <a href="/about/values" class="about-nav-item">Values</a>
+  <a href="/about/roadmap" class="about-nav-item">Roadmap</a>
+</div>
+
+<div class="about-section">
+  <p>The TKK pipeline turns a topic into a finished 28-45 second vertical video. Every step is automated and driven by a single Claude Code session using MCP tools.</p>
+</div>
+
+<div class="about-section">
+  <h2>Step by Step</h2>
+  <div class="pipeline-flow">
+    <div class="pipeline-step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>Write a Screenplay</h3>
+        <p>A Python file defines 6 scenes following the mystery arc: hook, wrong answer, contradiction, proof, betrayal, punch.</p>
+        <div class="step-detail">
+          Each scene is a Manim <code>Scene</code> class with a <code>construct()</code> method. The file includes VTT timing cues mapping narration segments to scenes, a <code>TTS_SCRIPT</code> with the full narration text, and <code>DURATION</code> constants controlling time allocation. Target: <strong>150 words per minute</strong> narration pace.
+        </div>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>Generate TTS</h3>
+        <p>Narration text is sent to Fish Audio, which returns a natural voice recording using the ELITE voice model.</p>
+        <div class="step-detail">
+          Fish Audio is the mandatory TTS provider. The returned audio drives all animation timing — scene durations are calibrated to match the audio length. <code>generate_tts.py</code> parses the screenplay's <code>TTS_SCRIPT</code> and produces per-scene <code>tts_*.mp3</code> files. edge-tts is available as a fallback.
+        </div>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>Render Preview Frames</h3>
+        <p>Quick static PNG snapshots of each scene for visual review before committing to a full render.</p>
+        <div class="step-detail">
+          Run with <code>python3 {topic}_manim.py --preview</code>. Generates 6 PNGs in <code>previews/</code> (~10 seconds). Lets you check layout, text placement, zone coverage, and visual balance without waiting for a full video render.
+        </div>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h3>Quality Assurance</h3>
+        <p>Three automated QA checks verify the video will look and sound right before final render.</p>
+        <div class="step-detail">
+          <strong>Layout QA</strong> (<code>qa_layout.py</code>) — checks that content fills the vertical frame, verifies zone coverage and balance.<br>
+          <strong>Readability QA</strong> (<code>qa_readability.py</code>) — contrast ratios, margin clearance, text size minimums.<br>
+          <strong>Sync QA</strong> (<code>qa_sync.py</code>) — AV drift (&gt;2s = FAIL), dead time (animations finishing &gt;3s early), overflow (animations exceeding allocated time), number sync (visual numbers in correct scene), scene budget (minimum 1.5s per scene).
+        </div>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h3>Full Render</h3>
+        <p>Manim renders each scene as a video clip. Clips are concatenated and merged with voice audio to produce the final MP4.</p>
+        <div class="step-detail">
+          Output: <strong>1080x1920, 30fps, H.264 + AAC</strong>. FFmpeg handles concatenation and audio merge. Takes 1-2 minutes. Result is saved as <code>{topic}_final.mp4</code> in the vidgen directory and appears in the clips library.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="about-section">
+  <h2>MCP Server</h2>
+  <p>The entire pipeline is exposed as MCP (Model Context Protocol) tools via <code>mcp_server.py</code>. This lets Claude Code drive every step programmatically — reading/writing screenplays, generating TTS, rendering previews, running QA, and producing final videos — all from a single conversation.</p>
+  <div class="mcp-tools">
+    <div class="mcp-tool">
+      <span class="tool-name">list_screenplays</span>
+      <span class="tool-desc">List all screenplays with status</span>
+    </div>
+    <div class="mcp-tool">
+      <span class="tool-name">read_screenplay</span>
+      <span class="tool-desc">Read a screenplay file</span>
+    </div>
+    <div class="mcp-tool">
+      <span class="tool-name">write_screenplay</span>
+      <span class="tool-desc">Write/update a screenplay</span>
+    </div>
+    <div class="mcp-tool">
+      <span class="tool-name">generate_tts</span>
+      <span class="tool-desc">Generate Fish Audio TTS</span>
+    </div>
+    <div class="mcp-tool">
+      <span class="tool-name">render_preview</span>
+      <span class="tool-desc">Render 6 preview PNGs</span>
+    </div>
+    <div class="mcp-tool">
+      <span class="tool-name">render_full</span>
+      <span class="tool-desc">Full render to final MP4</span>
+    </div>
+    <div class="mcp-tool">
+      <span class="tool-name">run_qa</span>
+      <span class="tool-desc">Layout + readability + sync QA</span>
+    </div>
+    <div class="mcp-tool">
+      <span class="tool-name">read_production_guide</span>
+      <span class="tool-desc">Read the production guide</span>
+    </div>
+  </div>
+</div>
+
+<div class="about-section">
+  <h2>Session Model</h2>
+  <p>TKK uses a <strong>single Claude Code session</strong> to handle the full pipeline. No multi-agent orchestration, no autonomous workers, no message passing between processes. One session writes the screenplay, generates TTS, renders, runs QA, and fixes issues — all in a deterministic, linear flow.</p>
+  <p>This replaced an earlier multi-agent system (OpenClaw) that used 3 specialized agents. The single-session approach is simpler, more reliable, and easier to debug.</p>
+</div>
+
+<div class="about-section">
+  <h2>Tech Stack</h2>
+  <div class="tech-grid">
+    <div class="card tech-card">
+      <div class="tech-name">Manim CE v0.20</div>
+      <div class="tech-desc">Animation engine. Renders each scene as video frames from Python code.</div>
+    </div>
+    <div class="card tech-card">
+      <div class="tech-name">Fish Audio</div>
+      <div class="tech-desc">TTS API. Natural voice narration using the custom ELITE voice model.</div>
+    </div>
+    <div class="card tech-card">
+      <div class="tech-name">FFmpeg</div>
+      <div class="tech-desc">Video processing. Concatenates clips, merges audio, encodes H.264.</div>
+    </div>
+    <div class="card tech-card">
+      <div class="tech-name">Claude Code + MCP</div>
+      <div class="tech-desc">AI writes screenplays and drives the pipeline via MCP tools.</div>
+    </div>
+    <div class="card tech-card">
+      <div class="tech-name">FastAPI</div>
+      <div class="tech-desc">This dashboard. Library, workbench, chat, and about pages.</div>
+    </div>
+    <div class="card tech-card">
+      <div class="tech-name">Caddy</div>
+      <div class="tech-desc">Reverse proxy for clips.applesauce.chat on port 8020.</div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

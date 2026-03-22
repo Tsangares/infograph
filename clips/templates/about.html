@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+{% set active_page = 'about' %}
+
+{% block title %}clips — About{% endblock %}
+
+{% block head %}
+<style>
+  .about-nav {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .about-nav::-webkit-scrollbar { display: none; }
+  .about-nav-item {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 100px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .about-nav-item:hover { border-color: var(--border-hover); color: var(--text); }
+  .about-nav-item.active { background: var(--accent-subtle); border-color: var(--accent); color: var(--accent); }
+
+  .about-section {
+    margin-bottom: 32px;
+  }
+  .about-section h2 {
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+  .about-section p, .about-section li {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .about-section p + p {
+    margin-top: 10px;
+  }
+
+  .stat-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 14px;
+  }
+  .stat-box {
+    padding: 14px 18px;
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+  }
+  .stat-box .stat-val {
+    font-family: var(--font-heading);
+    font-size: 28px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-box .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .mystery-arc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .arc-beat {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .arc-beat .num {
+    color: var(--accent);
+    margin-right: 4px;
+  }
+  .arc-arrow {
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+
+  .link-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  @media (min-width: 520px) {
+    .link-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .link-card {
+    display: block;
+    padding: 20px;
+    text-decoration: none;
+    transition: border-color 0.2s, transform 0.12s;
+  }
+  .link-card:hover { border-color: var(--accent); }
+  .link-card:active { transform: scale(0.98); }
+  .link-card h3 {
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-size: 16px;
+  }
+  .link-card p {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>About</h1>
+</div>
+
+<div class="about-nav">
+  <a href="/about" class="about-nav-item active">Overview</a>
+  <a href="/about/engines" class="about-nav-item">Engines</a>
+  <a href="/about/pipeline" class="about-nav-item">Pipeline</a>
+  <a href="/about/values" class="about-nav-item">Values</a>
+  <a href="/about/roadmap" class="about-nav-item">Roadmap</a>
+</div>
+
+<div class="stat-row">
+  <div class="card stat-box">
+    <div class="stat-val">{{ video_count }}</div>
+    <div class="stat-label">Videos</div>
+  </div>
+  <div class="card stat-box">
+    <div class="stat-val">{{ screenplay_count }}</div>
+    <div class="stat-label">Screenplays</div>
+  </div>
+  <div class="card stat-box">
+    <div class="stat-val">28-45s</div>
+    <div class="stat-label">Duration</div>
+  </div>
+  <div class="card stat-box">
+    <div class="stat-val">1080x1920</div>
+    <div class="stat-label">Resolution</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="about-section">
+  <h2>What is TKK?</h2>
+  <p>TKK is a video pipeline that produces short-form educational TikTok videos. Each video follows a "mystery arc" narrative structure — presenting a historical or scientific puzzle, walking through wrong assumptions, then revealing the surprising truth.</p>
+  <p>Everything is automated: a screenplay file goes in, and a fully rendered vertical video with animated graphics and narration comes out. No manual editing, no After Effects, no drag-and-drop — just code.</p>
+</div>
+
+<div class="about-section">
+  <h2>The Mystery Arc</h2>
+  <p>Every video follows a 6-beat narrative structure designed to hook viewers and keep them watching to the end:</p>
+  <div class="mystery-arc">
+    <span class="arc-beat"><span class="num">1</span> Hook</span>
+    <span class="arc-arrow">&rarr;</span>
+    <span class="arc-beat"><span class="num">2</span> Wrong Answer</span>
+    <span class="arc-arrow">&rarr;</span>
+    <span class="arc-beat"><span class="num">3</span> Contradiction</span>
+    <span class="arc-arrow">&rarr;</span>
+    <span class="arc-beat"><span class="num">4</span> Proof</span>
+    <span class="arc-arrow">&rarr;</span>
+    <span class="arc-beat"><span class="num">5</span> Betrayal</span>
+    <span class="arc-arrow">&rarr;</span>
+    <span class="arc-beat"><span class="num">6</span> Punch</span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="about-section">
+  <h2>Explore</h2>
+  <div class="link-grid">
+    <a href="/about/engines" class="card link-card">
+      <h3>Engines</h3>
+      <p>Two rendering engines — Manim (Python, 60+ videos) and Remotion (React, in migration). How they compare and when each is used.</p>
+    </a>
+    <a href="/about/pipeline" class="card link-card">
+      <h3>Pipeline</h3>
+      <p>How a video gets made, step by step: screenplay, TTS, preview, QA, render. Plus the MCP server that drives it all.</p>
+    </a>
+    <a href="/about/values" class="card link-card">
+      <h3>Values</h3>
+      <p>Design philosophy: deterministic over autonomous, code as source of truth, visual-first storytelling, quality gates.</p>
+    </a>
+    <a href="/about/roadmap" class="card link-card">
+      <h3>Roadmap</h3>
+      <p>Where the project is heading: Remotion migration, word-level captions, batch rendering, and the essay-to-video vision.</p>
+    </a>
+  </div>
+</div>
+
+{% endblock %}

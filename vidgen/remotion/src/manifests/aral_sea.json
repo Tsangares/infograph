@@ -1,0 +1,273 @@
+{
+  "topic": "aral_sea",
+  "ttsScript": "The Aral Sea was the fourth largest lake on Earth. Then it vanished in a single lifetime. Scientists first blamed the climate. Drought. Evaporation. A natural disaster no one could have stopped. It was not nature. In 1960, Soviet engineers diverted the rivers... The lake lost 90 percent of its water. Fishing towns ended up 150 km from the shore. The fish died. Then the economy died. An area the size of Ireland. Gone. The exposed seabed became a toxic desert. The dust carries pesticides... Ships rust in the desert... The Soviets knew it would die. They called it a worthwhile sacrifice.",
+  "colors": {
+    "bg": "#080A10",
+    "accent": "#2563EB",
+    "secondary": "#D4A76A"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "label": "THE HOOK",
+      "type": "counter",
+      "scene_anchor": "The",
+      "scene_end_anchor": "lifetime.",
+      "elements": [
+        {
+          "type": "counter",
+          "start": 1,
+          "end": 4,
+          "unit": "th largest lake",
+          "description": "Aral Sea — 1960",
+          "color": "#2563EB",
+          "zone": "MID",
+          "anchor": "fourth",
+          "attack": 0.0,
+          "count_end_anchor": "Earth.",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "68,000 km²",
+          "zone": "LOWER",
+          "style": "stat",
+          "color": "#D4A76A",
+          "anchor": "vanished",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "wrong_answer",
+      "label": "THE WRONG ANSWER",
+      "type": "flowDiagram",
+      "scene_anchor": "Scientists",
+      "scene_end_anchor": "stopped.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "DROUGHT?",
+          "zone": "UPPER",
+          "style": "stat",
+          "color": "#94A3B8",
+          "anchor": "Scientists",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "flow_diagram",
+          "zone": "MID",
+          "anchor": "blamed",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "nodes": [
+            {"label": "Drought", "icon": "thermometer", "color": "#D4A76A"},
+            {"label": "Evaporation", "icon": "wave", "color": "#64748B"},
+            {"label": "Natural disaster", "icon": "warning", "color": "#EF4444"}
+          ],
+          "direction": "horizontal",
+          "arrowColor": "#64748B"
+        },
+        {
+          "type": "text",
+          "content": "Natural causes — ruled out",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "natural",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "truth",
+      "label": "THE TRUTH",
+      "type": "timeline",
+      "scene_anchor": "not",
+      "scene_end_anchor": "rivers...",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Soviet irrigation project",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "not",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "1960",
+          "label": "Rivers diverted",
+          "color": "#EF4444",
+          "anchor": "1960,",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "1970",
+          "label": "Lake shrinks",
+          "color": "#EF4444",
+          "anchor": "Soviet",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "1990",
+          "label": "Split in two",
+          "color": "#EF4444",
+          "anchor": "diverted",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "2010",
+          "label": "Eastern lobe gone",
+          "color": "#EF4444",
+          "anchor": "rivers...",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "collapse",
+      "label": "THE COLLAPSE",
+      "type": "progressRing",
+      "scene_anchor": "lake",
+      "scene_end_anchor": "died.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Surface area decline",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "lake",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "progress_ring",
+          "zone": "MID",
+          "anchor": "lost",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "rings": [
+            {"value": 10, "maxValue": 100, "label": "Water remaining", "color": "#2563EB"}
+          ],
+          "unit": "%"
+        },
+        {
+          "type": "text",
+          "content": "90% water lost",
+          "zone": "LOWER",
+          "style": "stat",
+          "color": "#EF4444",
+          "anchor": "90",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "scale",
+      "label": "THE SCALE",
+      "type": "scaleComparison",
+      "scene_anchor": "area",
+      "scene_end_anchor": "Gone.",
+      "elements": [
+        {
+          "type": "scale_comparison",
+          "zone": "MID",
+          "anchor": "size",
+          "attack": 0.1,
+          "hold": "until_scene_end",
+          "left": {
+            "label": "Aral Sea lost",
+            "icon": "wave",
+            "value": 61000,
+            "color": "#2563EB"
+          },
+          "right": {
+            "label": "Ireland",
+            "icon": "globe",
+            "value": 70000,
+            "color": "#D4A76A"
+          },
+          "unit": "km²"
+        },
+        {
+          "type": "text",
+          "content": "150 km to nearest shore",
+          "zone": "LOWER",
+          "style": "stat",
+          "color": "#D4A76A",
+          "anchor": "Gone.",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "punch",
+      "label": "THE PUNCH",
+      "type": "transformReveal",
+      "scene_anchor": "exposed",
+      "scene_end_anchor": "sacrifice.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "\"WORTHWHILE SACRIFICE\"",
+          "zone": "UPPER",
+          "style": "stat",
+          "color": "#EF4444",
+          "anchor": "Soviets",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "transform",
+          "zone": "MID",
+          "anchor": "exposed",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "from_icon": "wave",
+          "from_label": "Aral Sea",
+          "from_color": "#2563EB",
+          "to_icon": "skull",
+          "to_label": "Toxic desert",
+          "to_color": "#EF4444",
+          "effect": "shatter",
+          "transformAt": 0.5
+        },
+        {
+          "type": "text",
+          "content": "They knew it would die",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#D4A76A",
+          "anchor": "sacrifice.",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    }
+  ]
+}

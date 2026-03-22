@@ -1,0 +1,20 @@
+{
+  "topic": "azithromycin_trojan",
+  "filename": "azithromycin_trojan_manim.py",
+  "arc": {
+    "scene1_hook": "Open on a giant pill capsule splitting open at center frame \u2014 inside, the number \"37%\" pulses in red. A narrator says this drug barely gets into your blood. The pill dissolves downward, leaving the percentage hanging ominously. Below, a faint bloodstream river flows left-to-right with almost no drug particles visible \u2014 the visual says \"failure.\" Label pill: \"THE WORST DRUG?\" at ZONE_TITLE.",
+    "scene2_mystery": "A simplified lung outline appears at center frame, glowing faintly. Tiny azithromycin dots drift through a bloodstream ribbon below \u2014 barely any reach the lung. A \"blood level\" bar on the left stays tiny. The lung looks undefended, bacteria dots multiply inside it. The visual question: if so little drug reaches the blood, how does this treat pneumonia? Label: \"THE PROBLEM\".",
+    "scene3_wrong_answer": "Show the \"obvious\" answer: maybe you just take a huge dose. A giant pile of pills stacks up at center. An arrow pumps more drug into the bloodstream river. But the blood-level bar barely moves \u2014 the drug vanishes from the blood almost as fast as it arrives. The pills keep piling but the lung bacteria keep multiplying. Brute force isn't working. Label: \"MORE PILLS?\"",
+    "scene4_contradiction": "The twist: a single immune cell (neutrophil shape \u2014 a blobby circle with a nucleus) drifts through the bloodstream. As it passes azithromycin molecules, it ABSORBS them \u2014 the dots disappear INTO the cell, which glows brighter and brighter blue. The cell is now packed with drug. It exits the bloodstream and enters the lung. Flash: \"64-98x\" appears huge at ZONE_MID. The drug isn't in the blood because it's INSIDE the immune cells. Label: \"WAIT...\"",
+    "scene5_proof": "The lung fills center frame. A stream of glowing neutrophils (each packed with drug) marches into the infected lung tissue. When each cell reaches bacteria, it bursts open \u2014 releasing a concentrated blast of azithromycin shown as expanding rings. The bacteria dissolve on contact. A comparison bar chart at ZONE_LOWER: \"BLOOD\" bar is tiny (1x), \"LUNG TISSUE\" bar towers at 98x. Source label at footer: \"Trojan horse delivery.\" Label: \"THE PROOF\".",
+    "scene6_betrayal": "The kicker: show a calendar with 5 days crossed off \u2014 then the pills STOP. But the neutrophils keep marching into the lung, still glowing, for days and days more. The calendar keeps ticking: day 6, 7, 8, 9, 10... The text \"133 HOURS\" appears huge \u2014 the drug's lung tissue half-life. Your immune cells are still delivering drug almost a WEEK after you stop taking pills. Label: \"THE TRUTH\"."
+  },
+  "shapes": [
+    "pill_capsule",
+    "neutrophil_cell",
+    "lung_outline",
+    "bacteria_dot"
+  ],
+  "tts_script": "Azithromycin is one of the most prescribed antibiotics on Earth. But here's the thing \u2014 only thirty-seven percent of it actually reaches your blood. That's terrible. Most drugs would be useless at that number. So doctors tried the obvious fix: bigger doses, more pills. Didn't help. The drug just vanished from the bloodstream. Then researchers discovered something no one expected. The drug wasn't disappearing. It was hiding \u2014 inside your own immune cells. Neutrophils, the white blood cells that rush to infections, were absorbing azithromycin like sponges. Concentrating it sixty to ninety-eight times higher than blood levels. Then carrying it directly into infected tissue and releasing it like a payload. Your immune system wasn't just fighting the bacteria. It was the drug's delivery truck. And here's the wildest part \u2014 those cells keep delivering the drug for almost a week after you stop taking the pills.",
+  "word_count": 146
+}

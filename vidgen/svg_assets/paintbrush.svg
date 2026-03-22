@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 300" fill="none">
+  <!-- Handle -->
+  <rect x="22" y="0" width="16" height="200" rx="4" fill="#8B7355" stroke="#6B5335" stroke-width="1.5"/>
+  <!-- Ferrule (metal band) -->
+  <rect x="18" y="195" width="24" height="25" rx="2" fill="#C0C0C0" stroke="#A0A0A0" stroke-width="1"/>
+  <!-- Bristles -->
+  <path d="M20 220 L18 280 Q30 295 42 280 L40 220Z" fill="#D4A574" stroke="#B08050" stroke-width="1"/>
+  <!-- Paint on tip -->
+  <ellipse cx="30" cy="285" rx="14" ry="8" fill="#39FF14" opacity="0.8"/>
+  <!-- Glow effect -->
+  <ellipse cx="30" cy="285" rx="20" ry="12" fill="#39FF14" opacity="0.2"/>
+</svg>

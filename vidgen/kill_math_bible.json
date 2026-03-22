@@ -1,0 +1,20 @@
+{
+  "topic": "kill_math",
+  "filename": "kill_math_manim.py",
+  "arc": {
+    "scene1_hook": "Two pill bottles stand side by side at center frame. One is labeled \"1x/DAY\" and the other \"4x/DAY\". Same disease, both work. But WHY the different schedules? A clock ticks behind them. The question isn't which pill is better \u2014 it's why they play by completely different rules. Label: \"THE MATH OF KILLING\" at ZONE_TITLE.",
+    "scene2_mystery": "Show a graph axis: x-axis is time (hours), y-axis is drug concentration. A horizontal dashed line marks \"MIC\" (minimum inhibitory concentration) \u2014 the level needed to stop bacteria. Above this line, bacteria die. Below it, they grow. This line is the battlefield. How you cross it determines everything. Label: \"THE LINE\".",
+    "scene3_wrong_answer": "The assumption: more drug = more killing, always. Show a simple \"pile it on\" visual \u2014 three stacked dose bars getting taller. An arrow pointing up says \"MORE = BETTER.\" This is intuitive but wrong for half of all antibiotics. Label: \"WHAT YOU THINK\".",
+    "scene4_contradiction": "The twist: split the screen. LEFT side \u2014 \"TIDAL WAVE\" \u2014 show a concentration curve that spikes way above MIC then crashes back down. ONE giant peak. The bacteria underneath get obliterated by the spike. RIGHT side \u2014 \"CAMPFIRE\" \u2014 show a flat, sustained line hovering just above MIC for hours and hours. The bacteria underneath slowly die from sustained exposure. Two completely different killing patterns. Neither is wrong \u2014 they're different math. Flash: \"SAME GOAL, DIFFERENT RULES.\" Label: \"TWO STRATEGIES\".",
+    "scene5_proof": "Concrete examples. LEFT (tidal wave): gentamicin \u2014 one massive daily dose, peak/MIC ratio must hit 8-10x. Show the towering spike with \"8-10x MIC\" labeled. Bacteria are stunned for hours even after the drug drops (PAE \u2014 post-antibiotic effect shown as a ghostly afterglow). RIGHT (campfire): amoxicillin \u2014 the curve must stay above MIC for 40-50% of each interval. Show three modest bumps every 8 hours with the \"above MIC\" zone highlighted. Miss a dose and bacteria immediately regrow \u2014 show a gap where bacteria multiply. Label: \"THE PROOF\".",
+    "scene6_betrayal": "The gut punch: this is why missing a dose matters differently depending on which drug you're taking. Miss a gentamicin dose? The bacteria are still stunned from the last peak (PAE). Miss an amoxicillin dose? Bacteria start regrowing immediately \u2014 no afterglow. A split showing one clock with a missed dose and \"STILL OK\" vs another with \"REGROWTH\" happening in the gap. Label: \"WHY IT MATTERS\"."
+  },
+  "shapes": [
+    "pill_bottle",
+    "concentration_curve",
+    "bacteria_cluster",
+    "clock_face"
+  ],
+  "tts_script": "Some antibiotics you take once a day. Others, every six hours. Same disease. Both work. But they play by completely different mathematical rules. Every antibiotic has to get above a line called the MIC \u2014 the minimum concentration that stops bacteria. But HOW you cross that line changes everything. Gentamicin is a tidal wave. One massive dose that spikes to eight to ten times the MIC. The peak is so overwhelming it stuns bacteria for hours even after the drug wears off. That's why you take it once a day. Amoxicillin is a campfire. It doesn't spike \u2014 it has to stay above the MIC for forty to fifty percent of every dosing interval. Three modest doses, eight hours apart, keeping the fire lit. And here's why this matters to you. Miss a gentamicin dose? The bacteria are still stunned from the last peak. Miss an amoxicillin dose? Bacteria start regrowing immediately. The schedule on your pill bottle isn't arbitrary. It's a war strategy.",
+  "word_count": 164
+}

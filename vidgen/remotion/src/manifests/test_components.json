@@ -1,0 +1,132 @@
+{
+  "topic": "test_components",
+  "ttsScript": "This is a test of all new visual components. First the text effect. Then a gauge meter. Then a flow diagram. Then a scale comparison. Then progress rings. Then stacked accumulation. Then a transform reveal. Finally dominos.",
+  "colors": {
+    "bg": "#080A10",
+    "accent": "#FFD700",
+    "secondary": "#3B82F6"
+  },
+  "scenes": [
+    {
+      "type": "textEffect",
+      "label": "TEXT EFFECT",
+      "props": {
+        "text": "VISUAL LIBRARY V2",
+        "effect": "glitch",
+        "color": "#FFD700",
+        "zone": "MID",
+        "effectDuration": 0.5
+      }
+    },
+    {
+      "type": "gaugeMeter",
+      "label": "GAUGE METER",
+      "props": {
+        "value": 85,
+        "maxValue": 100,
+        "unit": "%",
+        "label": "DANGER THRESHOLD",
+        "zone": "MID",
+        "sweepDuration": 0.6,
+        "zones": [
+          { "from": 0, "to": 50, "color": "#22C55E" },
+          { "from": 50, "to": 75, "color": "#F59E0B" },
+          { "from": 75, "to": 100, "color": "#EF4444" }
+        ]
+      }
+    },
+    {
+      "type": "flowDiagram",
+      "label": "FLOW DIAGRAM",
+      "props": {
+        "nodes": [
+          { "label": "CAUSE", "icon": "warning", "color": "#FFD700" },
+          { "label": "REACTION", "icon": "fire", "color": "#EF4444" },
+          { "label": "CHAIN", "icon": "chain", "color": "#F59E0B" },
+          { "label": "RESULT", "icon": "explosion", "color": "#EF4444" }
+        ],
+        "direction": "vertical",
+        "arrowColor": "#FFD700",
+        "zone": "MID"
+      }
+    },
+    {
+      "type": "scaleComparison",
+      "label": "SCALE COMPARISON",
+      "props": {
+        "left": {
+          "label": "O-Ring",
+          "icon": "ring",
+          "value": 0.06,
+          "color": "#FFD700"
+        },
+        "right": {
+          "label": "Space Shuttle",
+          "icon": "rocket",
+          "value": 2000000000,
+          "color": "#3B82F6"
+        },
+        "unit": "$",
+        "zone": "MID"
+      }
+    },
+    {
+      "type": "progressRing",
+      "label": "PROGRESS RINGS",
+      "props": {
+        "rings": [
+          { "value": 90, "maxValue": 100, "label": "Water Lost", "color": "#3B82F6" },
+          { "value": 65, "maxValue": 100, "label": "Fish Died", "color": "#EF4444" }
+        ],
+        "unit": "%",
+        "zone": "MID",
+        "fillDuration": 0.5
+      }
+    },
+    {
+      "type": "stackedAccumulation",
+      "label": "ACCUMULATION",
+      "props": {
+        "icon": "skull",
+        "count": 12,
+        "label": "Casualties",
+        "displayValue": "10,000+",
+        "color": "#EF4444",
+        "zone": "MID"
+      }
+    },
+    {
+      "type": "transformReveal",
+      "label": "TRANSFORM",
+      "props": {
+        "from": {
+          "icon": "rocket",
+          "label": "LAUNCH",
+          "color": "#3B82F6"
+        },
+        "to": {
+          "icon": "explosion",
+          "label": "DISASTER",
+          "color": "#EF4444"
+        },
+        "effect": "shatter",
+        "transformAt": 0.5,
+        "zone": "MID"
+      }
+    },
+    {
+      "type": "causeEffect",
+      "label": "DOMINO CHAIN",
+      "props": {
+        "dominoes": [
+          { "label": "Cold", "icon": "thermometer", "color": "#3B82F6" },
+          { "label": "Crack", "icon": "warning", "color": "#F59E0B" },
+          { "label": "Leak", "icon": "droplet", "color": "#EF4444" },
+          { "label": "Boom", "icon": "explosion", "color": "#EF4444" }
+        ],
+        "zone": "MID",
+        "chainSpeed": 0.15
+      }
+    }
+  ]
+}

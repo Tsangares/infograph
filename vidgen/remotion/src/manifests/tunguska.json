@@ -1,0 +1,321 @@
+{
+  "topic": "tunguska",
+  "ttsScript": "June 30th, 1908. The largest explosion in recorded history hit Siberia. No crater. No meteorite. No explanation for 19 years. Locals thought a god was punishing them. Scientists guessed a volcano. Then a comet. Every theory fell apart. 80 million trees flattened in a radial pattern. 2,150 square kilometers destroyed. The shockwave registered in London. Night skies glowed for weeks. But there was no crater. No fragments. It was an airburst. A rock 50 meters wide exploded kilometers above the surface. Vaporized before impact. The ground was hit by pure energy. A rock the size of a building destroyed an area the size of a city. And left absolutely nothing behind.",
+  "colors": {
+    "bg": "#0F172A",
+    "accent": "#F97316",
+    "secondary": "#FBBF24"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "label": "THE HOOK",
+      "type": "illustration",
+      "scene_anchor": "June",
+      "scene_end_anchor": "years.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "June 30, 1908 — Siberia",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#F97316",
+          "anchor": "June",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "explosion",
+          "zone": "MID",
+          "anchor": "largest",
+          "attack": 0.1,
+          "enter": "pop",
+          "hold": "until_scene_end",
+          "size": 200,
+          "color": "#F97316",
+          "position": {"x": 0, "y": -30},
+          "holdMotion": "pulse"
+        },
+        {
+          "type": "svg",
+          "svg": "mountain",
+          "zone": "MID",
+          "anchor": "Siberia.",
+          "attack": 0.0,
+          "enter": "fadeIn",
+          "hold": "until_scene_end",
+          "size": 100,
+          "color": "#94A3B8",
+          "position": {"x": -120, "y": 90},
+          "holdMotion": "float",
+          "shake": true
+        },
+        {
+          "type": "svg",
+          "svg": "mountain",
+          "zone": "MID",
+          "anchor": "crater.",
+          "attack": 0.0,
+          "enter": "fadeIn",
+          "hold": "until_scene_end",
+          "size": 80,
+          "color": "#94A3B8",
+          "position": {"x": 120, "y": 90},
+          "holdMotion": "float",
+          "shake": true
+        },
+        {
+          "type": "text",
+          "content": "Largest explosion recorded",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#FBBF24",
+          "anchor": "explanation",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "wrong_answer",
+      "label": "THE WRONG ANSWER",
+      "type": "flowDiagram",
+      "scene_anchor": "Locals",
+      "scene_end_anchor": "apart.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "19 years, no answer",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#CBD5E1",
+          "anchor": "Locals",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "flow_diagram",
+          "zone": "MID",
+          "anchor": "thought",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "nodes": [
+            {"label": "Divine wrath", "icon": "lightning", "color": "#64748B"},
+            {"label": "Volcano", "icon": "mountain", "color": "#64748B"},
+            {"label": "Comet", "icon": "globe", "color": "#64748B"},
+            {"label": "???", "icon": "warning", "color": "#F97316"}
+          ],
+          "direction": "horizontal",
+          "arrowColor": "#64748B"
+        },
+        {
+          "type": "text",
+          "content": "Every theory failed",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#94A3B8",
+          "anchor": "apart.",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "contradiction",
+      "label": "THE CONTRADICTION",
+      "type": "scaleComparison",
+      "scene_anchor": "80",
+      "scene_end_anchor": "weeks.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "80 million trees flattened",
+          "zone": "UPPER",
+          "style": "stat",
+          "color": "#FBBF24",
+          "anchor": "80",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "scale_comparison",
+          "zone": "MID",
+          "anchor": "million",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "left": {
+            "label": "50m rock",
+            "icon": "mountain",
+            "value": 50,
+            "color": "#F97316"
+          },
+          "right": {
+            "label": "Destruction",
+            "icon": "explosion",
+            "value": 2150,
+            "color": "#EF4444"
+          },
+          "unit": "km²"
+        },
+        {
+          "type": "text",
+          "content": "2,150 km² destroyed",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#F97316",
+          "anchor": "destroyed.",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "proof",
+      "label": "THE PROOF",
+      "type": "illustration",
+      "scene_anchor": "there",
+      "scene_end_anchor": "fragments.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "NO CRATER",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FBBF24",
+          "anchor": "there",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "crosshair",
+          "zone": "MID",
+          "anchor": "no",
+          "attack": 0.1,
+          "enter": "fadeIn",
+          "hold": "until_scene_end",
+          "size": 200,
+          "color": "#FBBF24",
+          "position": {"x": 0, "y": 0},
+          "holdMotion": "breathe"
+        },
+        {
+          "type": "svg",
+          "svg": "figureThinking",
+          "zone": "MID",
+          "anchor": "fragments.",
+          "attack": 0.0,
+          "enter": "pop",
+          "hold": "until_scene_end",
+          "size": 80,
+          "color": "#F97316",
+          "position": {"x": 0, "y": 0},
+          "holdMotion": "pulse"
+        },
+        {
+          "type": "text",
+          "content": "Shockwave hit London",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "fragments.",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "betrayal",
+      "label": "THE ANSWER",
+      "type": "textEffect",
+      "scene_anchor": "air",
+      "scene_end_anchor": "impact.",
+      "elements": [
+        {
+          "type": "text_effect",
+          "text": "AIRBURST",
+          "effect": "stamp",
+          "color": "#F97316",
+          "zone": "MID",
+          "anchor": "air",
+          "attack": 0.0,
+          "hold": "until_scene_end",
+          "effectDuration": 0.3
+        },
+        {
+          "type": "text",
+          "content": "50m rock — vaporized at altitude",
+          "zone": "UPPER",
+          "style": "stat",
+          "color": "#FBBF24",
+          "anchor": "rock",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "Vaporized before impact",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#FBBF24",
+          "anchor": "Vaporized",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "punch",
+      "label": "THE PUNCH",
+      "type": "progressRing",
+      "scene_anchor": "ground",
+      "scene_end_anchor": "behind.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "NOTHING LEFT BEHIND",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#F97316",
+          "anchor": "ground",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "progress_ring",
+          "zone": "MID",
+          "anchor": "hit",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "rings": [
+            {"value": 0, "maxValue": 100, "label": "Fragments found", "color": "#F97316"}
+          ],
+          "unit": "%"
+        },
+        {
+          "type": "text",
+          "content": "Zero fragments found",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#FBBF24",
+          "anchor": "nothing",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+{% set active_page = 'intake' %}
+
+{% block title %}clips — Intake{% endblock %}
+
+{% block head %}
+<style>
+  .drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    margin-bottom: 24px;
+  }
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+  }
+  .drop-zone svg {
+    width: 48px; height: 48px;
+    stroke: var(--text-muted);
+    fill: none;
+    stroke-width: 1.5;
+    margin-bottom: 12px;
+  }
+  .drop-zone.dragover svg { stroke: var(--accent); }
+  .drop-zone p { color: var(--text-dim); font-size: 14px; margin-top: 8px; }
+  .drop-zone .hint { color: var(--text-muted); font-size: 12px; margin-top: 4px; }
+  .drop-zone input[type="file"] { display: none; }
+
+  .batch-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .batch-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .batch-header h3 { font-size: 16px; font-weight: 600; }
+  .batch-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .batch-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .status-pill.uploaded { background: rgba(255,245,230,0.06); color: var(--text-dim); }
+  .status-pill.analyzing, .status-pill.planning { background: rgba(232,131,74,0.12); color: var(--accent); }
+  .status-pill.writing, .status-pill.tts, .status-pill.previewing { background: rgba(232,196,74,0.12); color: var(--warn); }
+  .status-pill.done, .status-pill.previewed, .status-pill.written { background: rgba(108,192,112,0.12); color: var(--success); }
+  .status-pill.error { background: rgba(209,90,80,0.12); color: var(--fail); }
+  .status-pill.planned { background: rgba(255,245,230,0.06); color: var(--text-dim); }
+
+  .item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--surface);
+    border-radius: var(--radius-xs);
+    font-size: 13px;
+  }
+  .item-row .topic { font-weight: 500; }
+  .item-row a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .item-row a:hover { text-decoration: underline; }
+  .item-error {
+    font-size: 11px;
+    color: var(--fail);
+    margin-top: 4px;
+    font-family: var(--font-mono);
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.4;
+    max-height: 60px;
+    overflow-y: auto;
+  }
+  .item-row.has-error {
+    flex-wrap: wrap;
+  }
+
+  .active-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Intake</h1>
+</div>
+
+<div class="drop-zone" id="dropZone">
+  <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+  <p>Drop a .md research file here</p>
+  <div class="hint">or click to browse</div>
+  <input type="file" id="fileInput" accept=".md,.txt,.markdown">
+</div>
+
+<div id="batchList"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const batchList = document.getElementById('batchList');
+
+// Active polling intervals
+let _pollIntervals = {};
+
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) uploadFile(file);
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files[0]) uploadFile(fileInput.files[0]);
+  fileInput.value = '';
+});
+
+async function uploadFile(file) {
+  const form = new FormData();
+  form.append('file', file);
+  try {
+    const res = await fetch('/api/intake/upload', { method: 'POST', body: form });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.error || 'Upload failed', 'error'); return; }
+    showToast(`Started batch: ${data.name}`, 'success');
+    loadBatches();
+  } catch (e) {
+    showToast('Upload failed: ' + e.message, 'error');
+  }
+}
+
+async function loadBatches() {
+  try {
+    const res = await fetch('/api/intake/batches');
+    const data = await res.json();
+    renderBatches(data.batches);
+  } catch (e) {
+    batchList.innerHTML = '<div class="empty-state">Failed to load batches</div>';
+  }
+}
+
+function renderBatches(batches) {
+  if (!batches.length) {
+    batchList.innerHTML = '<div class="empty-state">No batches yet. Drop a .md file above to get started.</div>';
+    return;
+  }
+
+  // Stop old polls for batches no longer active
+  const activeIds = new Set(batches.map(b => b.id));
+  for (const id in _pollIntervals) {
+    if (!activeIds.has(id)) { clearInterval(_pollIntervals[id]); delete _pollIntervals[id]; }
+  }
+
+  batchList.innerHTML = batches.map(b => {
+    const isActive = !['done', 'error', 'uploaded'].includes(b.status) || b.status === 'uploaded';
+    const items = (b.items || []).map(it => {
+      const link = it.screenplay_file && ['written','tts','previewed'].includes(it.status)
+        ? `<a href="/workbench?file=${it.screenplay_file}">Open</a>` : '';
+      const errorLink = it.status === 'error' && it.screenplay_file
+        ? `<a href="/workbench?file=${it.screenplay_file}">Open</a>` : '';
+      const errorHtml = it.status === 'error' && it.error
+        ? `<div class="item-error">${esc(it.error)}</div>` : '';
+      return `<div class="item-row${it.error && it.status === 'error' ? ' has-error' : ''}">
+        <span class="topic">${it.title || it.topic.replace(/_/g, ' ')}</span>
+        <span style="display:flex;align-items:center;gap:8px;">
+          <span class="status-pill ${it.status}">${it.status}</span>
+          ${link || errorLink}
+        </span>
+        ${errorHtml}
+      </div>`;
+    }).join('');
+
+    const showStop = ['analyzing','planning','writing','tts','previewing'].includes(b.status);
+    const showRetry = b.status === 'error';
+    const showDelete = ['done','error'].includes(b.status);
+
+    return `<div class="batch-card" id="batch-${b.id}">
+      <div class="batch-header">
+        <h3>${b.name}</h3>
+        <div class="batch-meta">
+          ${b.video_count ? b.video_count + ' videos' : ''}
+          <span class="status-pill ${b.status}">${b.status}</span>
+        </div>
+      </div>
+      <div id="active-step-${b.id}"></div>
+      ${items ? '<div class="item-list">' + items + '</div>' : ''}
+      <div class="batch-actions">
+        ${showStop ? `<button class="btn btn-xs btn-ghost" onclick="stopBatch('${b.id}')">Stop</button>` : ''}
+        ${showRetry ? `<button class="btn btn-xs btn-primary" onclick="retryBatch('${b.id}')">Retry</button>` : ''}
+        ${showDelete ? `<button class="btn btn-xs btn-ghost" onclick="deleteBatch('${b.id}')">Delete</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Start polling for active batches
+  batches.forEach(b => {
+    const isActive = ['analyzing','planning','writing','tts','previewing','uploaded'].includes(b.status);
+    if (isActive && !_pollIntervals[b.id]) {
+      _pollIntervals[b.id] = setInterval(() => pollBatch(b.id), 2000);
+      pollBatch(b.id);
+    }
+  });
+}
+
+async function pollBatch(batchId) {
+  try {
+    const res = await fetch(`/api/intake/batches/${batchId}/poll`);
+    const data = await res.json();
+    const el = document.getElementById(`active-step-${batchId}`);
+    if (el && data.live) {
+      const step = data.current_step || '';
+      const item = data.current_item ? data.current_item.replace(/_/g, ' ') : '';
+      const elapsed = data.elapsed ? `${Math.floor(data.elapsed/60)}m ${data.elapsed%60}s` : '';
+      el.innerHTML = `<div class="active-step">
+        <span class="spinner"></span>
+        ${step}${item ? ': ' + item : ''} ${elapsed ? '(' + elapsed + ')' : ''}
+      </div>`;
+    }
+    // Update status pill
+    const card = document.getElementById(`batch-${batchId}`);
+    if (card) {
+      const pill = card.querySelector('.batch-meta .status-pill');
+      if (pill && data.status) {
+        pill.className = 'status-pill ' + data.status;
+        pill.textContent = data.status;
+      }
+    }
+    // Refresh full list when done or error
+    if (['done', 'error'].includes(data.status)) {
+      clearInterval(_pollIntervals[batchId]);
+      delete _pollIntervals[batchId];
+      loadBatches();
+    }
+  } catch (e) {}
+}
+
+async function stopBatch(batchId) {
+  await fetch(`/api/intake/batches/${batchId}/stop`, { method: 'POST' });
+  showToast('Batch stopped', 'info');
+  loadBatches();
+}
+
+async function retryBatch(batchId) {
+  const res = await fetch(`/api/intake/batches/${batchId}/retry`, { method: 'POST' });
+  if (res.ok) {
+    showToast('Retrying batch', 'success');
+    loadBatches();
+  } else {
+    const data = await res.json();
+    showToast(data.error || 'Retry failed', 'error');
+  }
+}
+
+async function deleteBatch(batchId) {
+  if (!confirm('Delete this batch?')) return;
+  await fetch(`/api/intake/batches/${batchId}`, { method: 'DELETE' });
+  showToast('Batch deleted', 'info');
+  loadBatches();
+}
+
+function esc(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+// Initial load
+loadBatches();
+</script>
+{% endblock %}

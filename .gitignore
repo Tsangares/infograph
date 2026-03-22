@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Secrets
+.env
+*.key
+*.pem
+credentials*
+
+# Generated media & binary assets
+vidgen/media/
+vidgen/previews/
+vidgen/*_final.mp4
+vidgen/tts_*.mp3
+vidgen/tts_*.mp3.json
+vidgen/tts_*_timings.json
+*.mp4
+*.wav
+*.mp3
+clips/thumbs/
+assets/
+tts/
+
+# Generated pipeline output
+vidgen/*_resolved.json
+vidgen/*_bible.json
+vidgen/svg_index.json
+
+# Chromium cache (Remotion renderer)
+vidgen/.remotion/
+
+# Built Remotion player bundle
+clips/static/remotion-player/
+
+# ffmpeg concat lists (generated)
+vidgen/concat_*.txt
+
+# Loose images (QA screenshots, previews, prototypes)
+vidgen/*.png
+vidgen/*.jpg
+
+# Reference styles & review screenshots
+vidgen/reference_styles/
+vidgen/review/
+vidgen/review_*/
+
+# Database files
+*.db
+*.sqlite3
+
+# Uploads
+clips/uploads/
+
+# Archive & workspaces (multi-GB)
+archive/
+workspaces/
+
+# IDE / tool
+.claude/
+CLAUDE.md
+
+# Remotion
+vidgen/remotion/node_modules/
+vidgen/remotion/.remotion/
+vidgen/remotion/dist/
+vidgen/remotion/public/assets/
+vidgen/remotion/public/*.mp3
+
+# Legacy
+videos/
+frames/
+test_scrape.py

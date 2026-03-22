@@ -1,0 +1,305 @@
+{
+  "topic": "radium",
+  "ttsScript": "A company told women to put radioactive paint in their mouths. They said it was safe. The women painted watch dials with radium. To get a fine point, they licked their brushes. Lip, dip, paint. Hundreds of times a day. Their teeth fell out. Their jaws crumbled. Their bones glowed in the dark. The company told them they were fine. US Radium Corporation knew. Their own scientists used lead shields. They hired doctors to blame the women's symptoms on syphilis. Five women sued. They were dying. The company called them liars. The case went to trial anyway. The Radium Girls lost everything. But their lawsuit created the worker safety laws that protect every American today.",
+  "colors": {
+    "bg": "#080A10",
+    "accent": "#4ADE80",
+    "secondary": "#EF4444"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "label": "THE HOOK",
+      "type": "illustration",
+      "scene_anchor": "A",
+      "scene_end_anchor": "safe.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "LIP, DIP, PAINT",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#4ADE80",
+          "anchor": "A",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "warning",
+          "zone": "MID",
+          "anchor": "radioactive",
+          "attack": 0.0,
+          "enter": "pop",
+          "hold": "until_scene_end",
+          "size": 100,
+          "color": "#4ADE80",
+          "position": {"x": 0, "y": -40},
+          "holdMotion": "pulse",
+          "shake": true
+        },
+        {
+          "type": "svg",
+          "svg": "figureGroup",
+          "zone": "MID",
+          "anchor": "mouths.",
+          "attack": 0.1,
+          "enter": "slideUp",
+          "hold": "until_scene_end",
+          "size": 80,
+          "color": "#94A3B8",
+          "position": {"x": 0, "y": 80},
+          "holdMotion": "none"
+        },
+        {
+          "type": "text",
+          "content": "US Radium Corporation",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "safe.",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "wrong_answer",
+      "label": "THE WRONG ANSWER",
+      "type": "gaugeMeter",
+      "scene_anchor": "women",
+      "scene_end_anchor": "day.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Radium watch dials",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "women",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "gauge",
+          "value": 250,
+          "maxValue": 300,
+          "unit": "licks/day",
+          "label": "Per worker",
+          "color": "#4ADE80",
+          "zone": "MID",
+          "anchor": "licked",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "sweepDuration": 0.6,
+          "gauge_zones": [
+            {"from": 0, "to": 50, "color": "#22C55E"},
+            {"from": 50, "to": 150, "color": "#FBBF24"},
+            {"from": 150, "to": 300, "color": "#EF4444"}
+          ]
+        },
+        {
+          "type": "text",
+          "content": "\"Perfectly safe\"",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#94A3B8",
+          "anchor": "Hundreds",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "contradiction",
+      "label": "THE CONTRADICTION",
+      "type": "timeline",
+      "scene_anchor": "teeth",
+      "scene_end_anchor": "fine.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Radiation poisoning",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#EF4444",
+          "anchor": "teeth",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "1917",
+          "label": "Painting begins",
+          "color": "#4ADE80",
+          "anchor": "teeth",
+          "attack": 0.3,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "1922",
+          "label": "Teeth fall out",
+          "color": "#FBBF24",
+          "anchor": "jaws",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "1924",
+          "label": "Jaws crumble",
+          "color": "#EF4444",
+          "anchor": "bones",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "1925",
+          "label": "First death",
+          "color": "#EF4444",
+          "anchor": "dark.",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "proof",
+      "label": "THE PROOF",
+      "type": "stackedAccumulation",
+      "scene_anchor": "US",
+      "scene_end_anchor": "syphilis.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Scientists wore lead shields",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "US",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "stacked_accumulation",
+          "icon": "skull",
+          "count": 15,
+          "label": "Workers exposed",
+          "displayValue": "4,000+",
+          "color": "#EF4444",
+          "zone": "MID",
+          "anchor": "scientists",
+          "attack": 0.2,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "Workers got nothing",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#EF4444",
+          "anchor": "blame",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "betrayal",
+      "label": "THE BETRAYAL",
+      "type": "illustration",
+      "scene_anchor": "Five",
+      "scene_end_anchor": "anyway.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "The Radium Girls",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FBBF24",
+          "anchor": "Five",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "figureFallen",
+          "zone": "MID",
+          "anchor": "sued.",
+          "attack": 0.1,
+          "enter": "fadeIn",
+          "hold": "until_scene_end",
+          "size": 70,
+          "color": "#EF4444",
+          "position": {"x": 0, "y": 0},
+          "repeat": 5,
+          "stagger": 0.2,
+          "holdMotion": "none"
+        },
+        {
+          "type": "text",
+          "content": "5 women sued while dying",
+          "zone": "LOWER",
+          "style": "stat",
+          "color": "#EF4444",
+          "anchor": "dying.",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "Called liars by US Radium",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "liars.",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "punch",
+      "label": "THE PUNCH",
+      "type": "textEffect",
+      "scene_anchor": "Radium",
+      "scene_end_anchor": "today.",
+      "elements": [
+        {
+          "type": "text_effect",
+          "text": "LOST EVERYTHING",
+          "effect": "stamp",
+          "color": "#4ADE80",
+          "zone": "MID",
+          "anchor": "lost",
+          "attack": 0.0,
+          "hold": "until_scene_end",
+          "effectDuration": 0.4
+        },
+        {
+          "type": "text",
+          "content": "OSHA exists because of them",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#4ADE80",
+          "anchor": "protect",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    }
+  ]
+}

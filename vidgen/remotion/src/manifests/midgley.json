@@ -1,0 +1,319 @@
+{
+  "topic": "midgley",
+  "ttsScript": "One man caused more environmental damage than any organism in Earth's history. In 1921, Thomas Midgley invented a new fuel additive. Tetraethyl lead. He told reporters it was safe. He washed his hands in it. He knew it was poison. Then he did it again. In 1930, he invented Freon. The first CFC. It punched a hole in the ozone layer. One man. Two inventions. Lead poisoning killed millions. CFCs nearly destroyed the atmosphere. He won every award. The American Chemical Society gave him their highest honor. Twice. He never saw the damage. He died in 1944 — strangled by his own pulley system. The man who poisoned the planet couldn't save himself.",
+  "colors": {
+    "bg": "#0A0A10",
+    "accent": "#22C55E",
+    "secondary": "#EF4444"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "label": "THE HOOK",
+      "type": "illustration",
+      "scene_anchor": "One",
+      "scene_end_anchor": "history.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "1 MAN, 2 INVENTIONS",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#EF4444",
+          "anchor": "One",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "figureWithBeaker",
+          "zone": "MID",
+          "anchor": "caused",
+          "attack": 0.1,
+          "enter": "fadeIn",
+          "hold": "until_scene_end",
+          "size": 100,
+          "color": "#EF4444",
+          "position": {"x": 0, "y": -20},
+          "holdMotion": "none"
+        },
+        {
+          "type": "svg",
+          "svg": "warning",
+          "zone": "MID",
+          "anchor": "environmental",
+          "attack": 0.0,
+          "enter": "pop",
+          "hold": "until_scene_end",
+          "size": 60,
+          "color": "#22C55E",
+          "position": {"x": -90, "y": 60},
+          "holdMotion": "pulse"
+        },
+        {
+          "type": "svg",
+          "svg": "warning",
+          "zone": "MID",
+          "anchor": "damage",
+          "attack": 0.0,
+          "enter": "pop",
+          "hold": "until_scene_end",
+          "size": 60,
+          "color": "#22C55E",
+          "position": {"x": 90, "y": 60},
+          "holdMotion": "pulse"
+        },
+        {
+          "type": "text",
+          "content": "Thomas Midgley Jr.",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "history.",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "wrong_answer",
+      "label": "THE WRONG ANSWER",
+      "type": "timeline",
+      "scene_anchor": "1921,",
+      "scene_end_anchor": "poison.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "\"Perfectly safe\"",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#94A3B8",
+          "anchor": "1921,",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "1921",
+          "label": "Leaded gasoline",
+          "color": "#94A3B8",
+          "anchor": "Thomas",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "1924",
+          "label": "\"Washed hands in it\"",
+          "color": "#FBBF24",
+          "anchor": "reporters",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "1930",
+          "label": "Freon (CFCs)",
+          "color": "#22C55E",
+          "anchor": "poison.",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "contradiction",
+      "label": "THE CONTRADICTION",
+      "type": "progressRing",
+      "scene_anchor": "again.",
+      "scene_end_anchor": "layer.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Planetary damage",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#EF4444",
+          "anchor": "again.",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "progress_ring",
+          "zone": "MID",
+          "anchor": "1930,",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "rings": [
+            {"value": 5000, "maxValue": 5000, "label": "Lead deaths (K)", "color": "#94A3B8"},
+            {"value": 824, "maxValue": 1000, "label": "IQ points lost (M)", "color": "#FBBF24"},
+            {"value": 65, "maxValue": 100, "label": "Ozone loss %", "color": "#22C55E"}
+          ],
+          "unit": ""
+        },
+        {
+          "type": "text",
+          "content": "Two inventions",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#EF4444",
+          "anchor": "ozone",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "proof",
+      "label": "THE PROOF",
+      "type": "illustration",
+      "scene_anchor": "man.",
+      "scene_end_anchor": "atmosphere.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "50 years before ban",
+          "zone": "UPPER",
+          "style": "stat",
+          "color": "#EF4444",
+          "anchor": "man.",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "truck",
+          "zone": "MID",
+          "anchor": "Lead",
+          "attack": 0.0,
+          "enter": "slideLeft",
+          "hold": "until_scene_end",
+          "size": 90,
+          "color": "#94A3B8",
+          "position": {"x": -80, "y": 0},
+          "holdMotion": "none"
+        },
+        {
+          "type": "svg",
+          "svg": "skull",
+          "zone": "MID",
+          "anchor": "millions.",
+          "attack": 0.0,
+          "enter": "pop",
+          "hold": "until_scene_end",
+          "size": 90,
+          "color": "#EF4444",
+          "position": {"x": 80, "y": 0},
+          "holdMotion": "pulse",
+          "shake": true
+        },
+        {
+          "type": "text",
+          "content": "Industry covered it up",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "atmosphere.",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "betrayal",
+      "label": "THE BETRAYAL",
+      "type": "stackedAccumulation",
+      "scene_anchor": "won",
+      "scene_end_anchor": "Twice.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "2 TOP HONORS",
+          "zone": "UPPER",
+          "style": "stat",
+          "color": "#FFD700",
+          "anchor": "won",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "stacked_accumulation",
+          "icon": "crown",
+          "count": 8,
+          "label": "Awards received",
+          "displayValue": "Highest Honor — Twice",
+          "color": "#FFD700",
+          "zone": "MID",
+          "anchor": "award.",
+          "attack": 0.2,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "American Chemical Society",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "Twice.",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "punch",
+      "label": "THE PUNCH",
+      "type": "transformReveal",
+      "scene_anchor": "never",
+      "scene_end_anchor": "himself.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "1944",
+          "zone": "UPPER",
+          "style": "stat",
+          "color": "#EF4444",
+          "anchor": "died",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "transform",
+          "zone": "MID",
+          "anchor": "never",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "from_icon": "beaker",
+          "from_label": "His inventions",
+          "from_color": "#22C55E",
+          "to_icon": "skull",
+          "to_label": "Killed by own creation",
+          "to_color": "#EF4444",
+          "effect": "glitch",
+          "transformAt": 0.45
+        },
+        {
+          "type": "text",
+          "content": "Pulley system accident",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#94A3B8",
+          "anchor": "himself.",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    }
+  ]
+}

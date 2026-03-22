@@ -1,0 +1,490 @@
+{
+  "voice": "en-US-ChristopherNeural",
+  "speed": "+0%",
+  "words": [
+    {
+      "text": "For",
+      "offset_ticks": 1000000,
+      "duration_ticks": 2375000,
+      "offset_s": 0.1,
+      "end_s": 0.3375
+    },
+    {
+      "text": "decades",
+      "offset_ticks": 3500000,
+      "duration_ticks": 5875000,
+      "offset_s": 0.35,
+      "end_s": 0.9375
+    },
+    {
+      "text": "scientists",
+      "offset_ticks": 11875000,
+      "duration_ticks": 7125000,
+      "offset_s": 1.1875,
+      "end_s": 1.9
+    },
+    {
+      "text": "said",
+      "offset_ticks": 19125000,
+      "duration_ticks": 2000000,
+      "offset_s": 1.9125,
+      "end_s": 2.1125
+    },
+    {
+      "text": "Easter",
+      "offset_ticks": 21250000,
+      "duration_ticks": 3875000,
+      "offset_s": 2.125,
+      "end_s": 2.5125
+    },
+    {
+      "text": "Island's",
+      "offset_ticks": 25250000,
+      "duration_ticks": 3750000,
+      "offset_s": 2.525,
+      "end_s": 2.9
+    },
+    {
+      "text": "statues",
+      "offset_ticks": 29125000,
+      "duration_ticks": 5250000,
+      "offset_s": 2.9125,
+      "end_s": 3.4375
+    },
+    {
+      "text": "were",
+      "offset_ticks": 34500000,
+      "duration_ticks": 1000000,
+      "offset_s": 3.45,
+      "end_s": 3.55
+    },
+    {
+      "text": "dragged",
+      "offset_ticks": 35625000,
+      "duration_ticks": 4000000,
+      "offset_s": 3.5625,
+      "end_s": 3.9625
+    },
+    {
+      "text": "on",
+      "offset_ticks": 39750000,
+      "duration_ticks": 1500000,
+      "offset_s": 3.975,
+      "end_s": 4.125
+    },
+    {
+      "text": "wooden",
+      "offset_ticks": 41375000,
+      "duration_ticks": 2750000,
+      "offset_s": 4.1375,
+      "end_s": 4.4125
+    },
+    {
+      "text": "sleds",
+      "offset_ticks": 44250000,
+      "duration_ticks": 5625000,
+      "offset_s": 4.425,
+      "end_s": 4.9875
+    },
+    {
+      "text": "But",
+      "offset_ticks": 58500000,
+      "duration_ticks": 1375000,
+      "offset_s": 5.85,
+      "end_s": 5.9875
+    },
+    {
+      "text": "there's",
+      "offset_ticks": 60000000,
+      "duration_ticks": 2125000,
+      "offset_s": 6.0,
+      "end_s": 6.2125
+    },
+    {
+      "text": "a",
+      "offset_ticks": 62250000,
+      "duration_ticks": 625000,
+      "offset_s": 6.225,
+      "end_s": 6.2875
+    },
+    {
+      "text": "problem",
+      "offset_ticks": 63000000,
+      "duration_ticks": 5750000,
+      "offset_s": 6.3,
+      "end_s": 6.875
+    },
+    {
+      "text": "The",
+      "offset_ticks": 77375000,
+      "duration_ticks": 1500000,
+      "offset_s": 7.7375,
+      "end_s": 7.8875
+    },
+    {
+      "text": "island",
+      "offset_ticks": 79000000,
+      "duration_ticks": 3875000,
+      "offset_s": 7.9,
+      "end_s": 8.2875
+    },
+    {
+      "text": "had",
+      "offset_ticks": 83000000,
+      "duration_ticks": 1500000,
+      "offset_s": 8.3,
+      "end_s": 8.45
+    },
+    {
+      "text": "almost",
+      "offset_ticks": 84625000,
+      "duration_ticks": 3875000,
+      "offset_s": 8.4625,
+      "end_s": 8.85
+    },
+    {
+      "text": "no",
+      "offset_ticks": 88625000,
+      "duration_ticks": 2000000,
+      "offset_s": 8.8625,
+      "end_s": 9.0625
+    },
+    {
+      "text": "trees",
+      "offset_ticks": 90750000,
+      "duration_ticks": 6375000,
+      "offset_s": 9.075,
+      "end_s": 9.7125
+    },
+    {
+      "text": "The",
+      "offset_ticks": 105750000,
+      "duration_ticks": 1375000,
+      "offset_s": 10.575,
+      "end_s": 10.7125
+    },
+    {
+      "text": "Rapa",
+      "offset_ticks": 107250000,
+      "duration_ticks": 3250000,
+      "offset_s": 10.725,
+      "end_s": 11.05
+    },
+    {
+      "text": "Nui",
+      "offset_ticks": 110625000,
+      "duration_ticks": 3000000,
+      "offset_s": 11.0625,
+      "end_s": 11.3625
+    },
+    {
+      "text": "people",
+      "offset_ticks": 113750000,
+      "duration_ticks": 4125000,
+      "offset_s": 11.375,
+      "end_s": 11.7875
+    },
+    {
+      "text": "always",
+      "offset_ticks": 118000000,
+      "duration_ticks": 3375000,
+      "offset_s": 11.8,
+      "end_s": 12.1375
+    },
+    {
+      "text": "had",
+      "offset_ticks": 121500000,
+      "duration_ticks": 1625000,
+      "offset_s": 12.15,
+      "end_s": 12.3125
+    },
+    {
+      "text": "a",
+      "offset_ticks": 123250000,
+      "duration_ticks": 625000,
+      "offset_s": 12.325,
+      "end_s": 12.3875
+    },
+    {
+      "text": "different",
+      "offset_ticks": 124000000,
+      "duration_ticks": 3250000,
+      "offset_s": 12.4,
+      "end_s": 12.725
+    },
+    {
+      "text": "answer",
+      "offset_ticks": 127375000,
+      "duration_ticks": 5000000,
+      "offset_s": 12.7375,
+      "end_s": 13.2375
+    },
+    {
+      "text": "The",
+      "offset_ticks": 141000000,
+      "duration_ticks": 1375000,
+      "offset_s": 14.1,
+      "end_s": 14.2375
+    },
+    {
+      "text": "statues",
+      "offset_ticks": 142500000,
+      "duration_ticks": 5500000,
+      "offset_s": 14.25,
+      "end_s": 14.8
+    },
+    {
+      "text": "walked",
+      "offset_ticks": 148125000,
+      "duration_ticks": 5125000,
+      "offset_s": 14.8125,
+      "end_s": 15.325
+    },
+    {
+      "text": "In 2011",
+      "offset_ticks": 161875000,
+      "duration_ticks": 11875000,
+      "offset_s": 16.1875,
+      "end_s": 17.375
+    },
+    {
+      "text": "archaeologists",
+      "offset_ticks": 176125000,
+      "duration_ticks": 9500000,
+      "offset_s": 17.6125,
+      "end_s": 18.5625
+    },
+    {
+      "text": "tested",
+      "offset_ticks": 185750000,
+      "duration_ticks": 3875000,
+      "offset_s": 18.575,
+      "end_s": 18.9625
+    },
+    {
+      "text": "it",
+      "offset_ticks": 189750000,
+      "duration_ticks": 2250000,
+      "offset_s": 18.975,
+      "end_s": 19.2
+    },
+    {
+      "text": "18",
+      "offset_ticks": 200625000,
+      "duration_ticks": 4750000,
+      "offset_s": 20.0625,
+      "end_s": 20.5375
+    },
+    {
+      "text": "people",
+      "offset_ticks": 205500000,
+      "duration_ticks": 5125000,
+      "offset_s": 20.55,
+      "end_s": 21.0625
+    },
+    {
+      "text": "3",
+      "offset_ticks": 219250000,
+      "duration_ticks": 3250000,
+      "offset_s": 21.925,
+      "end_s": 22.25
+    },
+    {
+      "text": "ropes",
+      "offset_ticks": 222625000,
+      "duration_ticks": 5750000,
+      "offset_s": 22.2625,
+      "end_s": 22.8375
+    },
+    {
+      "text": "A",
+      "offset_ticks": 237000000,
+      "duration_ticks": 1125000,
+      "offset_s": 23.7,
+      "end_s": 23.8125
+    },
+    {
+      "text": "5-ton",
+      "offset_ticks": 238250000,
+      "duration_ticks": 7125000,
+      "offset_s": 23.825,
+      "end_s": 24.5375
+    },
+    {
+      "text": "replica",
+      "offset_ticks": 245500000,
+      "duration_ticks": 5875000,
+      "offset_s": 24.55,
+      "end_s": 25.1375
+    },
+    {
+      "text": "It",
+      "offset_ticks": 260000000,
+      "duration_ticks": 1750000,
+      "offset_s": 26.0,
+      "end_s": 26.175
+    },
+    {
+      "text": "walked",
+      "offset_ticks": 261875000,
+      "duration_ticks": 5125000,
+      "offset_s": 26.1875,
+      "end_s": 26.7
+    },
+    {
+      "text": "887",
+      "offset_ticks": 275625000,
+      "duration_ticks": 12250000,
+      "offset_s": 27.5625,
+      "end_s": 28.7875
+    },
+    {
+      "text": "statues",
+      "offset_ticks": 288000000,
+      "duration_ticks": 7625000,
+      "offset_s": 28.8,
+      "end_s": 29.5625
+    },
+    {
+      "text": "Moved",
+      "offset_ticks": 304250000,
+      "duration_ticks": 3875000,
+      "offset_s": 30.425,
+      "end_s": 30.8125
+    },
+    {
+      "text": "up",
+      "offset_ticks": 308250000,
+      "duration_ticks": 1625000,
+      "offset_s": 30.825,
+      "end_s": 30.9875
+    },
+    {
+      "text": "to",
+      "offset_ticks": 310000000,
+      "duration_ticks": 1250000,
+      "offset_s": 31.0,
+      "end_s": 31.125
+    },
+    {
+      "text": "18 km",
+      "offset_ticks": 311375000,
+      "duration_ticks": 13625000,
+      "offset_s": 31.1375,
+      "end_s": 32.5
+    },
+    {
+      "text": "All",
+      "offset_ticks": 333625000,
+      "duration_ticks": 2875000,
+      "offset_s": 33.3625,
+      "end_s": 33.65
+    },
+    {
+      "text": "by",
+      "offset_ticks": 336625000,
+      "duration_ticks": 1500000,
+      "offset_s": 33.6625,
+      "end_s": 33.8125
+    },
+    {
+      "text": "walking",
+      "offset_ticks": 338250000,
+      "duration_ticks": 5750000,
+      "offset_s": 33.825,
+      "end_s": 34.4
+    },
+    {
+      "text": "The",
+      "offset_ticks": 352625000,
+      "duration_ticks": 1375000,
+      "offset_s": 35.2625,
+      "end_s": 35.4
+    },
+    {
+      "text": "Rapa",
+      "offset_ticks": 354125000,
+      "duration_ticks": 3250000,
+      "offset_s": 35.4125,
+      "end_s": 35.7375
+    },
+    {
+      "text": "Nui",
+      "offset_ticks": 357500000,
+      "duration_ticks": 3875000,
+      "offset_s": 35.75,
+      "end_s": 36.1375
+    },
+    {
+      "text": "told",
+      "offset_ticks": 361500000,
+      "duration_ticks": 2750000,
+      "offset_s": 36.15,
+      "end_s": 36.425
+    },
+    {
+      "text": "us",
+      "offset_ticks": 364375000,
+      "duration_ticks": 1375000,
+      "offset_s": 36.4375,
+      "end_s": 36.575
+    },
+    {
+      "text": "the",
+      "offset_ticks": 365875000,
+      "duration_ticks": 1125000,
+      "offset_s": 36.5875,
+      "end_s": 36.7
+    },
+    {
+      "text": "truth",
+      "offset_ticks": 367125000,
+      "duration_ticks": 3125000,
+      "offset_s": 36.7125,
+      "end_s": 37.025
+    },
+    {
+      "text": "for",
+      "offset_ticks": 370375000,
+      "duration_ticks": 1500000,
+      "offset_s": 37.0375,
+      "end_s": 37.1875
+    },
+    {
+      "text": "centuries",
+      "offset_ticks": 372000000,
+      "duration_ticks": 7250000,
+      "offset_s": 37.2,
+      "end_s": 37.925
+    },
+    {
+      "text": "We",
+      "offset_ticks": 387875000,
+      "duration_ticks": 1750000,
+      "offset_s": 38.7875,
+      "end_s": 38.9625
+    },
+    {
+      "text": "just",
+      "offset_ticks": 389750000,
+      "duration_ticks": 2625000,
+      "offset_s": 38.975,
+      "end_s": 39.2375
+    },
+    {
+      "text": "didn't",
+      "offset_ticks": 392500000,
+      "duration_ticks": 2375000,
+      "offset_s": 39.25,
+      "end_s": 39.4875
+    },
+    {
+      "text": "listen",
+      "offset_ticks": 395000000,
+      "duration_ticks": 4375000,
+      "offset_s": 39.5,
+      "end_s": 39.9375
+    }
+  ],
+  "script": "For decades, scientists said Easter Island's statues were dragged on wooden sleds.\nBut there's a problem. The island had almost no trees.\nThe Rapa Nui people always had a different answer. The statues walked.\nIn 2011, archaeologists tested it. 18 people. 3 ropes. A 5-ton replica. It walked.\n887 statues. Moved up to 18 km. All by walking.\nThe Rapa Nui told us the truth for centuries. We just didn't listen."
+}

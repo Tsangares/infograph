@@ -1,0 +1,2924 @@
+{% extends "base.html" %}
+{% set active_page = 'workbench' %}
+
+{% block title %}clips — Workbench{% endblock %}
+
+{% block head %}
+<style>
+  /* Override base main for full-width workbench */
+  main {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  /* === 3-PANEL LAYOUT === */
+  .workbench-wrap {
+    display: flex;
+    height: calc(100vh - 70px);
+    height: calc(100dvh - 70px);
+    overflow: hidden;
+  }
+
+  /* === LEFT SIDEBAR === */
+  .wb-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .wb-sidebar-header {
+    padding: 14px 12px 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .wb-sidebar-actions {
+    display: flex;
+    gap: 6px;
+  }
+  .new-btn {
+    width: 100%;
+    padding: 7px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-subtle);
+    border: 1px solid rgba(232, 131, 74, 0.2);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+  .new-btn:hover { opacity: 0.85; }
+
+  .wb-search {
+    position: relative;
+  }
+  .wb-search input {
+    width: 100%;
+    font-size: 13px;
+    padding: 8px 12px 8px 32px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    outline: none;
+    font-family: var(--font-body);
+  }
+  .wb-search input:focus { border-color: var(--accent); }
+  .wb-search input::placeholder { color: var(--text-muted); }
+  .wb-search svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    stroke: var(--text-muted);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+
+  .wb-file-list {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding: 4px 0;
+  }
+
+  /* Group headers */
+  .group-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .group-header:hover { color: var(--text-dim); }
+  .group-header .chevron {
+    font-size: 8px;
+    transition: transform 0.15s;
+    display: inline-block;
+  }
+  .group-header .chevron.collapsed { transform: rotate(-90deg); }
+  .group-header .group-count {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-left: auto;
+  }
+
+  .group-items { }
+  .group-items.collapsed { display: none; }
+
+  /* File items */
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 12px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--text-dim);
+    text-align: left;
+    width: 100%;
+    transition: all 0.12s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .file-item:hover { background: var(--surface); }
+  .file-item.active {
+    color: var(--accent);
+    background: var(--accent-glow);
+  }
+  .file-item .file-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .file-item .pipeline-dots {
+    display: flex;
+    gap: 3px;
+    flex-shrink: 0;
+  }
+  .file-item .pdot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .file-item .pdot.on { background: var(--accent); }
+  .file-item .pdot.remotion { background: #38bdf8; }
+  .version-badge {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 100px;
+    background: var(--surface);
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  /* Version group expand */
+  .version-group-items {
+    padding-left: 16px;
+    display: none;
+  }
+  .version-group-items.expanded { display: block; }
+  .version-group-items .file-item { font-size: 12px; padding: 6px 12px; }
+
+  /* === CENTER PANEL === */
+  .wb-detail {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 56px;
+    min-width: 0;
+  }
+  .wb-detail-content {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .wb-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-muted);
+    font-size: 15px;
+    text-align: center;
+  }
+
+  /* Screenplay header styles */
+  .sp-header { margin-bottom: 16px; }
+  .sp-header-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+  .sp-type-badge {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+  .sp-type-badge.manim { background: rgba(167, 139, 250, 0.14); color: #a78bfa; }
+  .sp-type-badge.vidgen { background: rgba(108, 192, 112, 0.14); color: var(--success); }
+  .sp-type-badge.remotion { background: rgba(56, 189, 248, 0.14); color: #38bdf8; }
+
+  /* Engine filter pills */
+  .engine-filters { display: flex; gap: 6px; padding: 2px 0 0; }
+  .engine-pill {
+    font-size: 11px; font-family: var(--font-mono); padding: 3px 10px;
+    border-radius: 100px; border: 1px solid var(--border); background: transparent;
+    color: var(--text-dim); cursor: pointer; transition: all 0.15s;
+  }
+  .engine-pill:hover { border-color: var(--text-muted); }
+  .engine-pill.active { color: var(--fg); border-color: var(--fg); background: var(--surface); }
+  .engine-pill.active[data-engine="remotion"] { color: #38bdf8; border-color: rgba(56,189,248,0.5); background: rgba(56,189,248,0.08); }
+  .engine-pill.active[data-engine="manim"] { color: #a78bfa; border-color: rgba(167,139,250,0.5); background: rgba(167,139,250,0.08); }
+
+  /* Engine dot on file items */
+  .engine-dot {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 4px; flex-shrink: 0;
+  }
+  .engine-dot.manim { background: #a78bfa; }
+  .engine-dot.remotion { background: #38bdf8; }
+
+  /* New button split */
+  .new-btn-group { display: flex; gap: 4px; flex: 1; }
+  .new-btn-remotion { background: rgba(56,189,248,0.12); color: #38bdf8; border: 1px solid rgba(56,189,248,0.25); }
+  .new-btn-remotion:hover { background: rgba(56,189,248,0.2); border-color: rgba(56,189,248,0.4); }
+  .new-btn-manim { background: var(--surface); color: var(--text-dim); border: 1px solid var(--border); font-size: 11px; }
+  .new-btn-manim:hover { color: #a78bfa; border-color: rgba(167,139,250,0.4); }
+
+  .sp-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  .sp-meta-item {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+  .sp-docstring {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-dim);
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    white-space: pre-wrap;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  /* Action buttons */
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    max-width: 720px;
+  }
+  .action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    background: var(--bg-raised);
+    color: var(--text);
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .action-btn:active { transform: scale(0.98); }
+  .action-btn:hover { border-color: var(--border-hover); background: var(--surface-hover); }
+  .action-btn:disabled { opacity: 0.5; pointer-events: none; }
+  .action-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .action-btn.primary:hover { background: var(--accent-hover); }
+  .action-btn .action-icon { width: 16px; height: 16px; flex-shrink: 0; }
+  .action-btn .action-result {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+    margin-left: auto;
+  }
+  .action-btn.primary .action-result { color: rgba(255,255,255,0.7); }
+
+  /* Render bar */
+  .render-bar {
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    display: none;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    max-width: 720px;
+  }
+  .render-bar.active { display: block; }
+  .render-status-text {
+    font-size: 13px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .render-scenes-progress {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+  .render-scene-pip {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+  .render-scene-pip.done { background: var(--accent); }
+  .render-scene-pip.active { background: var(--accent); animation: pip-pulse 1s ease infinite; }
+  @keyframes pip-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .progress-track {
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.3s;
+    width: 0%;
+  }
+  .render-log {
+    margin-top: 10px;
+    max-height: 120px;
+    overflow-y: auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--text-muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    padding: 8px 10px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    scrollbar-width: thin;
+  }
+  .render-log-toggle {
+    font-size: 11px;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    margin-top: 6px;
+    padding: 0;
+  }
+  .render-log-toggle:hover { color: var(--text-dim); }
+
+  /* Scene cards */
+  .scenes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .scene-card {
+    padding: 0;
+    overflow: hidden;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .scene-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .scene-label {
+    font-family: var(--font-heading);
+    font-size: 15px;
+    color: var(--text);
+  }
+  .scene-duration {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 100px;
+    background: var(--accent-glow);
+    color: var(--accent);
+  }
+  .scene-card-body { padding: 12px; }
+  .scene-thumb {
+    width: 100%;
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+    display: block;
+    background: var(--surface);
+    aspect-ratio: 9/16;
+    object-fit: cover;
+  }
+  .scene-thumb-placeholder {
+    width: 100%;
+    aspect-ratio: 9/16;
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-family: var(--font-mono);
+  }
+  .zone-indicator {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 36px;
+    margin-bottom: 10px;
+  }
+  .zone-bar {
+    height: 3px;
+    border-radius: 1.5px;
+    background: var(--border);
+  }
+  .zone-bar.lit { background: var(--accent); }
+  .scene-narration {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+  .narration-line {
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 6px 10px;
+    background: var(--surface);
+    border-radius: var(--radius-xs);
+    border-left: 3px solid var(--accent);
+    color: var(--text);
+  }
+  .scene-screen-texts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .screen-text-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: var(--radius-xs);
+    background: rgba(232, 196, 74, 0.1);
+    color: var(--warn);
+    border: 1px solid rgba(232, 196, 74, 0.15);
+  }
+
+  /* QA panel */
+  .qa-panel {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+  .qa-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+  .qa-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .qa-badge.pass { background: rgba(232, 131, 74, 0.14); color: var(--accent); }
+  .qa-badge.warn { background: rgba(232, 196, 74, 0.14); color: var(--warn); }
+  .qa-badge.fail { background: rgba(239, 68, 68, 0.14); color: var(--fail); }
+  .qa-scene-row {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .qa-scene-row:last-child { border-bottom: none; }
+  .qa-scene-title {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .qa-checks { display: flex; flex-direction: column; gap: 3px; }
+  .qa-check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+  }
+  .qa-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .qa-dot.pass { background: var(--accent); }
+  .qa-dot.warn { background: var(--warn); }
+  .qa-dot.fail { background: var(--fail); }
+  .qa-dot.skip { background: var(--border); }
+  .qa-status-label {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    min-width: 32px;
+  }
+  .qa-status-label.pass { color: var(--accent); }
+  .qa-status-label.warn { color: var(--warn); }
+  .qa-status-label.fail { color: var(--fail); }
+  .qa-status-label.skip { color: var(--text-muted); }
+
+  .loading-card {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-dim);
+  }
+
+  /* Contextual help notes — disappear when content fills in */
+  .wb-hint {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 14px;
+  }
+  .wb-hint strong { color: var(--text-dim); }
+  .wb-hint .hint-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--accent);
+    opacity: 0.6;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  /* === RIGHT CHAT PANEL === */
+  .wb-chat {
+    width: 360px;
+    flex-shrink: 0;
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .chat-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-heading);
+    font-size: 16px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .chat-close-btn {
+    display: none;
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 22px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+  }
+  .chat-close-btn:hover { color: var(--text); }
+  .chat-header .chat-mode-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 100px;
+  }
+  .chat-mode-label.intake { background: rgba(108, 192, 112, 0.14); color: var(--success); }
+  .chat-mode-label.edit { background: rgba(167, 139, 250, 0.14); color: #a78bfa; }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .msg {
+    max-width: 90%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    word-wrap: break-word;
+  }
+  .msg-user {
+    align-self: flex-end;
+    background: var(--accent);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+  .msg-assistant {
+    align-self: flex-start;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+    white-space: normal;
+  }
+  .msg-assistant code {
+    background: rgba(0,0,0,0.3);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .msg-assistant pre {
+    background: rgba(0,0,0,0.3);
+    padding: 8px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    margin: 6px 0;
+  }
+  .msg-assistant pre code { background: none; padding: 0; }
+  .msg-assistant ul { margin: 4px 0; padding-left: 20px; }
+  .msg-assistant li { list-style: disc; }
+  .msg-error {
+    align-self: center;
+    background: rgba(220, 50, 50, 0.1);
+    border: 1px solid rgba(220, 50, 50, 0.2);
+    color: #e55;
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+  .msg-error-border { border: 1px solid rgba(220, 50, 50, 0.4) !important; }
+
+  .typing-indicator {
+    align-self: flex-start;
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 6px 14px;
+    display: none;
+  }
+  .typing-indicator.active { display: flex; align-items: center; gap: 8px; }
+  .typing-dots span {
+    animation: dot-pulse 1.4s infinite;
+    opacity: 0.3;
+    font-size: 10px;
+    margin-right: 2px;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dot-pulse {
+    0%, 80%, 100% { opacity: 0.3; }
+    40% { opacity: 1; }
+  }
+
+  .chat-empty {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    text-align: center;
+    padding: 20px;
+  }
+  .chat-empty p { margin: 6px 0; }
+  .chat-empty .hint { font-size: 12px; color: var(--text-dim); }
+
+  .chat-hint {
+    padding: 8px 14px;
+    font-size: 12px;
+    color: var(--text-dim);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .chat-hint.hidden { display: none; }
+
+  .attached-files {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 0 16px;
+  }
+  .attached-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 100px;
+    background: var(--accent-subtle);
+    border: 1px solid rgba(232, 131, 74, 0.2);
+    color: var(--accent);
+  }
+  .attached-file .remove-file {
+    cursor: pointer;
+    opacity: 0.6;
+    font-size: 13px;
+    line-height: 1;
+  }
+  .attached-file .remove-file:hover { opacity: 1; }
+
+  .chat-input-wrap {
+    padding: 10px 16px 12px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    flex-shrink: 0;
+  }
+  .chat-input {
+    flex: 1;
+    resize: none;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    min-height: 40px;
+    max-height: 100px;
+    line-height: 1.4;
+  }
+  .chat-input:focus { outline: none; border-color: var(--accent); }
+  .send-btn {
+    padding: 8px 16px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+    height: 40px;
+  }
+  .send-btn:hover { opacity: 0.9; }
+  .send-btn:disabled { opacity: 0.5; cursor: default; }
+  .stop-btn {
+    padding: 8px 16px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    color: #e55;
+    background: rgba(220, 50, 50, 0.1);
+    border: 1px solid rgba(220, 50, 50, 0.2);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    height: 40px;
+    display: none;
+  }
+  .attach-btn {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text-dim);
+  }
+  .attach-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  .attach-btn svg {
+    width: 16px; height: 16px;
+    stroke: currentColor; fill: none;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* === CHAT FAB (mobile/tablet) === */
+  .wb-chat-fab {
+    display: none;
+    position: fixed;
+    bottom: calc(var(--bottom-nav-h) + var(--safe-bottom) + 16px);
+    right: 16px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: none;
+    cursor: pointer;
+    z-index: 150;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  .wb-chat-fab svg {
+    width: 22px; height: 22px;
+    stroke: #fff; fill: none;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* === RESPONSIVE === */
+
+  /* Tablet: hide chat, show FAB */
+  @media (max-width: 1023px) {
+    .wb-chat {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100%;
+      max-width: 100vw;
+      z-index: 300;
+      background: var(--bg);
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+    }
+    .wb-chat.open { transform: translateX(0); }
+    .chat-close-btn { display: block; }
+    .wb-chat-fab { display: flex; }
+    .chat-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 250;
+      background: rgba(0,0,0,0.5);
+      display: none;
+    }
+    .chat-overlay.open { display: block; }
+  }
+
+  /* Mobile: hide sidebar too, bottom nav instead of top */
+  @media (max-width: 767px) {
+    .workbench-wrap {
+      flex-direction: column;
+      height: calc(100vh - var(--bottom-nav-h) - var(--safe-bottom));
+      height: calc(100dvh - var(--bottom-nav-h) - var(--safe-bottom));
+    }
+    .wb-detail {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+    .wb-sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      bottom: calc(var(--bottom-nav-h) + var(--safe-bottom));
+      width: 280px;
+      z-index: 300;
+      background: var(--bg);
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+    }
+    .wb-sidebar.open { transform: translateX(0); }
+    .wb-detail { padding: 8px 16px 16px; }
+    .wb-chat {
+      bottom: calc(var(--bottom-nav-h) + var(--safe-bottom));
+    }
+    .wb-chat-fab {
+      bottom: calc(var(--bottom-nav-h) + var(--safe-bottom) + 16px);
+    }
+    .scenes-grid { grid-template-columns: 1fr; }
+    .chat-input { font-size: 16px; }
+
+    /* Hide the desktop header row on mobile — title is in .mobile-topbar */
+    .sp-header-row {
+      display: none;
+    }
+    .sp-meta {
+      justify-content: center;
+    }
+
+    /* Action buttons: center and add breathing room */
+    .action-buttons {
+      justify-content: center;
+      padding: 0 4px;
+    }
+
+    /* Better text readability on mobile */
+    .sp-docstring {
+      line-height: 1.8;
+      font-size: 14px;
+      text-align: left;
+    }
+    .narration-line {
+      line-height: 1.7;
+      font-size: 14px;
+    }
+    .wb-hint {
+      line-height: 1.7;
+    }
+    .scene-card-body {
+      padding: 14px;
+    }
+  }
+
+  .mobile-sidebar-btn {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .mobile-sidebar-btn svg {
+    width: 20px; height: 20px;
+    stroke: var(--text-dim); fill: none;
+    stroke-width: 2; stroke-linecap: round;
+  }
+
+  /* Mobile top bar: hamburger + title in the same flex row */
+  .mobile-topbar {
+    display: none;
+  }
+  @media (max-width: 767px) {
+    .mobile-topbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0 8px;
+    }
+    .mobile-topbar .mobile-sidebar-btn {
+      display: flex;
+    }
+    .mobile-topbar .mobile-topbar-title {
+      flex: 1;
+      min-width: 0;
+      font-family: var(--font-heading);
+      font-size: 18px;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .mobile-topbar .sp-type-badge {
+      flex-shrink: 0;
+    }
+  }
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 250;
+    background: rgba(0,0,0,0.5);
+    display: none;
+  }
+  .sidebar-overlay.open { display: block; }
+
+  @media (max-width: 767px) {
+    .sidebar-overlay, .chat-overlay {
+      bottom: calc(var(--bottom-nav-h) + var(--safe-bottom));
+    }
+  }
+
+  .retry-btn {
+    display: inline-block;
+    margin-left: 12px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-family: var(--font-body);
+    color: #e55;
+    background: rgba(220, 50, 50, 0.1);
+    border: 1px solid rgba(220, 50, 50, 0.3);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+  .retry-btn:hover { background: rgba(220, 50, 50, 0.2); }
+
+  /* Pipeline step indicator */
+  .pipeline-bar {
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    display: none;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    max-width: 720px;
+  }
+  .pipeline-bar.active { display: block; }
+  .pipeline-steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 10px;
+  }
+  .pipeline-step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 6px 12px;
+    border-radius: 100px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+  .pipeline-step.active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-glow);
+  }
+  .pipeline-step.done {
+    color: var(--success);
+    border-color: rgba(108, 192, 112, 0.3);
+    background: rgba(108, 192, 112, 0.08);
+  }
+  .pipeline-step.failed {
+    color: var(--fail);
+    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.08);
+  }
+  .pipeline-arrow {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0 4px;
+  }
+  .pipeline-status-text {
+    font-size: 13px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Posted toggle */
+  .action-btn.posted-on {
+    background: rgba(108, 192, 112, 0.14);
+    border-color: rgba(108, 192, 112, 0.3);
+    color: var(--success);
+  }
+
+  /* Danger zone — destructive actions separated from pipeline */
+  .danger-zone {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    max-width: 720px;
+    justify-content: flex-end;
+  }
+  .action-btn.danger {
+    color: var(--fail);
+    border-color: rgba(209,90,80,0.25);
+    background: rgba(209,90,80,0.06);
+    font-size: 12px;
+    padding: 12px 24px;
+    margin: 6px 0;
+  }
+  .action-btn.danger:hover {
+    background: rgba(209,90,80,0.14);
+    border-color: rgba(209,90,80,0.4);
+  }
+  .action-btn.danger-audio {
+    color: var(--warn, #e0a020);
+    border-color: rgba(224,160,32,0.25);
+    background: rgba(224,160,32,0.06);
+    font-size: 12px;
+    padding: 12px 24px;
+    margin: 6px 0;
+  }
+  .action-btn.danger-audio:hover {
+    background: rgba(224,160,32,0.14);
+    border-color: rgba(224,160,32,0.4);
+  }
+
+  /* === MANIFEST SYNTAX EDITOR === */
+  .manifest-editor-wrap {
+    border-top: 1px solid var(--border);
+  }
+  .manifest-editor-wrap .manifest-view,
+  .manifest-editor-wrap textarea {
+    margin: 0;
+    padding: 14px 16px;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    border: none;
+    white-space: pre;
+    overflow-wrap: normal;
+    overflow: auto;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 380px;
+    max-height: 600px;
+    tab-size: 2;
+  }
+  .manifest-editor-wrap .manifest-view {
+    background: #0c0c14;
+    cursor: text;
+  }
+  .manifest-editor-wrap textarea {
+    background: #0c0c14;
+    color: #e0e0e0;
+    resize: vertical;
+    outline: none;
+    caret-color: #e0e0e0;
+  }
+  .manifest-mode-toggle {
+    display: inline-flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    font-size: 11px;
+  }
+  .manifest-mode-toggle button {
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    padding: 3px 10px;
+    cursor: pointer;
+    font-family: var(--font-mono);
+  }
+  .manifest-mode-toggle button.active {
+    background: rgba(56,189,248,0.12);
+    color: #38bdf8;
+  }
+  /* JSON token colors */
+  .jt-key { color: #7dd3fc; }        /* light blue — keys */
+  .jt-str { color: #86efac; }        /* green — string values */
+  .jt-num { color: #fbbf24; }        /* amber — numbers */
+  .jt-bool { color: #c084fc; }       /* purple — true/false */
+  .jt-null { color: #94a3b8; }       /* slate — null */
+  .jt-brace { color: #e0e0e0; }      /* white — {} [] */
+  .jt-colon { color: #64748b; }      /* dim — : , */
+  .jt-scene-type { color: #fb923c; } /* orange — scene type values */
+  .jt-zone { color: #f472b6; }       /* pink — zone values */
+  .jt-color-swatch {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    margin-right: 3px;
+    vertical-align: middle;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Overlays for mobile/tablet -->
+<div class="chat-overlay" id="chat-overlay" onclick="toggleChat()"></div>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<div class="workbench-wrap">
+  <!-- LEFT: Script List -->
+  <aside class="wb-sidebar" id="wb-sidebar">
+    <div class="wb-sidebar-header">
+      <div class="wb-sidebar-actions">
+        <div class="new-btn-group">
+          <button class="new-btn new-btn-remotion" onclick="startNewScreenplay('remotion')" style="flex:1">+ Remotion</button>
+          <button class="new-btn new-btn-manim" onclick="startNewScreenplay('manim')" style="padding:7px 10px">+ Manim</button>
+        </div>
+        <span class="ready-count" id="ready-count" title="Videos ready to post" style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--accent);padding:7px 10px;background:var(--accent-subtle);border:1px solid rgba(232,131,74,0.2);border-radius:var(--radius-sm);white-space:nowrap;display:none"></span>
+      </div>
+      <div class="wb-search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="wb-search" placeholder="Search scripts..." oninput="filterSidebar()">
+      </div>
+      <div class="engine-filters">
+        <button class="engine-pill active" data-engine="remotion" onclick="toggleEngineFilter('remotion')">Remotion</button>
+        <button class="engine-pill" data-engine="manim" onclick="toggleEngineFilter('manim')">Manim</button>
+      </div>
+    </div>
+    <div class="wb-file-list" id="wb-file-list">
+      <!-- populated by JS -->
+    </div>
+  </aside>
+
+  <!-- CENTER: Detail / Preview -->
+  <main class="wb-detail" id="wb-detail">
+    <div class="mobile-topbar">
+      <button class="mobile-sidebar-btn" onclick="toggleSidebar()">
+        <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <span class="mobile-topbar-title">Workbench</span>
+    </div>
+    <div class="wb-empty"><div style="max-width:420px">
+      <p style="font-size:20px;margin-bottom:12px;font-family:var(--font-heading)">Workbench</p>
+      <div class="wb-hint" style="text-align:left">
+        <span class="hint-label">Getting started</span>
+        <strong>Sidebar</strong> — browse screenplays by status. The three dots show pipeline progress: TTS / Preview / Final.<br><br>
+        <strong>Center panel</strong> — select a screenplay to see its scenes, run the pipeline, and preview renders.<br><br>
+        <strong>Chat</strong> — ask Claude to write a new screenplay or edit the selected one. Attach research notes as .md files.<br><br>
+        <strong>Keyboard:</strong> <code style="font-size:11px;background:var(--surface);padding:2px 6px;border-radius:3px">Cmd+Enter</code> send chat,
+        <code style="font-size:11px;background:var(--surface);padding:2px 6px;border-radius:3px">Esc</code> close panels,
+        <code style="font-size:11px;background:var(--surface);padding:2px 6px;border-radius:3px">/</code> focus search
+      </div>
+    </div></div>
+  </main>
+
+  <!-- RIGHT: Chat Panel -->
+  <aside class="wb-chat" id="wb-chat">
+    <div class="chat-header">
+      <span id="chat-header-text">New Video</span>
+      <span class="chat-mode-label intake" id="chat-mode-label">intake</span>
+      <button class="chat-close-btn" onclick="toggleChat()" aria-label="Close chat">&times;</button>
+    </div>
+    <div class="chat-hint" id="chat-hint">Paste research notes or describe a topic to create a new screenplay. Attach a .md file or just type.</div>
+    <div class="chat-messages" id="chat-messages">
+    </div>
+    <div class="typing-indicator" id="typing">
+      <svg width="24" height="24" viewBox="0 0 24 24" style="flex-shrink:0">
+        <circle cx="4" cy="12" r="2.5" fill="var(--accent)"><animate attributeName="opacity" values="1;0.3;1" dur="1.4s" repeatCount="indefinite" begin="0s"/></circle>
+        <circle cx="12" cy="12" r="2.5" fill="var(--accent)"><animate attributeName="opacity" values="1;0.3;1" dur="1.4s" repeatCount="indefinite" begin="0.2s"/></circle>
+        <circle cx="20" cy="12" r="2.5" fill="var(--accent)"><animate attributeName="opacity" values="1;0.3;1" dur="1.4s" repeatCount="indefinite" begin="0.4s"/></circle>
+      </svg>
+      Claude is working<span id="typing-time"></span>
+    </div>
+    <div class="attached-files" id="attached-files"></div>
+    <div class="chat-input-wrap">
+      <input type="file" id="file-input" multiple style="display:none" onchange="handleFileSelect(this)">
+      <button class="attach-btn" onclick="document.getElementById('file-input').click()" title="Attach file">
+        <svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+      </button>
+      <textarea class="chat-input" id="chat-input" placeholder="type here — Cmd+Enter to send" rows="1"
+                onkeydown="if(event.key==='Enter'&&(event.metaKey||event.ctrlKey)){event.preventDefault();sendMessage()}"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendMessage()">Send</button>
+      <button class="stop-btn" id="stop-btn" onclick="stopSession()">Stop</button>
+    </div>
+  </aside>
+</div>
+
+<!-- FABs for mobile/tablet -->
+<button class="wb-chat-fab" id="chat-fab" onclick="toggleChat()">
+  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</button>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // ============ STATE ============
+  let currentFile = null;
+  let currentData = null;
+  let renderPollTimer = null;
+  let currentSessionId = null;
+  let isStreaming = false;
+  let lastUserMessage = null;
+  let userAtBottom = true;
+  let attachedFiles = [];
+  let pollTimer = null;
+  let assistantDiv = null;
+  let allScreenplays = [];
+  let activeEngines = new Set(['remotion']);
+
+  function esc(t) {
+    const d = document.createElement('div');
+    d.textContent = t;
+    return d.innerHTML;
+  }
+
+  const _hamburgerSvg = '<svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+
+  function mobileTopbar(title, badgeHtml) {
+    return `<div class="mobile-topbar">`
+      + `<button class="mobile-sidebar-btn" onclick="toggleSidebar()">${_hamburgerSvg}</button>`
+      + (badgeHtml || '')
+      + `<span class="mobile-topbar-title">${title}</span>`
+      + `</div>`;
+  }
+
+  // ============ SIDEBAR ============
+
+  async function loadScreenplayList() {
+    try {
+      const res = await fetch('/api/workbench/screenplays');
+      if (!res.ok) return;
+      allScreenplays = await res.json();
+      renderSidebar(allScreenplays);
+    } catch {}
+  }
+
+  function toggleEngineFilter(engine) {
+    if (activeEngines.has(engine)) {
+      // Don't allow turning off the last one
+      if (activeEngines.size > 1) activeEngines.delete(engine);
+    } else {
+      activeEngines.add(engine);
+    }
+    document.querySelectorAll('.engine-pill').forEach(p => p.classList.toggle('active', activeEngines.has(p.dataset.engine)));
+    renderSidebar(allScreenplays);
+  }
+
+  function renderSidebar(screenplays) {
+    const list = document.getElementById('wb-file-list');
+    const query = (document.getElementById('wb-search')?.value || '').toLowerCase();
+
+    // Filter by search + engine
+    let items = screenplays;
+    if (query) {
+      items = items.filter(s => s.name.toLowerCase().includes(query) || s.stem.includes(query));
+    }
+    items = items.filter(s => activeEngines.has(s.engine));
+
+    // Group by status — split complete into ready vs posted
+    const groups = { draft: [], progress: [], ready: [], posted: [] };
+    for (const s of items) {
+      if (s.group === 'complete') {
+        groups[s.posted ? 'posted' : 'ready'].push(s);
+      } else {
+        groups[s.group].push(s);
+      }
+    }
+
+    // Update ready count badge
+    const readyCount = document.getElementById('ready-count');
+    if (readyCount) {
+      if (groups.ready.length > 0) {
+        readyCount.textContent = `${groups.ready.length} ready`;
+        readyCount.style.display = '';
+      } else {
+        readyCount.style.display = 'none';
+      }
+    }
+
+    // Version-collapse within each group
+    let html = '';
+    const groupMeta = [
+      { key: 'draft', label: 'Draft', defaultOpen: true },
+      { key: 'progress', label: 'In Progress', defaultOpen: true },
+      { key: 'ready', label: 'Ready to Post', defaultOpen: true },
+      { key: 'posted', label: 'Posted', defaultOpen: false },
+    ];
+
+    for (const gm of groupMeta) {
+      const items = groups[gm.key];
+      if (items.length === 0) continue;
+
+      const collapsed = !gm.defaultOpen && !query;
+      html += `<div class="group-header" onclick="toggleGroup('${gm.key}')">
+        <span class="chevron${collapsed ? ' collapsed' : ''}" id="chev-${gm.key}">&blacktriangledown;</span>
+        ${gm.label}
+        <span class="group-count">${items.length}</span>
+      </div>`;
+      html += `<div class="group-items${collapsed ? ' collapsed' : ''}" id="group-${gm.key}">`;
+
+      // Group by base_stem for version collapsing
+      const stemGroups = {};
+      const stemOrder = [];
+      for (const s of items) {
+        if (!stemGroups[s.base_stem]) {
+          stemGroups[s.base_stem] = [];
+          stemOrder.push(s.base_stem);
+        }
+        stemGroups[s.base_stem].push(s);
+      }
+
+      for (const baseStem of stemOrder) {
+        const variants = stemGroups[baseStem];
+        if (variants.length === 1) {
+          const s = variants[0];
+          html += renderFileItem(s);
+        } else {
+          // Show the latest (first) with version badge + expandable list
+          const latest = variants[0];
+          const vLabel = latest.version || `v${variants.length}`;
+          const latestEngineClass = latest.engine || (latest.has_remotion ? 'remotion' : 'manim');
+          html += `<button class="file-item${currentFile === latest.filename ? ' active' : ''}" data-file="${latest.filename}" onclick="loadScreenplay('${latest.filename}')">
+            <span class="engine-dot ${latestEngineClass}" title="${latestEngineClass}"></span>
+            <span class="file-name">${esc(latest.name)}</span>
+            <span class="version-badge">${esc(vLabel)}</span>
+            <span class="pipeline-dots" title="TTS / Preview / Final">
+              <span class="pdot${latest.has_tts ? ' on' : ''}"></span>
+              <span class="pdot${latest.has_preview ? ' on' : ''}"></span>
+              <span class="pdot${latest.has_final ? ' on' : ''}"></span>
+            </span>
+            <span style="font-size:10px;color:var(--text-muted);cursor:pointer;margin-left:2px" onclick="event.stopPropagation();expandVersions('vg-${baseStem.replace(/[^a-z0-9]/g,'')}')">&#9660;</span>
+          </button>`;
+          html += `<div class="version-group-items" id="vg-${baseStem.replace(/[^a-z0-9]/g,'')}">`;
+          for (const s of variants.slice(1)) {
+            html += renderFileItem(s);
+          }
+          html += '</div>';
+        }
+      }
+      html += '</div>';
+    }
+
+    list.innerHTML = html || '<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px">No screenplays found</div>';
+  }
+
+  function renderFileItem(s) {
+    const engineClass = s.engine || (s.has_remotion ? 'remotion' : 'manim');
+    return `<button class="file-item${currentFile === s.filename ? ' active' : ''}" data-file="${s.filename}" onclick="loadScreenplay('${s.filename}')">
+      <span class="engine-dot ${engineClass}" title="${engineClass}"></span>
+      <span class="file-name">${esc(s.name)}</span>
+      ${s.version ? `<span class="version-badge">${esc(s.version)}</span>` : ''}
+      <span class="pipeline-dots" title="TTS / Preview / Final">
+        <span class="pdot${s.has_tts ? ' on' : ''}"></span>
+        <span class="pdot${s.has_preview ? ' on' : ''}"></span>
+        <span class="pdot${s.has_final ? ' on' : ''}"></span>
+      </span>
+    </button>`;
+  }
+
+  function toggleGroup(key) {
+    const el = document.getElementById('group-' + key);
+    const chev = document.getElementById('chev-' + key);
+    if (!el) return;
+    el.classList.toggle('collapsed');
+    chev?.classList.toggle('collapsed');
+  }
+
+  function expandVersions(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('expanded');
+  }
+
+  function filterSidebar() {
+    renderSidebar(allScreenplays);
+  }
+
+  function startNewScreenplay(framework) {
+    framework = framework || 'remotion';
+    currentFile = null;
+    currentData = null;
+    document.querySelectorAll('.file-item').forEach(el => el.classList.remove('active'));
+    const fwLabel = framework === 'remotion' ? 'Remotion (React/TypeScript)' : 'Manim (Python)';
+    const fwColor = framework === 'remotion' ? '#38bdf8' : '#a78bfa';
+    document.getElementById('wb-detail').innerHTML = mobileTopbar('Workbench') + `<div class="wb-empty"><div>
+      <p style="font-size:18px;margin-bottom:8px">New <span style="color:${fwColor}">${fwLabel}</span> Screenplay</p>
+      <p>Describe your video topic in the chat. The screenplay will be created as a ${framework === 'remotion' ? 'Remotion manifest (.json)' : 'Manim screenplay (.py)'}.</p>
+    </div></div>`;
+    switchChatMode('intake', null, framework);
+    closeSidebar();
+    const url = new URL(window.location);
+    url.searchParams.delete('file');
+    history.replaceState(null, '', url);
+  }
+
+  // ============ CENTER PANEL — SCREENPLAY DETAIL ============
+
+  async function loadScreenplay(filename) {
+    // Update sidebar selection
+    document.querySelectorAll('.file-item').forEach(el => el.classList.remove('active'));
+    const el = document.querySelector(`[data-file="${filename}"]`);
+    if (el) el.classList.add('active');
+
+    currentFile = filename;
+    const detail = document.getElementById('wb-detail');
+    const prettyName = filename.replace('_manim.py','').replace('.py','').replace('.json','').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+    detail.innerHTML = mobileTopbar(prettyName) + '<div class="loading-card"><span class="spinner"></span> Parsing screenplay...</div>';
+
+    // Switch chat to edit mode
+    switchChatMode('edit', filename);
+
+    // Close mobile sidebar if open
+    closeSidebar();
+
+    try {
+      const res = await fetch(`/api/screenplay/${encodeURIComponent(filename)}/parsed`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      currentData = data;
+      renderScreenplayView(data);
+    } catch (err) {
+      detail.innerHTML = mobileTopbar(prettyName) + `<div class="wb-empty" style="color:var(--fail)">Failed to load: ${esc(err.message)}</div>`;
+    }
+
+    // Update URL without reload
+    const url = new URL(window.location);
+    url.searchParams.set('file', filename);
+    history.replaceState(null, '', url);
+  }
+
+  function renderScreenplayView(data) {
+    const el = document.getElementById('wb-detail');
+    const typeClass = data.type === 'remotion' ? 'remotion' : data.type === 'manim' ? 'manim' : data.type === 'vidgen' ? 'vidgen' : '';
+    const prettyTitle = esc(data.filename.replace('_manim.py','').replace('.py','').replace('.json','').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()));
+    const badgeHtml = `<span class="sp-type-badge ${typeClass}">${esc(data.type || 'unknown')}</span>`;
+
+    let html = mobileTopbar(prettyTitle, badgeHtml);
+    html += '<div class="wb-detail-content">';
+
+    // Header
+    html += '<div class="sp-header">';
+    html += '<div class="sp-header-row">';
+    html += badgeHtml;
+    html += `<span style="font-family:var(--font-heading);font-size:20px">${prettyTitle}</span>`;
+    if (data.peer_filename) {
+      const peerEngine = data.type === 'remotion' ? 'Manim' : 'Remotion';
+      const peerColor = data.type === 'remotion' ? '#a78bfa' : '#38bdf8';
+      html += `<button class="btn btn-xs" style="margin-left:auto;color:${peerColor};border-color:${peerColor}40" onclick="loadScreenplay('${esc(data.peer_filename)}')">Switch to ${peerEngine}</button>`;
+    }
+    html += '</div>';
+    html += '<div class="sp-meta">';
+    if (data.scene_count) html += `<span class="sp-meta-item">${data.scene_count} scenes</span>`;
+    if (data.total_duration) html += `<span class="sp-meta-item">${data.total_duration.toFixed(1)}s total</span>`;
+    html += '</div>';
+    if (data.docstring) {
+      html += `<div class="sp-docstring">${esc(data.docstring)}</div>`;
+    }
+    html += '</div>';
+
+    // Pipeline hint — shows workflow steps, disappears once everything is done
+    const sidebarEntry = allScreenplays.find(s => s.filename === data.filename);
+    const hasTTS = sidebarEntry ? sidebarEntry.has_tts : false;
+
+    // Stem used for TTS audio path and final video link
+    const stem = data.filename.replace('_manim.py', '').replace('.py', '').replace('.json', '');
+    // Audio player — only show if TTS file exists
+    if (hasTTS) {
+      html += `<audio controls preload="none" style="width:100%;margin:8px 0 12px;border-radius:8px"
+                src="/videos/tts_${encodeURIComponent(stem)}.mp3"></audio>`;
+    }
+    const hasPreview = sidebarEntry ? sidebarEntry.has_preview : false;
+    const hasFinal = sidebarEntry ? sidebarEntry.has_final : false;
+
+    if (!hasFinal) {
+      html += '<div class="wb-hint"><span class="hint-label">Pipeline</span>';
+      if (data.type === 'remotion') {
+        html += `<strong>Voice</strong> — generate Fish Audio TTS. `;
+        html += `<strong>Preview</strong> — render PNG snapshots. `;
+        html += `<strong>Render</strong> — full video via Remotion (React/TypeScript). `;
+        html += `Voice &rarr; Preview &rarr; Render. QA layout checks work; narration-sync QA is Manim-only.</div>`;
+      } else {
+        html += `<strong>Voice</strong> — generate Fish Audio TTS narration from the screenplay's TTS_SCRIPT. `;
+        html += `<strong>Preview</strong> — render a PNG snapshot of each scene (~20s). `;
+        html += `<strong>QA</strong> — run layout and readability checks on the preview images. `;
+        html += `<strong>Render</strong> — full video render, all 6 scenes to final MP4 (1-3 min). `;
+        html += `Run them left to right: Voice &rarr; Preview &rarr; QA &rarr; Render.</div>`;
+      }
+    }
+
+    html += '<div class="action-buttons">';
+    // Auto-pipeline: show when draft (no TTS, no final)
+    if (!hasTTS && !hasFinal) {
+      html += `<button class="action-btn primary" id="btn-pipeline" onclick="runAutoPipeline()">
+        <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Run Pipeline <span class="action-result" id="pipeline-result"></span>
+      </button>`;
+    }
+    // Voice button: only show if TTS not yet generated
+    if (!hasTTS) {
+      html += `<button class="action-btn" id="btn-tts" onclick="generateVoice()">
+        <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+        Voice <span class="action-result" id="tts-result"></span>
+      </button>`;
+    }
+    // Preview + QA: only show once TTS exists, hide once final exists
+    if (hasTTS && !hasFinal) {
+      if (!hasPreview) {
+        html += `<button class="action-btn" id="btn-preview" onclick="renderPreviews()">
+          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Preview
+        </button>`;
+      }
+      if (hasPreview) {
+        html += `<button class="action-btn" id="btn-qa" onclick="runQA()">
+          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          QA <span class="action-result" id="qa-result"></span>
+        </button>`;
+      }
+    }
+    // Render: only show once TTS exists and final doesn't
+    if (hasTTS && !hasFinal) {
+      html += `<button class="action-btn primary" id="btn-render" onclick="startRender()">
+        <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Render <span class="action-result" id="render-result"></span>
+      </button>`;
+    }
+    // Post-render buttons: Short, Meta, View, Posted — only show once final exists
+    if (hasFinal) {
+      const hasShort = sidebarEntry ? sidebarEntry.has_short : false;
+      const isPosted = sidebarEntry ? sidebarEntry.posted : false;
+      if (!hasShort) {
+        html += `<button class="action-btn" id="btn-short" onclick="createShort()">
+          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M10 7V17"/><path d="M15 7V17"/></svg>
+          Short <span class="action-result" id="short-result"></span>
+        </button>`;
+      }
+      html += `<button class="action-btn" id="btn-meta" onclick="generateMeta()">
+        <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Meta <span class="action-result" id="meta-result"></span>
+      </button>`;
+      html += `<button class="action-btn${isPosted ? ' posted-on' : ''}" id="btn-posted" onclick="togglePosted()">
+        ${isPosted ? '&#9745; Posted' : '&#9744; Mark as Posted'}
+      </button>`;
+      // View button moved to Play/View content section above
+    }
+    html += '</div>';
+
+    // Play/View content — audio or video depending on what exists
+    if (hasFinal || hasTTS) {
+      html += '<div style="display:flex;gap:8px;margin-top:10px">';
+      if (hasFinal) {
+        html += `<a class="action-btn primary" href="/video/${encodeURIComponent(stem + '_final.mp4')}" style="text-decoration:none;text-align:center">
+          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Watch Video
+        </a>`;
+      } else if (hasTTS) {
+        html += `<button class="action-btn" id="btn-play-audio" onclick="playTTSAudio()">
+          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Play Audio
+        </button>`;
+      }
+      html += '</div>';
+    }
+
+    // Danger zone — destructive actions, separated from pipeline
+    const showDangerZone = hasFinal || hasTTS;
+    if (showDangerZone) {
+      html += '<div class="danger-zone" style="margin-top:16px">';
+      if (hasTTS) {
+        html += `<button class="action-btn danger-audio" id="btn-delete-audio" onclick="deleteAudio()">
+          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Delete Audio <span class="action-result" id="delete-audio-result"></span>
+        </button>`;
+      }
+      if (hasFinal) {
+        html += `<button class="action-btn danger" id="btn-delete-video" onclick="deleteVideo()">
+          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+          Delete Video <span class="action-result" id="delete-result"></span>
+        </button>`;
+      }
+      html += '</div>';
+    }
+
+    // Pipeline progress bar
+    html += `<div class="pipeline-bar" id="pipeline-bar">
+      <div class="pipeline-steps" id="pipeline-steps">
+        <span class="pipeline-step" id="pstep-tts">TTS</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step" id="pstep-render">Render</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step" id="pstep-meta">Meta</span>
+      </div>
+      <div class="pipeline-status-text" id="pipeline-status-text"></div>
+      <div class="render-scenes-progress" id="pipeline-render-pips" style="display:none">
+        ${[1,2,3,4,5,6].map(i => '<div class="render-scene-pip" id="ppip-' + i + '"></div>').join('')}
+      </div>
+      <div class="progress-track" style="margin-top:8px"><div class="progress-fill" id="pipeline-progress"></div></div>
+    </div>`;
+
+    // Render progress
+    html += `<div class="render-bar" id="render-bar">
+      <div class="render-status-text" id="render-status-text"></div>
+      <div class="render-scenes-progress" id="render-pips">
+        ${[1,2,3,4,5,6].map(i => `<div class="render-scene-pip" id="pip-${i}" title="Scene ${i}"></div>`).join('')}
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="render-progress"></div></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+        <button class="btn btn-xs" id="render-cancel-btn" style="color:var(--fail);border:1px solid rgba(209,90,80,0.3);background:rgba(209,90,80,0.1);display:none" onclick="cancelRender()">Cancel</button>
+        <button class="render-log-toggle" id="render-log-toggle" onclick="toggleRenderLog()" style="display:none">Show log</button>
+      </div>
+      <div class="render-log" id="render-log" style="display:none"></div>
+    </div>`;
+
+    // QA results
+    html += '<div id="qa-panel-container"></div>';
+
+    // Remotion manifest editor — prominent for Remotion files
+    if (data.type === 'remotion' && data.manifest_path) {
+      const staleBorder = data.manifest_stale ? 'border-color:rgba(245,158,11,0.5)' : '';
+      html += `<div style="margin-bottom:16px;border:1px solid rgba(56,189,248,0.2);border-radius:8px;overflow:hidden;${staleBorder}">`;
+      html += `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(56,189,248,0.06);cursor:pointer" onclick="toggleManifestEditor()">`;
+      html += `<div style="display:flex;align-items:center;gap:8px">`;
+      html += `<span style="color:#38bdf8;font-weight:600;font-size:12px;font-family:var(--font-mono)">MANIFEST</span>`;
+      if (data.manifest_stale) html += `<span style="font-size:11px;color:#f59e0b;font-weight:600" title="Manifest changed since last render — re-render to update video">changed since render</span>`;
+      if (data.tts_script) html += `<span style="font-size:11px;color:var(--text-dim)">${data.tts_script.split(' ').length} words</span>`;
+      html += `</div>`;
+      html += `<span style="font-size:10px;color:var(--text-muted)" id="manifest-toggle-hint">Click to expand</span>`;
+      html += `</div>`;
+      html += `<div id="manifest-editor" style="display:none;padding:0">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px;border-top:1px solid var(--border);background:rgba(56,189,248,0.03)">
+          <div class="manifest-mode-toggle">
+            <button id="manifest-mode-view" class="active" onclick="setManifestMode('view')">View</button>
+            <button id="manifest-mode-edit" onclick="setManifestMode('edit')">Edit</button>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span class="action-result" id="manifest-save-result"></span>
+            <button class="action-btn" id="manifest-save-btn" onclick="saveManifest()" style="display:none">Save</button>
+          </div>
+        </div>
+        <div class="manifest-editor-wrap">
+          <pre id="manifest-highlight" class="manifest-view" onclick="copyManifest()" title="Click to copy" style="cursor:pointer"></pre>
+          <textarea id="manifest-json" spellcheck="false" style="display:none"
+            oninput="syncManifestHighlight()"></textarea>
+        </div>
+      </div>`;
+      html += `</div>`;
+    }
+
+    // Scene cards hint — only show if no previews yet
+    const hasAnyPreview = data.scenes && data.scenes.some(s => s.preview);
+    if (data.scenes && data.scenes.length && !hasAnyPreview) {
+      html += '<div class="wb-hint"><span class="hint-label">Scenes</span>';
+      html += 'Each card shows one scene from the 6-scene mystery arc. ';
+      html += 'The <strong>zone bars</strong> on the left show which vertical zones (Title/Upper/Mid/Lower/Footer) the scene uses — all 5 should be lit for good vertical fill. ';
+      html += '<strong>Orange lines</strong> are narration cues, <strong>yellow tags</strong> are on-screen text. ';
+      html += 'Click <strong>Preview</strong> above to generate thumbnail images.</div>';
+    }
+
+    // Scene cards
+    if (data.scenes && data.scenes.length) {
+      html += '<div class="scenes-grid">';
+      for (const scene of data.scenes) {
+        html += `<div class="scene-card">`;
+        html += '<div class="scene-card-header">';
+        html += `<span class="scene-label">${scene.index}. ${esc(scene.label || 'Scene ' + scene.index)}</span>`;
+        if (scene.duration != null) {
+          html += `<span class="scene-duration">${scene.duration.toFixed(1)}s</span>`;
+        }
+        html += '</div>';
+        html += '<div class="scene-card-body">';
+
+        // First scene card for Remotion: embed live player instead of static preview
+        if (data.type === 'remotion' && scene.index === 1) {
+          html += `<iframe id="remotion-player-iframe" src="/remotion-player/" class="scene-thumb" style="border:none;background:#080A10" allow="autoplay"></iframe>`;
+        } else if (scene.preview) {
+          html += `<img class="scene-thumb" src="/previews/${encodeURIComponent(scene.preview)}" alt="Scene ${scene.index}" loading="lazy" onerror="this.style.display='none'">`;
+        } else {
+          html += `<div class="scene-thumb-placeholder">No preview</div>`;
+        }
+
+        if (data.type === 'remotion' && scene.type) {
+          html += `<div style="margin-bottom:8px"><span style="font-size:10px;color:#38bdf8;font-family:var(--font-mono);background:rgba(56,189,248,0.1);padding:2px 6px;border-radius:4px">${esc(scene.type)}</span></div>`;
+        } else {
+          const allZones = ['TITLE', 'UPPER', 'MID', 'LOWER', 'FOOTER'];
+          const activeZones = scene.zones || [];
+          html += '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px">';
+          html += '<div class="zone-indicator">';
+          for (const z of allZones) {
+            html += `<div class="zone-bar${activeZones.includes(z) ? ' lit' : ''}" title="${z}"></div>`;
+          }
+          html += '</div>';
+          html += `<span style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono)">${activeZones.join(' / ') || 'none'}</span>`;
+          html += '</div>';
+        }
+
+        if (scene.narration && scene.narration.length) {
+          html += '<div class="scene-narration">';
+          for (const line of scene.narration) {
+            html += `<div class="narration-line">${esc(line)}</div>`;
+          }
+          html += '</div>';
+        }
+
+        if (scene.screen_text && scene.screen_text.length) {
+          html += '<div class="scene-screen-texts">';
+          for (const t of scene.screen_text) {
+            html += `<span class="screen-text-tag">${esc(t)}</span>`;
+          }
+          html += '</div>';
+        }
+
+        html += '</div></div>';
+      }
+      html += '</div>';
+    }
+
+    html += '</div>'; // close .wb-detail-content
+    el.innerHTML = html;
+
+    // Send manifest to Remotion player iframe
+    if (data.type === 'remotion') {
+      const iframe = document.getElementById('remotion-player-iframe');
+      if (iframe) {
+        const stem = data.filename.replace('_manim.py', '').replace('.py', '').replace('.json', '');
+        const sendManifest = async () => {
+          try {
+            const mRes = await fetch(`/api/screenplay/${encodeURIComponent(data.filename)}/manifest`);
+            if (!mRes.ok) return;
+            const manifest = await mRes.json();
+            // Try to load scene timings; fall back to 5s per scene
+            let sceneDurations = manifest.scenes.map(() => 5);
+            try {
+              const tRes = await fetch(`/videos/tts_${encodeURIComponent(stem)}_timings.json`);
+              if (tRes.ok) {
+                const timings = await tRes.json();
+                if (Array.isArray(timings)) sceneDurations = timings;
+                else if (timings.scene_durations) sceneDurations = timings.scene_durations;
+              }
+            } catch {}
+            const audioSrc = hasTTS ? `tts_${stem}.mp3` : undefined;
+            iframe.contentWindow.postMessage({
+              type: 'tkk:load-manifest',
+              manifest,
+              sceneDurations,
+              audioSrc,
+            }, '*');
+          } catch (e) {
+            console.warn('Failed to load manifest for player:', e);
+          }
+        };
+        // Wait for iframe to load, then send
+        iframe.addEventListener('load', sendManifest, { once: true });
+      }
+    }
+
+    // Auto-render previews if missing
+    if (data.scenes && data.scenes.some(s => !s.preview)) {
+      autoRenderPreviews(data.filename);
+    }
+  }
+
+  async function autoRenderPreviews(filename) {
+    const result = document.getElementById('preview-result');
+    if (result) result.innerHTML = '<span class="spinner"></span> auto';
+    try {
+      const res = await fetch(`/api/screenplay/${encodeURIComponent(filename)}/preview-render`, { method: 'POST' });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.success && currentFile === filename) {
+        loadScreenplay(filename);
+      }
+    } catch {}
+    if (result) result.textContent = '';
+  }
+
+  // ============ MANIFEST SYNTAX HIGHLIGHTING ============
+
+  const SCENE_TYPES = new Set(['headline','counter','barChart','timeline','kenburns','map','videoClip','splitCompare','iconRow','populationDrop']);
+  const ZONE_NAMES = new Set(['TITLE','UPPER','MID','LOWER','FOOTER']);
+
+  function highlightJSON(json) {
+    // Escape HTML, then colorize tokens
+    const esc = json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    // Track whether we're in a key position (after { or , before :)
+    let result = '';
+    let i = 0;
+    const src = json;
+    while (i < src.length) {
+      const ch = src[i];
+      if (ch === '"') {
+        // Find the end of the string
+        let j = i + 1;
+        while (j < src.length && src[j] !== '"') {
+          if (src[j] === '\\') j++; // skip escaped char
+          j++;
+        }
+        j++; // include closing quote
+        const raw = src.slice(i, j);
+        const escaped = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        const inner = src.slice(i + 1, j - 1);
+
+        // Look ahead to see if this is a key (followed by :)
+        let k = j;
+        while (k < src.length && (src[k] === ' ' || src[k] === '\t')) k++;
+        const isKey = src[k] === ':';
+
+        if (isKey) {
+          result += `<span class="jt-key">${escaped}</span>`;
+        } else if (SCENE_TYPES.has(inner)) {
+          result += `<span class="jt-scene-type">${escaped}</span>`;
+        } else if (ZONE_NAMES.has(inner)) {
+          result += `<span class="jt-zone">${escaped}</span>`;
+        } else if (/^#[0-9a-fA-F]{3,8}$/.test(inner)) {
+          result += `<span class="jt-str"><span class="jt-color-swatch" style="background:${inner}"></span>${escaped}</span>`;
+        } else {
+          result += `<span class="jt-str">${escaped}</span>`;
+        }
+        i = j;
+      } else if (/[0-9\-]/.test(ch) && (i === 0 || /[{,:\[\s]/.test(src[i-1]))) {
+        // Number
+        let j = i;
+        if (src[j] === '-') j++;
+        while (j < src.length && /[0-9.eE+\-]/.test(src[j])) j++;
+        const num = src.slice(i, j);
+        result += `<span class="jt-num">${num}</span>`;
+        i = j;
+      } else if (src.slice(i, i+4) === 'true') {
+        result += `<span class="jt-bool">true</span>`;
+        i += 4;
+      } else if (src.slice(i, i+5) === 'false') {
+        result += `<span class="jt-bool">false</span>`;
+        i += 5;
+      } else if (src.slice(i, i+4) === 'null') {
+        result += `<span class="jt-null">null</span>`;
+        i += 4;
+      } else if (ch === '{' || ch === '}' || ch === '[' || ch === ']') {
+        result += `<span class="jt-brace">${ch}</span>`;
+        i++;
+      } else if (ch === ':' || ch === ',') {
+        result += `<span class="jt-colon">${ch}</span>`;
+        i++;
+      } else {
+        // whitespace or other
+        result += ch === '&' ? '&amp;' : ch === '<' ? '&lt;' : ch === '>' ? '&gt;' : ch;
+        i++;
+      }
+    }
+    return result;
+  }
+
+  function syncManifestHighlight() {
+    const ta = document.getElementById('manifest-json');
+    const pre = document.getElementById('manifest-highlight');
+    if (!ta || !pre) return;
+    pre.innerHTML = highlightJSON(ta.value);
+  }
+
+  // ============ MANIFEST EDITOR ============
+
+  let manifestMode = 'view';
+
+  async function toggleManifestEditor() {
+    const editor = document.getElementById('manifest-editor');
+    if (!editor) return;
+    const isHidden = editor.style.display === 'none';
+    editor.style.display = isHidden ? 'block' : 'none';
+    const hint = document.getElementById('manifest-toggle-hint');
+    if (hint) hint.textContent = isHidden ? 'Click to collapse' : 'Click to expand';
+    if (isHidden && currentFile) {
+      try {
+        const res = await fetch(`/api/screenplay/${encodeURIComponent(currentFile)}/manifest`);
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('manifest-json').value = JSON.stringify(data, null, 2);
+          setManifestMode('view');
+        }
+      } catch (e) { console.error('Failed to load manifest', e); }
+    }
+  }
+
+  function setManifestMode(mode) {
+    manifestMode = mode;
+    const pre = document.getElementById('manifest-highlight');
+    const ta = document.getElementById('manifest-json');
+    const saveBtn = document.getElementById('manifest-save-btn');
+    const viewBtn = document.getElementById('manifest-mode-view');
+    const editBtn = document.getElementById('manifest-mode-edit');
+    if (!pre || !ta) return;
+
+    if (mode === 'edit') {
+      pre.style.display = 'none';
+      ta.style.display = 'block';
+      ta.focus();
+      if (saveBtn) saveBtn.style.display = '';
+      if (viewBtn) viewBtn.classList.remove('active');
+      if (editBtn) editBtn.classList.add('active');
+    } else {
+      // Sync textarea content to highlighted view
+      syncManifestHighlight();
+      pre.style.display = 'block';
+      ta.style.display = 'none';
+      if (saveBtn) saveBtn.style.display = 'none';
+      if (viewBtn) viewBtn.classList.add('active');
+      if (editBtn) editBtn.classList.remove('active');
+    }
+  }
+
+  function copyManifest() {
+    const ta = document.getElementById('manifest-json');
+    if (!ta) return;
+    navigator.clipboard.writeText(ta.value).then(() => {
+      showToast('Manifest copied', 'success');
+    });
+  }
+
+  async function saveManifest() {
+    if (!currentFile) return;
+    const textarea = document.getElementById('manifest-json');
+    const result = document.getElementById('manifest-save-result');
+    try {
+      const body = JSON.parse(textarea.value);
+      const res = await fetch(`/api/screenplay/${encodeURIComponent(currentFile)}/manifest`, {
+        method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      result.innerHTML = data.success ? '<span style="color:var(--success)">Saved</span>' : '<span style="color:var(--fail)">Error</span>';
+    } catch (e) {
+      result.innerHTML = `<span style="color:var(--fail)">${esc(e.message)}</span>`;
+    }
+  }
+
+  // ============ ACTION BUTTONS ============
+
+  async function generateVoice() {
+    if (!currentFile) return;
+    const btn = document.getElementById('btn-tts');
+    const result = document.getElementById('tts-result');
+    btn.disabled = true;
+    result.innerHTML = '<span class="spinner"></span> Generating...';
+    try {
+      const res = await fetch(`/api/screenplay/${encodeURIComponent(currentFile)}/tts`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        const errMsg = data.stderr || data.error || data.stdout || 'TTS failed — no audio produced';
+        throw new Error(errMsg);
+      }
+      if (!data.duration) throw new Error('TTS failed — no audio file was created');
+      result.textContent = `${data.duration.toFixed(1)}s`;
+      result.style.color = 'var(--success)';
+      showToast(`TTS generated (${data.duration.toFixed(1)}s)`, 'success');
+      await loadScreenplayList();
+      if (currentFile) loadScreenplay(currentFile);
+    } catch (err) {
+      const msg = err.message.length > 80 ? err.message.slice(0, 80) + '...' : err.message;
+      result.textContent = 'Failed';
+      result.style.color = 'var(--fail)';
+      showToast('TTS failed: ' + msg, 'error');
+      btn.disabled = false;
+    }
+  }
+
+  async function renderPreviews() {
+    if (!currentFile) return;
+    const btn = document.getElementById('btn-preview');
+    const result = document.getElementById('preview-result');
+    btn.disabled = true;
+    result.innerHTML = '<span class="spinner"></span>';
+    try {
+      const res = await fetch(`/api/screenplay/${encodeURIComponent(currentFile)}/preview-render`, { method: 'POST' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!data.success) throw new Error(data.stderr || data.error || 'Failed');
+      result.textContent = `${data.previews.length} scenes`;
+      result.style.color = 'var(--success)';
+      showToast(`Previews rendered (${data.previews.length} scenes)`, 'success');
+      await loadScreenplayList(); // refresh sidebar dots + button states
+      setTimeout(() => loadScreenplay(currentFile), 500);
+    } catch (err) {
+      result.textContent = 'Failed';
+      result.style.color = 'var(--fail)';
+      showToast('Preview render failed', 'error');
+    } finally { if (btn) btn.disabled = false; }
+  }
+
+  async function runQA() {
+    if (!currentFile) return;
+    const btn = document.getElementById('btn-qa');
+    const result = document.getElementById('qa-result');
+    const panel = document.getElementById('qa-panel-container');
+    btn.disabled = true;
+    result.innerHTML = '<span class="spinner"></span>';
+    if (panel) panel.innerHTML = '';
+    try {
+      const res = await fetch(`/api/screenplay/${encodeURIComponent(currentFile)}/qa`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (data.error) {
+        result.innerHTML = `<span style="color:var(--warn)">${esc(data.error)}</span>`;
+        return;
+      }
+      const overall = data.passed ? 'pass' : 'fail';
+      result.innerHTML = `<span class="qa-badge ${overall}">${overall.toUpperCase()}</span>`;
+      showToast(`QA ${overall.toUpperCase()}: ${data.scenes.length} scenes checked`, overall === 'pass' ? 'success' : 'error');
+      if (panel && data.scenes) {
+        let ph = '<div class="qa-panel">';
+        const totalChecks = data.scenes.reduce((n, s) => n + s.checks.length, 0);
+        const failCount = data.scenes.reduce((n, s) => n + s.checks.filter(c => c.status === 'FAIL').length, 0);
+        const warnCount = data.scenes.reduce((n, s) => n + s.checks.filter(c => c.status === 'WARN').length, 0);
+        ph += `<div class="qa-summary"><span class="qa-badge ${overall}">${overall.toUpperCase()}</span> ${data.scenes.length} scenes, ${totalChecks} checks`;
+        if (failCount) ph += ` — ${failCount} failed`;
+        if (warnCount) ph += `, ${warnCount} warnings`;
+        ph += '</div>';
+        for (const scene of data.scenes) {
+          ph += '<div class="qa-scene-row">';
+          ph += '<div class="qa-scene-title">';
+          ph += `Scene ${scene.scene}`;
+          for (const c of scene.checks) {
+            const s = c.status.toLowerCase();
+            ph += ` <span class="qa-dot ${s}" title="${esc(c.name)}: ${s.toUpperCase()}"></span>`;
+          }
+          ph += '</div><div class="qa-checks">';
+          for (const c of scene.checks) {
+            const s = c.status.toLowerCase();
+            ph += `<div class="qa-check"><span class="qa-dot ${s}"></span><span class="qa-status-label ${s}">${c.status}</span><span>${esc(c.name)}</span><span style="color:var(--text-muted);margin-left:auto">${esc(c.detail)}</span></div>`;
+          }
+          ph += '</div></div>';
+        }
+        ph += '</div>';
+        panel.innerHTML = ph;
+      }
+    } catch (err) {
+      result.innerHTML = '<span class="qa-badge fail">ERROR</span>';
+    } finally { if (btn) btn.disabled = false; }
+  }
+
+  async function startRender() {
+    if (!currentFile) return;
+    const btn = document.getElementById('btn-render');
+    const bar = document.getElementById('render-bar');
+    const text = document.getElementById('render-status-text');
+    const fill = document.getElementById('render-progress');
+    btn.disabled = true;
+    bar.classList.add('active');
+    text.innerHTML = '<span class="spinner"></span> Starting render...';
+    fill.style.width = '0%';
+    try {
+      const res = await fetch('/api/render', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ screenplay: currentFile })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!data.job_id) throw new Error(data.error || 'No job ID');
+      pollRender(data.job_id);
+    } catch (err) {
+      text.textContent = 'Failed: ' + err.message;
+      text.style.color = 'var(--fail)';
+      btn.disabled = false;
+    }
+  }
+
+  let currentRenderJobId = null;
+
+  function pollRender(jobId) {
+    const text = document.getElementById('render-status-text');
+    const fill = document.getElementById('render-progress');
+    const btn = document.getElementById('btn-render');
+    const result = document.getElementById('render-result');
+    const cancelBtn = document.getElementById('render-cancel-btn');
+    currentRenderJobId = jobId;
+    if (cancelBtn) cancelBtn.style.display = '';
+    if (renderPollTimer) clearInterval(renderPollTimer);
+    const logToggle = document.getElementById('render-log-toggle');
+    const logEl = document.getElementById('render-log');
+    if (logToggle) logToggle.style.display = '';
+
+    renderPollTimer = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/render/${jobId}`);
+        const d = await res.json();
+        const pct = d.progress || 0;
+        const elapsed = d.elapsed || 0;
+        const scenesDone = d.scenes_done || 0;
+        const elapsedStr = elapsed >= 60 ? `${Math.floor(elapsed/60)}m${String(elapsed%60).padStart(2,'0')}s` : `${elapsed}s`;
+        fill.style.width = pct + '%';
+
+        // Update scene pips
+        for (let i = 1; i <= 6; i++) {
+          const pip = document.getElementById('pip-' + i);
+          if (!pip) continue;
+          if (i <= scenesDone) pip.className = 'render-scene-pip done';
+          else if (i === scenesDone + 1 && d.state === 'running') pip.className = 'render-scene-pip active';
+          else pip.className = 'render-scene-pip';
+        }
+
+        // Update log if visible
+        if (logEl && d.output && logEl.style.display !== 'none') {
+          logEl.textContent = d.output;
+          logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        if (d.state === 'running') {
+          text.innerHTML = `<span class="spinner"></span> ${esc(d.status || 'Rendering...')} — ${elapsedStr}`;
+        }
+        if (d.state === 'complete') {
+          clearInterval(renderPollTimer);
+          fill.style.width = '100%';
+          for (let i = 1; i <= 6; i++) { const p = document.getElementById('pip-' + i); if (p) p.className = 'render-scene-pip done'; }
+          text.style.color = 'var(--success)';
+          text.innerHTML = d.filename
+            ? `Done in ${elapsedStr}! <a href="/video/${encodeURIComponent(d.filename)}" style="color:var(--accent);font-weight:600">Watch &rarr;</a> <button onclick="createShort()" style="margin-left:8px;padding:4px 10px;font-size:12px;border-radius:4px;border:1px solid var(--accent);background:var(--accent-subtle);color:var(--accent);cursor:pointer;font-weight:600">Create 30s Short</button>`
+            : 'Render complete!';
+          if (result) { result.textContent = 'Done'; result.style.color = 'rgba(255,255,255,0.7)'; }
+          if (cancelBtn) cancelBtn.style.display = 'none';
+          btn.disabled = false;
+          const shortBtn = document.getElementById('btn-short');
+          if (shortBtn) shortBtn.disabled = false;
+          showToast('Render complete!', 'success');
+          loadScreenplayList();
+        } else if (d.state === 'failed' || d.state === 'cancelled') {
+          clearInterval(renderPollTimer);
+          const msg = d.state === 'cancelled' ? 'Cancelled' : 'Failed';
+          text.textContent = msg;
+          text.style.color = 'var(--fail)';
+          if (cancelBtn) cancelBtn.style.display = 'none';
+          btn.disabled = false;
+          showToast(`Render ${msg.toLowerCase()}`, 'error');
+          // Auto-show log on failure
+          if (logEl && d.output) { logEl.textContent = d.output; logEl.style.display = ''; if (logToggle) logToggle.textContent = 'Hide log'; }
+        }
+      } catch {
+        clearInterval(renderPollTimer);
+        text.textContent = 'Lost connection.';
+        text.style.color = 'var(--fail)';
+        if (cancelBtn) cancelBtn.style.display = 'none';
+        btn.disabled = false;
+      }
+    }, 2000);
+  }
+
+  function toggleRenderLog() {
+    const logEl = document.getElementById('render-log');
+    const toggle = document.getElementById('render-log-toggle');
+    if (!logEl) return;
+    if (logEl.style.display === 'none') {
+      logEl.style.display = '';
+      if (toggle) toggle.textContent = 'Hide log';
+    } else {
+      logEl.style.display = 'none';
+      if (toggle) toggle.textContent = 'Show log';
+    }
+  }
+
+  async function cancelRender() {
+    if (!currentRenderJobId) return;
+    try {
+      await fetch(`/api/render/${currentRenderJobId}/cancel`, { method: 'POST' });
+    } catch {}
+  }
+
+  async function createShort() {
+    if (!currentFile) return;
+    const shortBtn = document.getElementById('btn-short');
+    const shortResult = document.getElementById('short-result');
+    if (shortBtn) shortBtn.disabled = true;
+    if (shortResult) shortResult.innerHTML = '<span class="spinner"></span>';
+    try {
+      const res = await fetch(`/api/screenplay/${encodeURIComponent(currentFile)}/short`, { method: 'POST' });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.detail || 'Failed');
+      if (shortResult) shortResult.innerHTML = `<span style="color:var(--success)">${d.duration}s</span>`;
+      showToast(`Short created: ${d.short} (${d.duration}s)`, 'success');
+      // Add watch link in render status area
+      const text = document.getElementById('render-status-text');
+      if (text && d.short) {
+        text.innerHTML += ` <a href="/video/${encodeURIComponent(d.short)}" style="color:var(--accent);font-weight:600">Watch Short &rarr;</a>`;
+      }
+    } catch (err) {
+      if (shortResult) shortResult.innerHTML = `<span style="color:var(--fail)">Error</span>`;
+      showToast('Short failed: ' + err.message, 'error');
+    } finally {
+      if (shortBtn) shortBtn.disabled = false;
+    }
+  }
+
+  async function deleteVideo() {
+    if (!currentFile) return;
+    const stem = currentFile.replace('_manim.py', '').replace('.py', '').replace('.json', '');
+    const videoFilename = stem + '_final.mp4';
+    if (!confirm(`Delete ${videoFilename}?\n\nThis will remove the rendered video so you can re-render it. The screenplay and TTS audio are kept.`)) return;
+    const btn = document.getElementById('btn-delete-video');
+    const result = document.getElementById('delete-result');
+    if (btn) btn.disabled = true;
+    if (result) result.innerHTML = '<span class="spinner"></span>';
+    try {
+      const res = await fetch(`/api/video/${encodeURIComponent(videoFilename)}`, { method: 'DELETE' });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.detail || 'Failed');
+      showToast('Video deleted. Ready to re-render.', 'success');
+      await loadScreenplayList();
+      loadScreenplay(currentFile);
+    } catch (err) {
+      if (result) result.innerHTML = `<span style="color:var(--fail)">Error</span>`;
+      showToast('Delete failed: ' + err.message, 'error');
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  let ttsAudioEl = null;
+  function playTTSAudio() {
+    if (!currentFile) return;
+    const stem = currentFile.replace('_manim.py', '').replace('.py', '').replace('.json', '');
+    const btn = document.getElementById('btn-play-audio');
+    if (ttsAudioEl) {
+      ttsAudioEl.pause();
+      ttsAudioEl = null;
+      if (btn) btn.innerHTML = `<svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> Play Audio`;
+      return;
+    }
+    ttsAudioEl = new Audio(`/videos/tts_${stem}.mp3`);
+    ttsAudioEl.play();
+    if (btn) btn.innerHTML = `<svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Stop`;
+    ttsAudioEl.addEventListener('ended', () => {
+      ttsAudioEl = null;
+      if (btn) btn.innerHTML = `<svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> Play Audio`;
+    });
+  }
+
+  async function deleteAudio() {
+    if (!currentFile) return;
+    const stem = currentFile.replace('_manim.py', '').replace('.py', '').replace('.json', '');
+    const audioFilename = `tts_${stem}.mp3`;
+    if (!confirm(`Delete ${audioFilename}?\n\nThis removes the TTS audio. You'll need to regenerate it before rendering. The screenplay is kept.`)) return;
+    const btn = document.getElementById('btn-delete-audio');
+    const result = document.getElementById('delete-audio-result');
+    if (btn) btn.disabled = true;
+    if (result) result.innerHTML = '<span class="spinner"></span>';
+    try {
+      const res = await fetch(`/api/audio/${encodeURIComponent(audioFilename)}`, { method: 'DELETE' });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.detail || 'Failed');
+      showToast('Audio deleted. Regenerate with Voice.', 'success');
+      await loadScreenplayList();
+      loadScreenplay(currentFile);
+    } catch (err) {
+      if (result) result.innerHTML = `<span style="color:var(--warn, #e0a020)">Error</span>`;
+      showToast('Delete failed: ' + err.message, 'error');
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  async function generateMeta() {
+    if (!currentFile) return;
+    const stem = currentFile.replace('_manim.py', '').replace('.py', '').replace('.json', '');
+    const videoFilename = stem + '_final.mp4';
+    const btn = document.getElementById('btn-meta');
+    const result = document.getElementById('meta-result');
+    if (btn) btn.disabled = true;
+    if (result) result.innerHTML = '<span class="spinner"></span>';
+    try {
+      const res = await fetch(`/api/video/${encodeURIComponent(videoFilename)}/generate-metadata`, { method: 'POST' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      // Poll until done
+      for (let i = 0; i < 30; i++) {
+        await new Promise(r => setTimeout(r, 1000));
+        const poll = await fetch(`/api/video/${encodeURIComponent(videoFilename)}/generate-metadata`);
+        const data = await poll.json();
+        if (data.status === 'done') {
+          if (result) result.innerHTML = '<span style="color:var(--success)">Done</span>';
+          showToast(`Metadata generated: "${data.result.title}"`, 'success');
+          return;
+        }
+        if (data.status === 'error') {
+          throw new Error(data.result?.error || 'Generation failed');
+        }
+      }
+      throw new Error('Timed out');
+    } catch (err) {
+      if (result) result.innerHTML = '<span style="color:var(--fail)">Error</span>';
+      showToast('Meta generation failed: ' + err.message, 'error');
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  // ============ CHAT PANEL ============
+
+  function switchChatMode(mode, filename, framework) {
+    const header = document.getElementById('chat-header-text');
+    const badge = document.getElementById('chat-mode-label');
+    const hint = document.getElementById('chat-hint');
+    if (mode === 'edit' && filename) {
+      const stem = filename.replace('_manim.py','').replace('.py','').replace('.json','').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+      header.textContent = stem;
+      badge.textContent = 'edit';
+      badge.className = 'chat-mode-label edit';
+      if (hint) hint.classList.add('hidden');
+      loadChatForScreenplay(filename);
+    } else {
+      const fw = framework || 'remotion';
+      const fwLabel = fw === 'remotion' ? 'Remotion' : 'Manim';
+      header.textContent = `New ${fwLabel} Video`;
+      badge.textContent = 'intake';
+      badge.className = 'chat-mode-label intake';
+      currentSessionId = null;
+      document.getElementById('chat-messages').innerHTML = '';
+      const hintText = fw === 'remotion'
+        ? 'Describe a topic to create a new Remotion manifest. Attach a .md file or just type.'
+        : 'Paste research notes or describe a topic to create a new Manim screenplay. Attach a .md file or just type.';
+      if (hint) { hint.textContent = hintText; hint.classList.remove('hidden'); }
+    }
+  }
+
+  async function loadChatForScreenplay(filename) {
+    stopPolling();
+    setStreaming(false);
+    try {
+      const res = await fetch(`/api/workbench/chat/${encodeURIComponent(filename)}`);
+      const data = await res.json();
+      currentSessionId = data.session_id;
+      const container = document.getElementById('chat-messages');
+      container.innerHTML = '';
+      const hint = document.getElementById('chat-hint');
+      if (data.messages.length === 0) {
+        if (hint) { hint.textContent = 'Ask Claude to modify this screenplay, fix QA issues, or adjust scenes.'; hint.classList.remove('hidden'); }
+      } else {
+        if (hint) hint.classList.add('hidden');
+        for (const msg of data.messages) {
+          appendMessage(msg.role, msg.content);
+        }
+      }
+      // Check if Claude is currently running
+      const pollRes = await fetch(`/api/studio/sessions/${currentSessionId}/poll`);
+      const pollData = await pollRes.json();
+      if (pollData.status === 'running') {
+        assistantDiv = appendMessage('assistant', pollData.content || '');
+        startPolling();
+      }
+    } catch {}
+  }
+
+  function renderMarkdown(text) {
+    let html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    html = html.replace(/^[\-\*]\s+(.+)$/gm, '<li>$1</li>');
+    html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+    html = html.replace(/\n/g, '<br>');
+    html = html.replace(/<pre><code>([\s\S]*?)<\/code><\/pre>/g, (m, code) => {
+      return '<pre><code>' + code.replace(/<br>/g, '\n') + '</code></pre>';
+    });
+    return html;
+  }
+
+  function isNearBottom() {
+    const el = document.getElementById('chat-messages');
+    return el.scrollHeight - el.scrollTop - el.clientHeight < 100;
+  }
+
+  function scrollToBottom() {
+    const el = document.getElementById('chat-messages');
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function appendMessage(role, content) {
+    const container = document.getElementById('chat-messages');
+    const empty = container.querySelector('.chat-empty');
+    if (empty) empty.remove();
+    const hint = document.getElementById('chat-hint');
+    if (hint) hint.classList.add('hidden');
+
+    const div = document.createElement('div');
+    div.className = 'msg msg-' + role;
+
+    if (role === 'assistant') {
+      div.innerHTML = renderMarkdown(content);
+    } else if (role === 'error') {
+      div.textContent = content;
+      if (lastUserMessage) {
+        const btn = document.createElement('button');
+        btn.className = 'retry-btn';
+        btn.textContent = 'Retry';
+        btn.onclick = () => {
+          div.remove();
+          document.getElementById('chat-input').value = lastUserMessage;
+          sendMessage();
+        };
+        div.appendChild(btn);
+      }
+    } else {
+      div.textContent = content;
+    }
+
+    container.appendChild(div);
+    scrollToBottom();
+    return div;
+  }
+
+  async function handleFileSelect(input) {
+    for (const file of input.files) {
+      const form = new FormData();
+      form.append('file', file);
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: form });
+        const data = await res.json();
+        attachedFiles.push({ name: file.name, path: data.path });
+        renderAttachedFiles();
+        showToast(`Uploaded ${file.name}`, 'success');
+      } catch {
+        showToast(`Failed to upload ${file.name}`, 'error');
+      }
+    }
+    input.value = '';
+  }
+
+  function removeFile(idx) {
+    attachedFiles.splice(idx, 1);
+    renderAttachedFiles();
+  }
+
+  function renderAttachedFiles() {
+    const container = document.getElementById('attached-files');
+    container.innerHTML = attachedFiles.map((f, i) => {
+      return `<span class="attached-file">${esc(f.name)} <span class="remove-file" onclick="removeFile(${i})">&times;</span></span>`;
+    }).join('');
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById('chat-input');
+    let message = input.value.trim();
+
+    if (attachedFiles.length > 0) {
+      const filePaths = attachedFiles.map(f =>
+        `[Attached file: ${f.name}] — Read it at: ${f.path}`
+      ).join('\n');
+      message = filePaths + (message ? '\n\n' + message : '\n\nPlease read the attached file(s) and review them.');
+    }
+
+    if (!message || isStreaming) return;
+
+    // Create session if needed
+    if (!currentSessionId) {
+      const res = await fetch('/api/studio/sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: message.slice(0, 60) }),
+      });
+      const data = await res.json();
+      currentSessionId = data.id;
+    }
+
+    lastUserMessage = message;
+    let displayMsg = input.value.trim();
+    if (attachedFiles.length > 0) {
+      const names = attachedFiles.map(f => f.name).join(', ');
+      displayMsg = (displayMsg ? displayMsg + '\n' : '') + '[Attached: ' + names + ']';
+    }
+    appendMessage('user', displayMsg || message);
+    input.value = '';
+    input.style.height = 'auto';
+    attachedFiles = [];
+    renderAttachedFiles();
+
+    try {
+      const body = { message };
+      if (currentFile) body.screenplay = currentFile;
+
+      const res = await fetch(`/api/studio/sessions/${currentSessionId}/message`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        appendMessage('error', `Server error (${res.status}): ${res.statusText}`);
+        return;
+      }
+      if (res.status === 409) {
+        appendMessage('error', data.error || 'Claude is already working');
+        return;
+      }
+      if (data.detail) {
+        appendMessage('error', data.detail);
+        return;
+      }
+      if (data.status === 'started') {
+        assistantDiv = null;
+        startPolling();
+      }
+    } catch (err) {
+      appendMessage('error', 'Connection error: ' + err.message);
+    }
+  }
+
+  function startPolling() {
+    setStreaming(true);
+    // Don't create the assistant bubble yet — wait until first poll has content
+    pollTimer = setInterval(pollForResponse, 800);
+  }
+
+  function stopPolling() {
+    if (pollTimer) {
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
+    assistantDiv = null;
+  }
+
+  async function pollForResponse() {
+    if (!currentSessionId) return;
+    try {
+      const res = await fetch(`/api/studio/sessions/${currentSessionId}/poll`);
+      const data = await res.json();
+      if (data.content) {
+        if (!assistantDiv) {
+          assistantDiv = appendMessage('assistant', '');
+        }
+        assistantDiv.innerHTML = renderMarkdown(data.content);
+        if (userAtBottom) scrollToBottom();
+      }
+      const timeEl = document.getElementById('typing-time');
+      if (data.elapsed && timeEl) timeEl.textContent = ` ${data.elapsed}s`;
+      if (data.status !== 'running') {
+        stopPolling();
+        setStreaming(false);
+        if (data.status === 'error' || data.status === 'timeout') {
+          if (assistantDiv) assistantDiv.classList.add('msg-error-border');
+        }
+        // Refresh sidebar in case a new screenplay was created
+        loadScreenplayList();
+
+        // Auto-refresh center panel
+        const responseText = data.content || '';
+        if (currentFile) {
+          // Edit mode: always refresh (Claude was editing this file)
+          loadScreenplay(currentFile);
+        } else {
+          // Intake mode: detect new screenplay filename in response
+          const match = responseText.match(/(\w+_manim\.py)/);
+          if (match) {
+            setTimeout(() => loadScreenplay(match[1]), 500);
+          }
+        }
+      }
+    } catch {}
+  }
+
+  async function stopSession() {
+    if (!currentSessionId) return;
+    await fetch(`/api/studio/sessions/${currentSessionId}/stop`, { method: 'POST' });
+  }
+
+  function setStreaming(active) {
+    isStreaming = active;
+    document.getElementById('send-btn').style.display = active ? 'none' : '';
+    document.getElementById('stop-btn').style.display = active ? '' : 'none';
+    const typingEl = document.getElementById('typing');
+    if (typingEl) typingEl.className = 'typing-indicator' + (active ? ' active' : '');
+    document.getElementById('chat-input').disabled = active;
+    if (!active) {
+      const timeEl = document.getElementById('typing-time');
+      if (timeEl) timeEl.textContent = '';
+    }
+  }
+
+  // Auto-resize textarea
+  document.getElementById('chat-input').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+  });
+
+  document.getElementById('chat-messages').addEventListener('scroll', () => {
+    userAtBottom = isNearBottom();
+  });
+
+  // ============ AUTO-PIPELINE ============
+
+  let pipelinePollTimer = null;
+  let knownFiles = new Set();
+  let autoTriggered = new Set();
+
+  async function runAutoPipeline(filename = null) {
+    const file = filename || currentFile;
+    if (!file) return;
+    const btn = document.getElementById('btn-pipeline');
+    const bar = document.getElementById('pipeline-bar');
+    if (btn) btn.disabled = true;
+    if (bar) bar.classList.add('active');
+
+    try {
+      const res = await fetch(`/api/screenplay/${encodeURIComponent(file)}/auto-pipeline`, { method: 'POST' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!data.pipeline_id) throw new Error(data.error || 'No pipeline ID');
+      pollPipeline(data.pipeline_id);
+    } catch (err) {
+      const text = document.getElementById('pipeline-status-text');
+      if (text) { text.textContent = 'Failed: ' + err.message; text.style.color = 'var(--fail)'; }
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  function pollPipeline(pipelineId) {
+    if (pipelinePollTimer) clearInterval(pipelinePollTimer);
+    const stepOrder = ['tts', 'render', 'meta'];
+
+    pipelinePollTimer = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/pipeline/${pipelineId}`);
+        const d = await res.json();
+        const text = document.getElementById('pipeline-status-text');
+        const fill = document.getElementById('pipeline-progress');
+        const pips = document.getElementById('pipeline-render-pips');
+
+        // Update step indicators
+        for (const step of stepOrder) {
+          const el = document.getElementById('pstep-' + step);
+          if (!el) continue;
+          const stepIdx = stepOrder.indexOf(step);
+          const currentIdx = stepOrder.indexOf(d.step === 'done' ? 'meta' : d.step);
+          if (d.status === 'failed' && step === d.step) {
+            el.className = 'pipeline-step failed';
+          } else if (stepIdx < currentIdx || (d.status === 'complete' && step !== 'done')) {
+            el.className = 'pipeline-step done';
+          } else if (step === d.step && d.status === 'running') {
+            el.className = 'pipeline-step active';
+          } else {
+            el.className = 'pipeline-step';
+          }
+        }
+
+        // Progress bar: rough 3-step progress
+        const stepPct = { tts: 15, render: 50, meta: 85, done: 100 };
+        let pct = stepPct[d.step] || 0;
+        if (d.step === 'render' && d.render_progress) {
+          pct = 15 + (d.render_progress / 100) * 60; // 15-75%
+        }
+        if (d.status === 'complete') pct = 100;
+        if (fill) fill.style.width = pct + '%';
+
+        // Show render pips during render step
+        if (pips) {
+          pips.style.display = d.step === 'render' ? '' : 'none';
+          if (d.step === 'render') {
+            const sd = d.render_scenes_done || 0;
+            for (let i = 1; i <= 6; i++) {
+              const pip = document.getElementById('ppip-' + i);
+              if (!pip) continue;
+              if (i <= sd) pip.className = 'render-scene-pip done';
+              else if (i === sd + 1 && d.status === 'running') pip.className = 'render-scene-pip active';
+              else pip.className = 'render-scene-pip';
+            }
+          }
+        }
+
+        const elapsed = d.elapsed || 0;
+        const elapsedStr = elapsed >= 60 ? `${Math.floor(elapsed/60)}m${String(elapsed%60).padStart(2,'0')}s` : `${elapsed}s`;
+
+        if (d.status === 'running') {
+          const stepLabel = { tts: 'Generating TTS...', render: 'Rendering video...', meta: 'Generating metadata...' };
+          if (text) text.innerHTML = `<span class="spinner"></span> ${stepLabel[d.step] || 'Working...'} (${elapsedStr})`;
+        }
+
+        if (d.status === 'complete') {
+          clearInterval(pipelinePollTimer);
+          const stem = (d.filename || currentFile || '').replace('_manim.py','').replace('.py','').replace('.json','');
+          const videoUrl = `/video/${encodeURIComponent(stem + '_final.mp4')}`;
+          if (text) {
+            text.innerHTML = `Pipeline complete in ${elapsedStr} &mdash; <a href="${videoUrl}" style="color:var(--success);text-decoration:underline;font-weight:600">View &amp; Review &rarr;</a>`;
+            text.style.color = 'var(--success)';
+          }
+          showToast('Pipeline complete!', 'success');
+          await loadScreenplayList();
+          if (currentFile) loadScreenplay(currentFile);
+        } else if (d.status === 'failed') {
+          clearInterval(pipelinePollTimer);
+          if (text) { text.innerHTML = `Failed at ${d.step}: ${esc(d.error || 'unknown error')}`; text.style.color = 'var(--fail)'; }
+          showToast(`Pipeline failed at ${d.step}`, 'error');
+          const btn = document.getElementById('btn-pipeline');
+          if (btn) btn.disabled = false;
+          await loadScreenplayList();
+        }
+      } catch {
+        clearInterval(pipelinePollTimer);
+      }
+    }, 2000);
+  }
+
+  // ============ POSTED TOGGLE ============
+
+  async function togglePosted() {
+    if (!currentFile) return;
+    const stem = currentFile.replace('_manim.py', '').replace('.py', '').replace('.json', '');
+    const videoFilename = stem + '_final.mp4';
+    const btn = document.getElementById('btn-posted');
+    if (btn) btn.disabled = true;
+    try {
+      const sidebarEntry = allScreenplays.find(s => s.filename === currentFile);
+      const currentPosted = sidebarEntry ? sidebarEntry.posted : false;
+      const res = await fetch(`/api/video/${encodeURIComponent(videoFilename)}/posted`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ posted: !currentPosted }),
+      });
+      const data = await res.json();
+      if (btn) {
+        if (data.posted) {
+          btn.innerHTML = '&#9745; Posted';
+          btn.classList.add('posted-on');
+        } else {
+          btn.innerHTML = '&#9744; Mark as Posted';
+          btn.classList.remove('posted-on');
+        }
+      }
+      // Update sidebar entry
+      if (sidebarEntry) sidebarEntry.posted = data.posted;
+      renderSidebar(allScreenplays);
+      showToast(data.posted ? 'Marked as posted' : 'Unmarked as posted', 'success');
+    } catch (err) {
+      showToast('Failed to toggle posted status', 'error');
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  // ============ AUTO-DETECTION POLLING ============
+
+  setInterval(async () => {
+    await loadScreenplayList();
+    for (const s of allScreenplays) {
+      if (s.group === 'draft' && !knownFiles.has(s.filename) && !autoTriggered.has(s.filename)) {
+        // Only auto-trigger if knownFiles is populated (not first load)
+        if (knownFiles.size > 0) {
+          autoTriggered.add(s.filename);
+          showToast(`Pipeline auto-started for ${s.name}`, 'success');
+          runAutoPipeline(s.filename);
+        }
+      }
+      knownFiles.add(s.filename);
+    }
+  }, 15000);
+
+  // ============ MOBILE/TABLET TOGGLES ============
+
+  function toggleChat() {
+    document.getElementById('wb-chat').classList.toggle('open');
+    document.getElementById('chat-overlay').classList.toggle('open');
+  }
+
+  function toggleSidebar() {
+    document.getElementById('wb-sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('open');
+  }
+
+  function closeSidebar() {
+    document.getElementById('wb-sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+  }
+
+  // ============ INIT ============
+
+  // ============ KEYBOARD SHORTCUTS ============
+
+  document.addEventListener('keydown', (e) => {
+    // Escape: close chat/sidebar overlays
+    if (e.key === 'Escape') {
+      const chat = document.getElementById('wb-chat');
+      const sidebar = document.getElementById('wb-sidebar');
+      if (chat && chat.classList.contains('open')) { toggleChat(); return; }
+      if (sidebar && sidebar.classList.contains('open')) { toggleSidebar(); return; }
+    }
+    // "/": focus sidebar search (when not in an input)
+    if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+      e.preventDefault();
+      const search = document.getElementById('wb-search');
+      if (search) search.focus();
+    }
+  });
+
+  // ============ RESUME ACTIVE RENDER ============
+
+  async function checkActiveRender() {
+    try {
+      const res = await fetch('/api/render/active');
+      const d = await res.json();
+      if (d.job_id) {
+        // There's a render running — if we're viewing that screenplay, resume the UI
+        const bar = document.getElementById('render-bar');
+        const btn = document.getElementById('btn-render');
+        if (bar) { bar.classList.add('active'); }
+        if (btn) { btn.disabled = true; }
+        pollRender(d.job_id);
+      }
+    } catch {}
+  }
+
+  // ============ INIT ============
+
+  loadScreenplayList().then(() => {
+    // Populate knownFiles on first load so auto-detection doesn't trigger for existing files
+    for (const s of allScreenplays) {
+      knownFiles.add(s.filename);
+    }
+  });
+  const params = new URLSearchParams(window.location.search);
+  const file = params.get('file');
+  if (file) {
+    setTimeout(() => loadScreenplay(file), 200);
+  }
+  // Check for active render after a short delay (so the UI has loaded)
+  setTimeout(checkActiveRender, 500);
+</script>
+{% endblock %}

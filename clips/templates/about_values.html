@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% set active_page = 'about' %}
+
+{% block title %}clips — Values{% endblock %}
+
+{% block head %}
+<style>
+  .about-nav {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .about-nav::-webkit-scrollbar { display: none; }
+  .about-nav-item {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 100px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .about-nav-item:hover { border-color: var(--border-hover); color: var(--text); }
+  .about-nav-item.active { background: var(--accent-subtle); border-color: var(--accent); color: var(--accent); }
+
+  .about-section {
+    margin-bottom: 32px;
+  }
+  .about-section h2 {
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+  .about-section p, .about-section li {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .about-section p + p {
+    margin-top: 10px;
+  }
+
+  .value-card {
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+  .value-card h3 {
+    color: var(--accent);
+    font-size: 16px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .value-card p {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .value-card p + p {
+    margin-top: 8px;
+  }
+  .value-card .value-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 100px;
+    background: var(--accent-subtle);
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Values</h1>
+</div>
+
+<div class="about-nav">
+  <a href="/about" class="about-nav-item">Overview</a>
+  <a href="/about/engines" class="about-nav-item">Engines</a>
+  <a href="/about/pipeline" class="about-nav-item">Pipeline</a>
+  <a href="/about/values" class="about-nav-item active">Values</a>
+  <a href="/about/roadmap" class="about-nav-item">Roadmap</a>
+</div>
+
+<div class="about-section">
+  <p>These are the design principles that guide how TKK is built and evolved. They emerged from real experience — including learning what doesn't work.</p>
+</div>
+
+<div class="card value-card">
+  <div class="value-tag">Core</div>
+  <h3>Essay to Infographic</h3>
+  <p>The core vision: take written knowledge — an essay, an article, a Wikipedia page — and turn it into an engaging short-form infographic video as fast as possible. Everything else is in service of this goal.</p>
+</div>
+
+<div class="card value-card">
+  <div class="value-tag">Architecture</div>
+  <h3>Deterministic Over Autonomous</h3>
+  <p>Pipelines beat multi-agent systems. TKK tried the autonomous route with OpenClaw — 3 specialized agents coordinating over Discord. It was fragile, hard to debug, and produced inconsistent results.</p>
+  <p>The current system is a single Claude Code session running a deterministic pipeline: screenplay, TTS, preview, QA, render. Same input, same output. No emergent behavior, no agent negotiation, no mystery failures.</p>
+</div>
+
+<div class="card value-card">
+  <div class="value-tag">Source of Truth</div>
+  <h3>Code is the Source of Truth</h3>
+  <p>Every frame in every video is defined in code. No manual edits, no drag-and-drop timeline, no "I tweaked it in After Effects." This means any video can be reproduced exactly, any change can be traced to a code change, and iteration is a text edit away.</p>
+</div>
+
+<div class="card value-card">
+  <div class="value-tag">Storytelling</div>
+  <h3>Visual-First Storytelling</h3>
+  <p>The narration tells the story. The screen shows it. Never put narration text on screen — that's what captions are for. The visuals should be animated graphics, charts, timelines, and data visualizations that complement and reinforce what the voice is saying.</p>
+  <p>If a viewer muted the video, they should still get value from the visuals alone. If they closed their eyes, the narration should still tell a complete story.</p>
+</div>
+
+<div class="card value-card">
+  <div class="value-tag">Process</div>
+  <h3>Quality Gates</h3>
+  <p>No video ships without passing automated QA. Layout checks verify the frame is filled. Readability checks verify text is legible. Sync checks verify audio and video are aligned. These gates catch problems that are easy to miss in manual review — subtle drift, zone imbalance, contrast issues.</p>
+  <p>The cost of running QA is ~10 seconds. The cost of shipping a bad video is much higher.</p>
+</div>
+
+<div class="card value-card">
+  <div class="value-tag">Speed</div>
+  <h3>Fast Iteration</h3>
+  <p>Preview PNGs render in ~10 seconds. A full video renders in 1-2 minutes. This tight feedback loop means you can try something, see it, fix it, and try again — all in the same session. The alternative (slow renders, manual review, re-queue) kills creative momentum.</p>
+</div>
+
+{% endblock %}

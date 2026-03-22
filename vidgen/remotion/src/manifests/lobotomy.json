@@ -1,0 +1,285 @@
+{
+  "topic": "lobotomy",
+  "ttsScript": "A Nobel Prize winner drove an ice pick through 3,500 human brains. Walter Freeman called it a cure. He didn't use an operating room. He used a van. Patients called it the lobotomobile. Rosemary Kennedy was 23. Intelligent. Rebellious. Her father had her lobotomized. She couldn't walk or speak for the rest of her life. Freeman performed lobotomies on housewives, veterans, children. His youngest patient was four years old. In 1949, the Nobel Committee gave him the Prize. They called it a breakthrough. The prize has never been revoked. The Nobel Prize for lobotomies still stands. No one has ever apologized.",
+  "colors": {
+    "bg": "#0A0A10",
+    "accent": "#94A3B8",
+    "secondary": "#EF4444"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "label": "THE HOOK",
+      "type": "textEffect",
+      "scene_anchor": "A",
+      "scene_end_anchor": "brains.",
+      "elements": [
+        {
+          "type": "text_effect",
+          "text": "NOBEL PRIZE WINNER",
+          "effect": "glitch",
+          "color": "#FFD700",
+          "zone": "MID",
+          "anchor": "A",
+          "attack": 0.0,
+          "hold": "until_scene_end",
+          "effectDuration": 0.4
+        },
+        {
+          "type": "text",
+          "content": "Ice pick. 3,500 brains.",
+          "zone": "LOWER",
+          "style": "stat",
+          "color": "#EF4444",
+          "anchor": "ice",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "Walter Freeman, MD",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "brains.",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "wrong_answer",
+      "label": "THE WRONG ANSWER",
+      "type": "flowDiagram",
+      "scene_anchor": "Walter",
+      "scene_end_anchor": "lobotomyble.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "The \"Lobotomobile\"",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "Walter",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "flow_diagram",
+          "zone": "MID",
+          "anchor": "cure.",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "nodes": [
+            {"label": "Van arrives", "icon": "truck", "color": "#94A3B8"},
+            {"label": "Patient seated", "icon": "person", "color": "#FBBF24"},
+            {"label": "Ice pick", "icon": "warning", "color": "#EF4444"},
+            {"label": "\"Cured\"", "icon": "skull", "color": "#EF4444"}
+          ],
+          "direction": "horizontal",
+          "arrowColor": "#64748B"
+        },
+        {
+          "type": "text",
+          "content": "3,500 lobotomies — no OR needed",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#94A3B8",
+          "anchor": "lobotomyble.",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "contradiction",
+      "label": "THE CONTRADICTION",
+      "type": "populationDrop",
+      "scene_anchor": "Rosemary",
+      "scene_end_anchor": "life.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Rosemary Kennedy, age 23",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FBBF24",
+          "anchor": "Rosemary",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "population_drop",
+          "startValue": 100,
+          "endValue": 0,
+          "unit": "% motor function",
+          "label": "After lobotomy",
+          "color": "#EF4444",
+          "zone": "MID",
+          "anchor": "Kennedy",
+          "attack": 0.3,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "Father authorized procedure",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#94A3B8",
+          "anchor": "lobotomized.",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "proof",
+      "label": "THE PROOF",
+      "type": "barChart",
+      "scene_anchor": "Freeman",
+      "scene_end_anchor": "old.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Youngest patient: age 4",
+          "zone": "UPPER",
+          "style": "stat",
+          "color": "#EF4444",
+          "anchor": "Freeman",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "bar",
+          "label": "Housewives",
+          "value": 40,
+          "color": "#94A3B8",
+          "anchor": "housewives,",
+          "attack": 0.0
+        },
+        {
+          "type": "bar",
+          "label": "Veterans",
+          "value": 35,
+          "color": "#94A3B8",
+          "anchor": "veterans,",
+          "attack": 0.0
+        },
+        {
+          "type": "bar",
+          "label": "Children",
+          "value": 25,
+          "color": "#EF4444",
+          "anchor": "children.",
+          "attack": 0.0
+        }
+      ]
+    },
+    {
+      "id": "betrayal",
+      "label": "THE BETRAYAL",
+      "type": "timeline",
+      "scene_anchor": "1949,",
+      "scene_end_anchor": "breakthrough.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Nobel Prize, 1949",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#FFD700",
+          "anchor": "1949,",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "1935",
+          "label": "Moniz pioneers",
+          "color": "#94A3B8",
+          "anchor": "Nobel",
+          "attack": 0.2,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "1946",
+          "label": "Freeman's ice pick",
+          "color": "#FFD700",
+          "anchor": "Committee",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "1949",
+          "label": "Nobel Prize awarded",
+          "color": "#FFD700",
+          "anchor": "Prize.",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "1967",
+          "label": "Practice abandoned",
+          "color": "#EF4444",
+          "anchor": "breakthrough.",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "punch",
+      "label": "THE PUNCH",
+      "type": "textEffect",
+      "scene_anchor": "prize",
+      "scene_end_anchor": "apologized.",
+      "elements": [
+        {
+          "type": "text_effect",
+          "text": "NEVER REVOKED",
+          "effect": "redacted",
+          "color": "#EF4444",
+          "zone": "MID",
+          "anchor": "never",
+          "attack": 0.0,
+          "hold": "until_replaced",
+          "effectDuration": 0.4
+        },
+        {
+          "type": "text_effect",
+          "text": "NO APOLOGY",
+          "effect": "stamp",
+          "color": "#FFD700",
+          "zone": "MID",
+          "anchor": "apologized.",
+          "attack": 0.0,
+          "hold": "until_scene_end",
+          "replaces_zone": true,
+          "effectDuration": 0.3
+        },
+        {
+          "type": "text",
+          "content": "The Nobel Prize for lobotomies still stands",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#FFD700",
+          "anchor": "stands.",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    }
+  ]
+}

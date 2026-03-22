@@ -1,0 +1,304 @@
+{
+  "topic": "challenger",
+  "ttsScript": "Seven people died on the Space Shuttle Challenger. NASA knew it would happen. The night before, engineers begged them not to launch. NASA called it a malfunction. Unforeseeable. Unpredictable. But engineers had warned them for months. The rubber O-rings cracked in cold weather. Launch morning, it was 36 degrees. Engineers told NASA the O-rings would fail. NASA asked them to reconsider. Their managers overruled them. Millions of children watched live from their classrooms. Seventy-three seconds after launch, the O-ring failed. Richard Feynman proved it at the hearing. He dropped an O-ring in a glass of ice water. It cracked. A six cent rubber ring. That is what they ignored.",
+  "colors": {
+    "bg": "#0F172A",
+    "accent": "#D4A017",
+    "secondary": "#EF4444"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "label": "THE HOOK",
+      "type": "counter",
+      "scene_anchor": "Seven",
+      "scene_end_anchor": "happen.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "January 28, 1986",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "Seven",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "counter",
+          "start": 0,
+          "end": 7,
+          "unit": "lives lost",
+          "description": "Space Shuttle Challenger",
+          "color": "#EF4444",
+          "zone": "MID",
+          "anchor": "people",
+          "attack": 0.0,
+          "count_end_anchor": "Challenger.",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "NASA knew",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#D4A017",
+          "anchor": "knew",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "wrong_answer",
+      "label": "THE WRONG ANSWER",
+      "type": "illustration",
+      "scene_anchor": "night",
+      "scene_end_anchor": "Unpredictable.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "O-RINGS CRACK IN COLD",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#D4A017",
+          "anchor": "night",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "figurePointing",
+          "zone": "MID",
+          "anchor": "engineers",
+          "attack": 0.1,
+          "enter": "slideUp",
+          "hold": "until_scene_end",
+          "size": 90,
+          "position": {"x": -100, "y": 0},
+          "holdMotion": "none"
+        },
+        {
+          "type": "svg",
+          "svg": "thermometer",
+          "zone": "MID",
+          "anchor": "begged",
+          "attack": 0.2,
+          "enter": "pop",
+          "hold": "until_scene_end",
+          "size": 80,
+          "color": "#EF4444",
+          "position": {"x": 100, "y": -20},
+          "holdMotion": "pulse",
+          "shake": true
+        },
+        {
+          "type": "text",
+          "content": "Engineers warned for months",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#94A3B8",
+          "anchor": "malfunction.",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "contradiction",
+      "label": "THE CONTRADICTION",
+      "type": "gaugeMeter",
+      "scene_anchor": "But",
+      "scene_end_anchor": "degrees.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "O-ring temp threshold: 53°F",
+          "zone": "UPPER",
+          "style": "stat",
+          "color": "#D4A017",
+          "anchor": "But",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "gauge",
+          "value": 36,
+          "maxValue": 80,
+          "unit": "°F",
+          "label": "Launch day temperature",
+          "color": "#EF4444",
+          "zone": "MID",
+          "anchor": "cracked",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "sweepDuration": 0.6,
+          "gauge_zones": [
+            {"from": 0, "to": 40, "color": "#EF4444"},
+            {"from": 40, "to": 53, "color": "#FBBF24"},
+            {"from": 53, "to": 80, "color": "#22C55E"}
+          ]
+        },
+        {
+          "type": "text",
+          "content": "36°F at launch",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#EF4444",
+          "anchor": "36",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "proof",
+      "label": "THE PROOF",
+      "type": "timeline",
+      "scene_anchor": "Engineers",
+      "scene_end_anchor": "them.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "The night before launch",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "Engineers",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "6 PM",
+          "label": "Engineers warn",
+          "color": "#22C55E",
+          "anchor": "told",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "8 PM",
+          "label": "NASA pushes back",
+          "color": "#D4A017",
+          "anchor": "asked",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "11 PM",
+          "label": "Managers overrule",
+          "color": "#EF4444",
+          "anchor": "overruled",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "betrayal",
+      "label": "THE BETRAYAL",
+      "type": "causeEffect",
+      "scene_anchor": "Millions",
+      "scene_end_anchor": "failed.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Live on classroom TVs",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "Millions",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "cause_effect",
+          "zone": "MID",
+          "anchor": "children",
+          "attack": 0.3,
+          "hold": "until_scene_end",
+          "dominoes": [
+            {"label": "Cold weather", "icon": "thermometer", "color": "#60A5FA"},
+            {"label": "O-ring cracks", "icon": "warning", "color": "#FBBF24"},
+            {"label": "Fuel leaks", "icon": "fire", "color": "#F97316"},
+            {"label": "Explosion", "icon": "explosion", "color": "#EF4444"}
+          ],
+          "chainSpeed": 0.15
+        },
+        {
+          "type": "text",
+          "content": "73 seconds after launch",
+          "zone": "FOOTER",
+          "style": "stat",
+          "color": "#EF4444",
+          "anchor": "73",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "punch",
+      "label": "THE PUNCH",
+      "type": "scaleComparison",
+      "scene_anchor": "Richard",
+      "scene_end_anchor": "ignored.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Feynman's ice water proof",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "Richard",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "scale_comparison",
+          "zone": "MID",
+          "anchor": "dropped",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "left": {
+            "label": "O-ring",
+            "icon": "ring",
+            "value": 0.06,
+            "color": "#D4A017"
+          },
+          "right": {
+            "label": "Shuttle",
+            "icon": "rocket",
+            "value": 2000000000,
+            "color": "#EF4444"
+          },
+          "unit": "$"
+        },
+        {
+          "type": "text",
+          "content": "That is what they ignored",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#D4A017",
+          "anchor": "ignored.",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    }
+  ]
+}

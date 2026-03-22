@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" fill="none" stroke="#39FF14" stroke-width="2">
+  <!-- Skull outline -->
+  <path d="M200 50 C100 50 40 120 40 200 C40 260 70 310 120 340 L120 380 C120 420 160 450 200 450 C240 450 280 420 280 380 L280 340 C330 310 360 260 360 200 C360 120 300 50 200 50Z" stroke-width="3"/>
+  <!-- Eye sockets -->
+  <ellipse cx="150" cy="180" rx="35" ry="30" stroke-width="2.5"/>
+  <ellipse cx="250" cy="180" rx="35" ry="30" stroke-width="2.5"/>
+  <!-- Nasal cavity -->
+  <path d="M185 220 L200 270 L215 220" stroke-width="2"/>
+  <!-- Upper teeth row -->
+  <rect x="125" y="300" width="18" height="28" rx="3" fill="#39FF14" opacity="0.6"/>
+  <rect x="148" y="298" width="18" height="30" rx="3" fill="#39FF14" opacity="0.6"/>
+  <rect x="171" y="296" width="18" height="32" rx="3" fill="#39FF14" opacity="0.6"/>
+  <rect x="194" y="296" width="18" height="32" rx="3" fill="#39FF14" opacity="0.6"/>
+  <rect x="217" y="298" width="18" height="30" rx="3" fill="#39FF14" opacity="0.6"/>
+  <rect x="240" y="300" width="18" height="28" rx="3" fill="#39FF14" opacity="0.6"/>
+  <!-- Jaw bone -->
+  <path d="M120 340 C120 390 150 430 200 430 C250 430 280 390 280 340" stroke-width="3" stroke-dasharray="8 4" opacity="0.5"/>
+  <!-- Crack lines in jaw -->
+  <path d="M140 360 L155 380 L145 400" stroke="#FF4444" stroke-width="1.5" opacity="0.7"/>
+  <path d="M250 355 L265 375 L255 395" stroke="#FF4444" stroke-width="1.5" opacity="0.7"/>
+</svg>

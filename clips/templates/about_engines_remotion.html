@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+{% set active_page = 'about' %}
+
+{% block title %}clips — Remotion Engine{% endblock %}
+
+{% block head %}
+<style>
+  .about-nav {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .about-nav::-webkit-scrollbar { display: none; }
+  .about-nav-item {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 100px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .about-nav-item:hover { border-color: var(--border-hover); color: var(--text); }
+  .about-nav-item.active { background: var(--accent-subtle); border-color: var(--accent); color: var(--accent); }
+
+  .about-section {
+    margin-bottom: 32px;
+  }
+  .about-section h2 {
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+  .about-section h3 {
+    margin-bottom: 8px;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .about-section p, .about-section li {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .about-section p + p {
+    margin-top: 10px;
+  }
+  .about-section ul {
+    list-style: none;
+    margin-top: 8px;
+  }
+  .about-section ul li {
+    padding-left: 16px;
+    position: relative;
+    margin-bottom: 4px;
+  }
+  .about-section ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--surface);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .component-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  @media (min-width: 520px) {
+    .component-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .comp-item {
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+  }
+  .comp-item .comp-name {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .comp-item .comp-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .manifest-example {
+    background: var(--bg-warm);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    margin-top: 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .manifest-example .key { color: var(--accent); }
+  .manifest-example .str { color: var(--success); }
+  .manifest-example .num { color: var(--warn); }
+
+  .pros-cons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  @media (min-width: 520px) {
+    .pros-cons { grid-template-columns: 1fr 1fr; }
+  }
+  .pros-cons .col h3 {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  .pros-cons .col.strengths h3 { color: var(--success); }
+  .pros-cons .col.current h3 { color: var(--warn); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Remotion Engine</h1>
+</div>
+
+<div class="about-nav">
+  <a href="/about" class="about-nav-item">Overview</a>
+  <a href="/about/engines" class="about-nav-item active">Engines</a>
+  <a href="/about/pipeline" class="about-nav-item">Pipeline</a>
+  <a href="/about/values" class="about-nav-item">Values</a>
+  <a href="/about/roadmap" class="about-nav-item">Roadmap</a>
+</div>
+
+<div class="about-section">
+  <h2>What is Remotion?</h2>
+  <p>Remotion is a React-based framework for creating videos programmatically. Instead of writing imperative animation code, you compose React components that render frames as a function of the current time. Each frame is a React render — the same mental model as building a web page, but animated over time.</p>
+  <p>TKK's Remotion integration is <strong>manifest-driven</strong>: you write a JSON file describing the scenes, and the component library handles all the rendering. No code changes per video.</p>
+</div>
+
+<div class="about-section">
+  <h2>Manifest-Driven Architecture</h2>
+  <p>Instead of writing Python code for each video, Remotion videos are defined entirely by a JSON manifest. The manifest specifies scenes, components, text, timing, and zone placement. The renderer reads this manifest and produces a video.</p>
+  <div class="manifest-example">{
+  <span class="key">"title"</span>: <span class="str">"The Aral Sea"</span>,
+  <span class="key">"scenes"</span>: [
+    {
+      <span class="key">"type"</span>: <span class="str">"headline"</span>,
+      <span class="key">"zone"</span>: <span class="str">"MID"</span>,
+      <span class="key">"text"</span>: <span class="str">"A lake the size of Ireland"</span>,
+      <span class="key">"duration"</span>: <span class="num">5</span>
+    }
+  ]
+}</div>
+</div>
+
+<div class="about-section">
+  <h2>Component Library</h2>
+  <p>The Remotion engine includes a library of reusable scene components. Each component handles its own enter/hold/exit animation lifecycle with spring physics and crossfade transitions.</p>
+  <div class="component-grid">
+    <div class="comp-item">
+      <div class="comp-name">Headline</div>
+      <div class="comp-desc">Large text with spring-in animation</div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-name">Counter</div>
+      <div class="comp-desc">Animated number counting up/down</div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-name">BarChart</div>
+      <div class="comp-desc">Animated bar chart with labels</div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-name">Timeline</div>
+      <div class="comp-desc">Horizontal timeline with events</div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-name">CompareStack</div>
+      <div class="comp-desc">Side-by-side comparison layout</div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-name">StatGrid</div>
+      <div class="comp-desc">Grid of stat cards with staggered entry</div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-name">QuoteCard</div>
+      <div class="comp-desc">Styled quotation with attribution</div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-name">MapHighlight</div>
+      <div class="comp-desc">Map with animated region highlight</div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-name">ListReveal</div>
+      <div class="comp-desc">Bullet points appearing one by one</div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-name">CaptionOverlay</div>
+      <div class="comp-desc">Word-level subtitle overlay</div>
+    </div>
+  </div>
+</div>
+
+<div class="about-section">
+  <h2>Zone System</h2>
+  <p>Remotion uses the same 5-zone vertical layout as Manim, pixel-mapped for the 1080x1920 frame. Components are placed by zone name in the manifest — the renderer handles the positioning.</p>
+</div>
+
+<div class="about-section">
+  <h2>Animation Model</h2>
+  <p>All animations use Remotion's spring physics system. Each component follows a 3-phase lifecycle:</p>
+  <ul>
+    <li><strong>Enter</strong> — spring-animated appearance (scale, opacity, position)</li>
+    <li><strong>Hold</strong> — static display during the scene's core duration</li>
+    <li><strong>Exit</strong> — crossfade transition to the next scene</li>
+  </ul>
+  <p>Transitions between scenes use crossfade by default, with the exit of one scene overlapping the enter of the next.</p>
+</div>
+
+<div class="about-section">
+  <h2>Strengths & Current State</h2>
+  <div class="pros-cons">
+    <div class="col strengths">
+      <h3>Strengths</h3>
+      <ul>
+        <li>Declarative — JSON in, video out</li>
+        <li>Zero per-video code changes</li>
+        <li>Faster iteration cycle</li>
+        <li>Web-native tooling (React DevTools)</li>
+        <li>Spring physics feel natural</li>
+        <li>Component reuse across all videos</li>
+      </ul>
+    </div>
+    <div class="col current">
+      <h3>Current State</h3>
+      <ul>
+        <li>{{ remotion_count }} manifests built</li>
+        <li>Migration from {{ video_count }}+ Manim videos</li>
+        <li>Component library growing</li>
+        <li>QA integration in progress</li>
+        <li>Not yet in production pipeline</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

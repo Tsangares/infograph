@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% set active_page = 'about' %}
+
+{% block title %}clips — Roadmap{% endblock %}
+
+{% block head %}
+<style>
+  .about-nav {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .about-nav::-webkit-scrollbar { display: none; }
+  .about-nav-item {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 100px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .about-nav-item:hover { border-color: var(--border-hover); color: var(--text); }
+  .about-nav-item.active { background: var(--accent-subtle); border-color: var(--accent); color: var(--accent); }
+
+  .about-section {
+    margin-bottom: 32px;
+  }
+  .about-section h2 {
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+  .about-section p, .about-section li {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .about-section p + p {
+    margin-top: 10px;
+  }
+
+  .roadmap-phase {
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+  .roadmap-phase h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .roadmap-phase .phase-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  .phase-now .phase-tag { background: rgba(108, 192, 112, 0.14); color: var(--success); }
+  .phase-now h3 { color: var(--success); }
+  .phase-next .phase-tag { background: rgba(232, 196, 74, 0.14); color: var(--warn); }
+  .phase-next h3 { color: var(--warn); }
+  .phase-later .phase-tag { background: rgba(232, 131, 74, 0.14); color: var(--accent); }
+  .phase-later h3 { color: var(--accent); }
+  .phase-vision .phase-tag { background: var(--accent-subtle); color: var(--accent); }
+  .phase-vision h3 { color: var(--accent); }
+
+  .roadmap-phase ul {
+    list-style: none;
+    margin-top: 8px;
+  }
+  .roadmap-phase ul li {
+    padding-left: 16px;
+    position: relative;
+    margin-bottom: 4px;
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .roadmap-phase ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  .phase-now ul li::before { background: var(--success); }
+  .phase-next ul li::before { background: var(--warn); }
+  .phase-later ul li::before { background: var(--accent); }
+  .phase-vision ul li::before { background: var(--accent); }
+
+  .stat-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 14px;
+    margin-bottom: 24px;
+  }
+  .stat-box {
+    padding: 14px 18px;
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+  }
+  .stat-box .stat-val {
+    font-family: var(--font-heading);
+    font-size: 28px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-box .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Roadmap</h1>
+</div>
+
+<div class="about-nav">
+  <a href="/about" class="about-nav-item">Overview</a>
+  <a href="/about/engines" class="about-nav-item">Engines</a>
+  <a href="/about/pipeline" class="about-nav-item">Pipeline</a>
+  <a href="/about/values" class="about-nav-item">Values</a>
+  <a href="/about/roadmap" class="about-nav-item active">Roadmap</a>
+</div>
+
+<div class="stat-row">
+  <div class="card stat-box">
+    <div class="stat-val">{{ video_count }}</div>
+    <div class="stat-label">Manim Videos</div>
+  </div>
+  <div class="card stat-box">
+    <div class="stat-val">{{ remotion_count }}</div>
+    <div class="stat-label">Remotion Manifests</div>
+  </div>
+  <div class="card stat-box">
+    <div class="stat-val">{{ screenplay_count }}</div>
+    <div class="stat-label">Screenplays</div>
+  </div>
+</div>
+
+<div class="card roadmap-phase phase-now">
+  <div class="phase-tag">Now</div>
+  <h3>Current Focus</h3>
+  <ul>
+    <li><strong>Remotion migration</strong> — porting Manim screenplays to Remotion manifests ({{ remotion_count }}/60)</li>
+    <li><strong>Timing polish</strong> — refining enter/hold/exit timing in Remotion components</li>
+    <li><strong>Component library</strong> — building and testing new Remotion scene types</li>
+    <li><strong>QA integration</strong> — extending layout and sync checks to Remotion renders</li>
+  </ul>
+</div>
+
+<div class="card roadmap-phase phase-next">
+  <div class="phase-tag">Next</div>
+  <h3>Up Next</h3>
+  <ul>
+    <li><strong>Word-level captions</strong> — Whisper integration for precise subtitle timing, CaptionOverlay component ready</li>
+    <li><strong>More scene types</strong> — expanding the Remotion component library beyond the initial 10</li>
+    <li><strong>Manifest validation</strong> — schema-level checks before render to catch errors early</li>
+    <li><strong>A/B testing</strong> — generating multiple versions of the same video with different hooks</li>
+  </ul>
+</div>
+
+<div class="card roadmap-phase phase-later">
+  <div class="phase-tag">Later</div>
+  <h3>On the Horizon</h3>
+  <ul>
+    <li><strong>Batch rendering</strong> — queue multiple videos and render them in parallel</li>
+    <li><strong>Auto-publish pipeline</strong> — render, review, and publish to TikTok in one flow</li>
+    <li><strong>Analytics integration</strong> — pull view/engagement data back into the dashboard</li>
+    <li><strong>Template marketplace</strong> — shareable video templates other creators can use</li>
+  </ul>
+</div>
+
+<div class="card roadmap-phase phase-vision">
+  <div class="phase-tag">Vision</div>
+  <h3>Where This is Going</h3>
+  <p style="color: var(--text-dim); font-size: 14px; line-height: 1.7;">Go from essay or article to polished infographic video in under 5 minutes. Paste a URL, pick a style, and get a production-ready TikTok — narration, animations, captions, and all. The pipeline handles everything; the human just picks the topic.</p>
+</div>
+
+{% endblock %}

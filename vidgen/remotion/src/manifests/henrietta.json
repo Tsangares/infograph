@@ -1,0 +1,331 @@
+{
+  "topic": "henrietta",
+  "ttsScript": "Henrietta Lacks's cells saved millions of lives. She never knew. In 1951, doctors at Johns Hopkins took cells from her tumor. Without her knowledge. Without her consent. Her cells never stopped dividing. Scientists called them HeLa. They became the most important cells in medical history. HeLa cells helped develop the polio vaccine. Gene mapping. Cancer treatments. COVID vaccines. They have been to space. Companies made billions from her cells. Her family could not afford health insurance. They did not even know the cells existed until 1975. Her body is in every lab on Earth. Her name was almost erased from all of them.",
+  "colors": {
+    "bg": "#080A10",
+    "accent": "#E879F9",
+    "secondary": "#F59E0B"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "label": "THE HOOK",
+      "type": "illustration",
+      "scene_anchor": "And",
+      "scene_end_anchor": "knew.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "STOLEN CELLS",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#E879F9",
+          "anchor": "And",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "figureStanding",
+          "zone": "MID",
+          "anchor": "Lax's",
+          "attack": 0.1,
+          "enter": "fadeIn",
+          "hold": "until_scene_end",
+          "size": 80,
+          "position": {"x": 0, "y": 80},
+          "holdMotion": "none"
+        },
+        {
+          "type": "svg",
+          "svg": "brain",
+          "zone": "MID",
+          "anchor": "cells",
+          "attack": 0.0,
+          "enter": "pop",
+          "hold": "until_scene_end",
+          "size": 60,
+          "position": {"x": 0, "y": -250},
+          "holdMotion": "pulse"
+        },
+        {
+          "type": "text",
+          "content": "She never knew",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#F59E0B",
+          "anchor": "never",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "wrong_answer",
+      "label": "THE THEFT",
+      "type": "illustration",
+      "scene_anchor": "1951,",
+      "scene_end_anchor": "consent.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Johns Hopkins, 1951",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "1951,",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "factory",
+          "zone": "MID",
+          "anchor": "Hopkins",
+          "attack": 0.0,
+          "enter": "slideUp",
+          "hold": "until_scene_end",
+          "size": 80,
+          "position": {"x": 0, "y": -200},
+          "holdMotion": "none"
+        },
+        {
+          "type": "svg",
+          "svg": "warning",
+          "zone": "MID",
+          "anchor": "knowledge.",
+          "attack": 0.0,
+          "enter": "pop",
+          "hold": "until_scene_end",
+          "size": 60,
+          "position": {"x": 0, "y": 100},
+          "holdMotion": "none"
+        },
+        {
+          "type": "text",
+          "content": "Without consent",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#EF4444",
+          "anchor": "consent.",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "contradiction",
+      "label": "THE DISCOVERY",
+      "type": "progressRing",
+      "scene_anchor": "Her",
+      "scene_end_anchor": "history.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "HeLa cells",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#E879F9",
+          "anchor": "hella.",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "progress_ring",
+          "zone": "MID",
+          "anchor": "dividing.",
+          "attack": 0.3,
+          "hold": "until_scene_end",
+          "rings": [
+            {"value": 75000, "maxValue": 75000, "label": "Tons of cells", "color": "#E879F9"}
+          ],
+          "unit": "tons"
+        },
+        {
+          "type": "text",
+          "content": "Never stopped dividing",
+          "zone": "LOWER",
+          "style": "caption",
+          "color": "#94A3B8",
+          "anchor": "stopped",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "proof",
+      "label": "THE IMPACT",
+      "type": "barChart",
+      "scene_anchor": "Hella",
+      "scene_end_anchor": "billions",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Built on her body",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "Hella",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_replaced"
+        },
+        {
+          "type": "bar",
+          "label": "Polio vaccine",
+          "value": 1955,
+          "color": "#4ADE80",
+          "anchor": "polio",
+          "attack": 0.0
+        },
+        {
+          "type": "bar",
+          "label": "Gene mapping",
+          "value": 1990,
+          "color": "#60A5FA",
+          "anchor": "Gene",
+          "attack": 0.0
+        },
+        {
+          "type": "bar",
+          "label": "Cancer treatments",
+          "value": 2010,
+          "color": "#FBBF24",
+          "anchor": "Cancer",
+          "attack": 0.0
+        },
+        {
+          "type": "bar",
+          "label": "COVID vaccines",
+          "value": 2021,
+          "color": "#F87171",
+          "anchor": "COVID",
+          "attack": 0.0
+        },
+        {
+          "type": "text",
+          "content": "Companies made billions",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#F59E0B",
+          "anchor": "billions",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end",
+          "replaces_zone": true
+        },
+        {
+          "type": "text",
+          "content": "Sent to space",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#94A3B8",
+          "anchor": "space.",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "betrayal",
+      "label": "THE BETRAYAL",
+      "type": "scaleComparison",
+      "scene_anchor": "family",
+      "scene_end_anchor": "1975.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "The Lacks Family",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#F59E0B",
+          "anchor": "family",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "scale_comparison",
+          "zone": "MID",
+          "anchor": "afford",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "left": {
+            "label": "Companies",
+            "icon": "factory",
+            "value": 1000000000,
+            "color": "#E879F9"
+          },
+          "right": {
+            "label": "Lacks family",
+            "icon": "person",
+            "value": 0,
+            "color": "#F59E0B"
+          },
+          "unit": "$"
+        },
+        {
+          "type": "text",
+          "content": "Didn't know until 1975",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#EF4444",
+          "anchor": "1975.",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "punch",
+      "label": "THE PUNCH",
+      "type": "textEffect",
+      "scene_anchor": "body",
+      "scene_end_anchor": "them.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "IN EVERY LAB ON EARTH",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#E879F9",
+          "anchor": "every",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text_effect",
+          "text": "HENRIETTA LACKS",
+          "effect": "redacted",
+          "color": "#F59E0B",
+          "zone": "MID",
+          "anchor": "erased",
+          "attack": 0.0,
+          "hold": "until_scene_end",
+          "effectDuration": 0.4
+        },
+        {
+          "type": "text",
+          "content": "From all of them",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "all",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    }
+  ]
+}

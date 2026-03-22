@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+{% set active_page = 'about' %}
+
+{% block title %}clips — Engines{% endblock %}
+
+{% block head %}
+<style>
+  .about-nav {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .about-nav::-webkit-scrollbar { display: none; }
+  .about-nav-item {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 100px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .about-nav-item:hover { border-color: var(--border-hover); color: var(--text); }
+  .about-nav-item.active { background: var(--accent-subtle); border-color: var(--accent); color: var(--accent); }
+
+  .about-section {
+    margin-bottom: 32px;
+  }
+  .about-section h2 {
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+  .about-section p {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .about-section p + p {
+    margin-top: 10px;
+  }
+
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    font-size: 13px;
+  }
+  .compare-table th {
+    text-align: left;
+    padding: 10px 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  .compare-table td {
+    padding: 10px 14px;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table td:first-child {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .engine-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  @media (min-width: 520px) {
+    .engine-cards { grid-template-columns: 1fr 1fr; }
+  }
+  .engine-card {
+    display: block;
+    padding: 20px;
+    text-decoration: none;
+    transition: border-color 0.2s, transform 0.12s;
+  }
+  .engine-card:hover { border-color: var(--accent); }
+  .engine-card:active { transform: scale(0.98); }
+  .engine-card h3 {
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .engine-card .engine-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .engine-card p {
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .progress-bar {
+    margin-top: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+  }
+  .progress-bar .progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .progress-bar .progress-label span:first-child { color: var(--text); font-weight: 600; }
+  .progress-bar .progress-label span:last-child { font-family: var(--font-mono); color: var(--accent); }
+  .progress-track {
+    height: 8px;
+    background: var(--bg);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: width 0.3s;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Engines</h1>
+</div>
+
+<div class="about-nav">
+  <a href="/about" class="about-nav-item">Overview</a>
+  <a href="/about/engines" class="about-nav-item active">Engines</a>
+  <a href="/about/pipeline" class="about-nav-item">Pipeline</a>
+  <a href="/about/values" class="about-nav-item">Values</a>
+  <a href="/about/roadmap" class="about-nav-item">Roadmap</a>
+</div>
+
+<div class="about-section">
+  <p>TKK uses two rendering engines. <strong>Manim</strong> is the original engine that powers all {{ video_count }} published videos. <strong>Remotion</strong> is a newer React-based engine currently in migration — {{ remotion_count }} manifests built so far.</p>
+</div>
+
+<div class="about-section">
+  <h2>Comparison</h2>
+  <div class="card" style="overflow-x: auto;">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Manim</th>
+          <th>Remotion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Language</td>
+          <td>Python</td>
+          <td>React / TypeScript</td>
+        </tr>
+        <tr>
+          <td>Video Model</td>
+          <td>Scene classes with construct()</td>
+          <td>JSON manifest &rarr; components</td>
+        </tr>
+        <tr>
+          <td>Animation</td>
+          <td>Imperative (play, wait, FadeIn)</td>
+          <td>Declarative (spring, interpolate)</td>
+        </tr>
+        <tr>
+          <td>Per-Video Code</td>
+          <td>~600 lines Python per video</td>
+          <td>Zero — JSON manifest only</td>
+        </tr>
+        <tr>
+          <td>Render Speed</td>
+          <td>1-2 min</td>
+          <td>~30s (target)</td>
+        </tr>
+        <tr>
+          <td>Videos</td>
+          <td>{{ video_count }}+ published</td>
+          <td>{{ remotion_count }} manifests</td>
+        </tr>
+        <tr>
+          <td>QA</td>
+          <td>Layout + readability + sync</td>
+          <td>In progress</td>
+        </tr>
+        <tr>
+          <td>Status</td>
+          <td>Production</td>
+          <td>Migration in progress</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="about-section">
+  <h2>Migration Progress</h2>
+  {% set total = 60 %}
+  {% set pct = (remotion_count / total * 100) | int %}
+  <div class="progress-bar">
+    <div class="progress-label">
+      <span>Remotion migration</span>
+      <span>{{ remotion_count }}/{{ total }}</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" style="width: {{ pct }}%"></div>
+    </div>
+  </div>
+</div>
+
+<div class="about-section">
+  <h2>Deep Dives</h2>
+  <div class="engine-cards">
+    <a href="/about/engines/manim" class="card engine-card">
+      <h3>Manim</h3>
+      <div class="engine-tag">Python / Community Edition</div>
+      <p>The original engine. Scene classes, zone layout, imperative animations, full QA pipeline. Powers every published video.</p>
+    </a>
+    <a href="/about/engines/remotion" class="card engine-card">
+      <h3>Remotion</h3>
+      <div class="engine-tag">React / TypeScript</div>
+      <p>The new engine. Manifest-driven, component library, spring animations, declarative video composition. Migration in progress.</p>
+    </a>
+  </div>
+</div>
+
+{% endblock %}

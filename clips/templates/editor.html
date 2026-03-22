@@ -1,0 +1,901 @@
+{% extends "base.html" %}
+{% set active_page = 'editor' %}
+
+{% block title %}clips — Editor{% endblock %}
+
+{% block head %}
+<style>
+  /* --- FILE SELECTOR (mobile: vertical list) --- */
+  .file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 20px;
+  }
+
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: none;
+    color: var(--text-dim);
+    text-align: left;
+    width: 100%;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .file-item:active { transform: scale(0.98); }
+  .file-item:hover { background: var(--surface); }
+  .file-item.active {
+    color: var(--accent);
+    background: var(--accent-glow);
+    border-color: rgba(232, 131, 74, 0.2);
+  }
+  .file-item .file-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  .file-item.active .file-dot {
+    background: var(--accent);
+  }
+  .file-item .pipeline-dots {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .file-item .pipeline-dots .pdot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .file-item .pipeline-dots .pdot.on {
+    background: var(--accent);
+  }
+
+  /* --- SCREENPLAY HEADER --- */
+  .sp-header {
+    margin-bottom: 16px;
+  }
+
+  .sp-header-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+
+  .sp-type-badge {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+  .sp-type-badge.manim {
+    background: rgba(167, 139, 250, 0.14);
+    color: #a78bfa;
+  }
+  .sp-type-badge.vidgen {
+    background: rgba(108, 192, 112, 0.14);
+    color: var(--success);
+  }
+
+  .sp-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+
+  .sp-meta-item {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+
+  .sp-docstring {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-dim);
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    white-space: pre-wrap;
+  }
+
+  /* --- ACTION BUTTONS --- */
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .action-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    background: var(--bg-raised);
+    color: var(--text);
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+  }
+  .action-btn:active { transform: scale(0.98); }
+  .action-btn:hover { border-color: var(--border-hover); background: var(--surface-hover); }
+  .action-btn:disabled { opacity: 0.5; pointer-events: none; }
+
+  .action-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .action-btn.primary:hover { background: var(--accent-hover); }
+
+  .action-btn .action-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  .action-btn .action-result {
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+    margin-left: auto;
+  }
+  .action-btn.primary .action-result { color: rgba(255,255,255,0.7); }
+
+  /* --- RENDER PROGRESS --- */
+  .render-bar {
+    margin-bottom: 20px;
+    padding: 14px;
+    display: none;
+  }
+  .render-bar.active { display: block; }
+
+  .render-status-text {
+    font-size: 13px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.3s;
+    width: 0%;
+  }
+
+  /* --- SCENE CARDS --- */
+  .scenes-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .scene-card {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .scene-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .scene-label {
+    font-family: var(--font-heading);
+    font-size: 16px;
+    color: var(--text);
+  }
+
+  .scene-duration {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 100px;
+    background: var(--accent-glow);
+    color: var(--accent);
+  }
+
+  .scene-card-body {
+    padding: 14px;
+  }
+
+  .scene-thumb {
+    width: 100%;
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+    display: block;
+    background: var(--surface);
+    aspect-ratio: 16/9;
+    object-fit: cover;
+  }
+
+  .scene-thumb-placeholder {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-family: var(--font-mono);
+  }
+
+  /* --- ZONE INDICATOR --- */
+  .zone-indicator {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 40px;
+    margin-bottom: 12px;
+  }
+
+  .zone-bar {
+    height: 3px;
+    border-radius: 1.5px;
+    background: var(--border);
+    transition: background 0.2s;
+  }
+  .zone-bar.lit { background: var(--accent); }
+
+  .zone-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 2px;
+  }
+
+  /* --- NARRATION LINES --- */
+  .scene-narration {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .narration-line {
+    font-size: 14px;
+    line-height: 1.55;
+    padding: 8px 12px;
+    background: var(--surface);
+    border-radius: var(--radius-xs);
+    border-left: 3px solid var(--accent);
+    color: var(--text);
+  }
+
+  /* --- SCREEN TEXT --- */
+  .scene-screen-texts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .screen-text-tag {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: var(--radius-xs);
+    background: rgba(232, 196, 74, 0.1);
+    color: var(--warn);
+    border: 1px solid rgba(232, 196, 74, 0.15);
+  }
+
+  /* --- QA RESULTS PANEL --- */
+  .qa-panel {
+    margin-bottom: 20px;
+    padding: 14px;
+  }
+  .qa-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+  .qa-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .qa-badge.pass { background: rgba(232, 131, 74, 0.14); color: var(--accent); }
+  .qa-badge.warn { background: rgba(232, 196, 74, 0.14); color: var(--warn); }
+  .qa-badge.fail { background: rgba(239, 68, 68, 0.14); color: var(--fail); }
+  .qa-scene-row {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .qa-scene-row:last-child { border-bottom: none; }
+  .qa-scene-title {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .qa-checks {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .qa-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+  }
+  .qa-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .qa-dot.pass { background: var(--accent); }
+  .qa-dot.warn { background: var(--warn); }
+  .qa-dot.fail { background: var(--fail); }
+  .qa-dot.skip { background: var(--border); }
+  .qa-status-label {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    min-width: 32px;
+  }
+  .qa-status-label.pass { color: var(--accent); }
+  .qa-status-label.warn { color: var(--warn); }
+  .qa-status-label.fail { color: var(--fail); }
+  .qa-status-label.skip { color: var(--text-muted); }
+
+  /* --- EMPTY / LOADING --- */
+  .editor-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .loading-card {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-dim);
+  }
+
+  /* --- DESKTOP LAYOUT --- */
+  @media (min-width: 768px) {
+    .editor-wrap {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 24px;
+    }
+
+    .file-sidebar {
+      position: sticky;
+      top: 80px;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      padding-right: 8px;
+    }
+
+    .file-list {
+      margin-bottom: 0;
+    }
+
+    .action-buttons {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    .action-btn {
+      width: auto;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .scenes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="editor-wrap">
+  <!-- File Sidebar / List -->
+  <div class="file-sidebar">
+    <div class="page-head" style="margin-bottom: 12px">
+      <h1>Editor</h1>
+      <span class="count">{{ screenplays | length }}</span>
+    </div>
+    <div class="file-list" id="file-list">
+      {% for s in screenplays %}
+      <button class="file-item" data-file="{{ s.filename }}" onclick="loadScreenplay('{{ s.filename }}')">
+        <span class="file-dot"></span>
+        {{ s.name }}
+        <span class="pipeline-dots" title="TTS / Preview / Final">
+          <span class="pdot{{ ' on' if s.has_tts else '' }}" title="TTS"></span>
+          <span class="pdot{{ ' on' if s.has_preview else '' }}" title="Preview"></span>
+          <span class="pdot{{ ' on' if s.has_final else '' }}" title="Final"></span>
+        </span>
+      </button>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div id="editor-content">
+    <div class="editor-empty card">Select a screenplay to view its scenes.</div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let currentFile = null;
+  let currentData = null;
+  let renderPollTimer = null;
+
+  function esc(t) {
+    const d = document.createElement('div');
+    d.textContent = t;
+    return d.innerHTML;
+  }
+
+  async function loadScreenplay(filename) {
+    // Update file list selection
+    document.querySelectorAll('.file-item').forEach(el => el.classList.remove('active'));
+    const el = document.querySelector(`[data-file="${filename}"]`);
+    if (el) {
+      el.classList.add('active');
+      el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+
+    currentFile = filename;
+    const content = document.getElementById('editor-content');
+    content.innerHTML = '<div class="loading-card card"><span class="spinner"></span> Parsing screenplay...</div>';
+
+    try {
+      const res = await fetch(`/api/screenplay/${encodeURIComponent(filename)}/parsed`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      currentData = data;
+      renderScreenplayView(data);
+    } catch (err) {
+      content.innerHTML = `<div class="editor-empty card" style="color:var(--fail)">Failed to load: ${esc(err.message)}</div>`;
+    }
+  }
+
+  function renderScreenplayView(data) {
+    const el = document.getElementById('editor-content');
+    let html = '';
+
+    // --- Header ---
+    html += '<div class="sp-header">';
+    html += '<div class="sp-header-row">';
+    const typeClass = data.type === 'manim' ? 'manim' : data.type === 'vidgen' ? 'vidgen' : '';
+    html += `<span class="sp-type-badge ${typeClass}">${esc(data.type || 'unknown')}</span>`;
+    html += '</div>';
+
+    html += '<div class="sp-meta">';
+    if (data.scene_count) html += `<span class="sp-meta-item">${data.scene_count} scenes</span>`;
+    if (data.total_duration) html += `<span class="sp-meta-item">${data.total_duration.toFixed(1)}s total</span>`;
+    html += '</div>';
+
+    if (data.docstring) {
+      html += `<div class="sp-docstring">${esc(data.docstring)}</div>`;
+    }
+    html += '</div>';
+
+    // --- Audio Player (if TTS exists) ---
+    const stem = data.filename.replace('_manim.py', '').replace('.py', '');
+    html += `<audio controls preload="none" style="width:100%;margin:12px 0;border-radius:8px"
+              src="/videos/tts_${encodeURIComponent(stem)}.mp3"
+              onerror="this.style.display='none'">
+             </audio>`;
+
+    // --- Action Buttons ---
+    html += '<div class="action-buttons">';
+    html += `<button class="action-btn" id="btn-tts" onclick="generateVoice()">
+      <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+      Generate Voice
+      <span class="action-result" id="tts-result"></span>
+    </button>`;
+    html += `<button class="action-btn" id="btn-preview" onclick="renderPreviews()">
+      <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      Render Previews
+      <span class="action-result" id="preview-result"></span>
+    </button>`;
+    html += `<button class="action-btn" id="btn-qa" onclick="runQA()">
+      <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      Run QA
+      <span class="action-result" id="qa-result"></span>
+    </button>`;
+    html += `<button class="action-btn primary" id="btn-render" onclick="startRender()">
+      <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Full Render
+      <span class="action-result" id="render-result"></span>
+    </button>`;
+    html += '</div>';
+
+    // --- Render Progress Bar ---
+    html += `<div class="render-bar card" id="render-bar">
+      <div class="render-status-text" id="render-status-text"></div>
+      <div class="progress-track"><div class="progress-fill" id="render-progress"></div></div>
+    </div>`;
+
+    // --- QA Results Panel (populated by runQA) ---
+    html += '<div id="qa-panel-container"></div>';
+
+    // --- Scene Cards ---
+    if (data.scenes && data.scenes.length) {
+      html += '<div class="scenes-grid">';
+      for (const scene of data.scenes) {
+        html += `<div class="scene-card card">`;
+
+        // Header
+        html += '<div class="scene-card-header">';
+        html += `<span class="scene-label">${scene.index}. ${esc(scene.label || 'Scene ' + scene.index)}</span>`;
+        if (scene.duration != null) {
+          html += `<span class="scene-duration">${scene.duration.toFixed(1)}s</span>`;
+        }
+        html += '</div>';
+
+        // Body
+        html += '<div class="scene-card-body">';
+
+        // Thumbnail
+        if (scene.preview) {
+          html += `<img class="scene-thumb" src="/previews/${encodeURIComponent(scene.preview)}" alt="Scene ${scene.index} preview" loading="lazy" onerror="this.style.display='none'">`;
+        } else {
+          html += `<div class="scene-thumb-placeholder">No preview</div>`;
+        }
+
+        // Zone indicator
+        const allZones = ['TITLE', 'UPPER', 'MID', 'LOWER', 'FOOTER'];
+        const activeZones = scene.zones || [];
+        html += '<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px">';
+        html += '<div class="zone-indicator">';
+        for (const z of allZones) {
+          const lit = activeZones.includes(z) ? ' lit' : '';
+          html += `<div class="zone-bar${lit}" title="${z}"></div>`;
+        }
+        html += '</div>';
+        html += `<span class="zone-label" style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono)">${activeZones.join(' / ') || 'none'}</span>`;
+        html += '</div>';
+
+        // Narration
+        if (scene.narration && scene.narration.length) {
+          html += '<div class="scene-narration">';
+          for (const line of scene.narration) {
+            html += `<div class="narration-line">${esc(line)}</div>`;
+          }
+          html += '</div>';
+        }
+
+        // Screen text
+        if (scene.screen_text && scene.screen_text.length) {
+          html += '<div class="scene-screen-texts">';
+          for (const t of scene.screen_text) {
+            html += `<span class="screen-text-tag">${esc(t)}</span>`;
+          }
+          html += '</div>';
+        }
+
+        html += '</div>'; // .scene-card-body
+        html += '</div>'; // .scene-card
+      }
+      html += '</div>'; // .scenes-grid
+    }
+
+    el.innerHTML = html;
+
+    // Auto-trigger preview render if any scenes are missing previews
+    if (data.scenes && data.scenes.some(s => !s.preview)) {
+      autoRenderPreviews(data.filename);
+    }
+  }
+
+  async function autoRenderPreviews(filename) {
+    const result = document.getElementById('preview-result');
+    if (result) result.innerHTML = '<span class="spinner"></span> auto';
+
+    try {
+      const res = await fetch(`/api/screenplay/${encodeURIComponent(filename)}/preview-render`, { method: 'POST' });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.success && currentFile === filename) {
+        // Reload to pick up new preview images
+        loadScreenplay(filename);
+      }
+    } catch {}
+    if (result) result.textContent = '';
+  }
+
+  // --- Generate Voice ---
+  async function generateVoice() {
+    if (!currentFile) return;
+    const btn = document.getElementById('btn-tts');
+    const result = document.getElementById('tts-result');
+    btn.disabled = true;
+    result.innerHTML = '<span class="spinner"></span>';
+
+    try {
+      const res = await fetch(`/api/screenplay/${encodeURIComponent(currentFile)}/tts`, { method: 'POST' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!data.success) throw new Error(data.stderr || data.error || 'TTS generation failed');
+      result.textContent = data.duration ? `${data.duration.toFixed(1)}s` : 'Done';
+      result.style.color = 'var(--success)';
+    } catch (err) {
+      result.textContent = err.message.length > 40 ? 'Failed' : err.message;
+      result.title = err.message;
+      result.style.color = 'var(--fail)';
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // --- Render Previews ---
+  async function renderPreviews() {
+    if (!currentFile) return;
+    const btn = document.getElementById('btn-preview');
+    const result = document.getElementById('preview-result');
+    btn.disabled = true;
+    result.innerHTML = '<span class="spinner"></span>';
+
+    try {
+      const res = await fetch(`/api/screenplay/${encodeURIComponent(currentFile)}/preview-render`, { method: 'POST' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!data.success) throw new Error(data.stderr || data.error || 'Render failed');
+      result.textContent = `Done (${data.previews.length} scenes)`;
+      result.style.color = 'var(--success)';
+      // Refresh the screenplay to pick up new thumbnails
+      setTimeout(() => loadScreenplay(currentFile), 500);
+    } catch (err) {
+      result.textContent = err.message.length > 40 ? 'Failed' : err.message;
+      result.title = err.message;
+      result.style.color = 'var(--fail)';
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // --- Run QA ---
+  async function runQA() {
+    if (!currentFile) return;
+    const btn = document.getElementById('btn-qa');
+    const result = document.getElementById('qa-result');
+    const panel = document.getElementById('qa-panel-container');
+    btn.disabled = true;
+    result.innerHTML = '<span class="spinner"></span>';
+    if (panel) panel.innerHTML = '';
+
+    try {
+      const res = await fetch(`/api/screenplay/${encodeURIComponent(currentFile)}/qa`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      if (data.error) {
+        result.innerHTML = `<span style="color:var(--warn)">${esc(data.error)}</span>`;
+        return;
+      }
+
+      const overall = data.passed ? 'pass' : 'fail';
+      result.innerHTML = `<span class="qa-badge ${overall}">${overall.toUpperCase()}</span>`;
+
+      // Build detailed panel
+      if (panel && data.scenes) {
+        let ph = '<div class="qa-panel card">';
+        // Summary
+        const totalChecks = data.scenes.reduce((n, s) => n + s.checks.length, 0);
+        const failCount = data.scenes.reduce((n, s) => n + s.checks.filter(c => c.status === 'FAIL').length, 0);
+        const warnCount = data.scenes.reduce((n, s) => n + s.checks.filter(c => c.status === 'WARN').length, 0);
+        ph += `<div class="qa-summary"><span class="qa-badge ${overall}">${overall.toUpperCase()}</span> `;
+        ph += `${data.scenes.length} scenes, ${totalChecks} checks`;
+        if (failCount) ph += ` — ${failCount} failed`;
+        if (warnCount) ph += `, ${warnCount} warnings`;
+        ph += '</div>';
+
+        for (const scene of data.scenes) {
+          ph += '<div class="qa-scene-row">';
+          // Scene title with summary dots
+          ph += '<div class="qa-scene-title">';
+          ph += `Scene ${scene.scene}`;
+          for (const c of scene.checks) {
+            const s = c.status.toLowerCase();
+            ph += ` <span class="qa-dot ${s}" title="${esc(c.name)}: ${s.toUpperCase()}"></span>`;
+          }
+          ph += '</div>';
+          // Individual checks
+          ph += '<div class="qa-checks">';
+          for (const c of scene.checks) {
+            const s = c.status.toLowerCase();
+            ph += `<div class="qa-check">`;
+            ph += `<span class="qa-dot ${s}"></span>`;
+            ph += `<span class="qa-status-label ${s}">${c.status}</span>`;
+            ph += `<span>${esc(c.name)}</span>`;
+            ph += `<span style="color:var(--text-muted);margin-left:auto">${esc(c.detail)}</span>`;
+            ph += '</div>';
+          }
+          ph += '</div></div>';
+        }
+        ph += '</div>';
+        panel.innerHTML = ph;
+      }
+    } catch (err) {
+      result.innerHTML = '<span class="qa-badge fail">ERROR</span>';
+      result.title = err.message;
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // --- Full Render ---
+  async function startRender() {
+    if (!currentFile) return;
+    const btn = document.getElementById('btn-render');
+    const bar = document.getElementById('render-bar');
+    const text = document.getElementById('render-status-text');
+    const fill = document.getElementById('render-progress');
+
+    btn.disabled = true;
+    bar.classList.add('active');
+    text.innerHTML = '<span class="spinner"></span> Starting render...';
+    fill.style.width = '0%';
+
+    try {
+      const res = await fetch('/api/render', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ screenplay: currentFile })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!data.job_id) throw new Error(data.error || 'No job ID returned');
+      pollRender(data.job_id);
+    } catch (err) {
+      text.textContent = 'Failed: ' + err.message;
+      text.style.color = 'var(--fail)';
+      btn.disabled = false;
+    }
+  }
+
+  // Sidebar fallback: if server-side rendering produced an empty list, fetch client-side
+  async function ensureSidebar() {
+    const list = document.getElementById('file-list');
+    if (list && list.children.length === 0) {
+      try {
+        const res = await fetch('/api/screenplays');
+        if (!res.ok) return;
+        const screenplays = await res.json();
+        const count = document.querySelector('.file-sidebar .count');
+        if (count) count.textContent = screenplays.length;
+        for (const s of screenplays) {
+          const btn = document.createElement('button');
+          btn.className = 'file-item';
+          btn.dataset.file = s.filename;
+          btn.onclick = () => loadScreenplay(s.filename);
+          btn.innerHTML = `<span class="file-dot"></span> ${esc(s.name)}`
+            + `<span class="pipeline-dots" title="TTS / Preview / Final">`
+            + `<span class="pdot${s.has_tts ? ' on' : ''}" title="TTS"></span>`
+            + `<span class="pdot${s.has_preview ? ' on' : ''}" title="Preview"></span>`
+            + `<span class="pdot${s.has_final ? ' on' : ''}" title="Final"></span>`
+            + `</span>`;
+          list.appendChild(btn);
+        }
+      } catch {}
+    }
+  }
+
+  // Auto-load from URL ?file= parameter (used by Writer page links)
+  (function() {
+    ensureSidebar();
+    const params = new URLSearchParams(window.location.search);
+    const file = params.get('file');
+    if (file) {
+      setTimeout(() => loadScreenplay(file), 100);
+    }
+  })();
+
+  function pollRender(jobId) {
+    const text = document.getElementById('render-status-text');
+    const fill = document.getElementById('render-progress');
+    const btn = document.getElementById('btn-render');
+    const result = document.getElementById('render-result');
+
+    if (renderPollTimer) clearInterval(renderPollTimer);
+    renderPollTimer = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/render/${jobId}`);
+        const d = await res.json();
+        const pct = d.progress || 0;
+        fill.style.width = pct + '%';
+        text.innerHTML = `<span class="spinner"></span> ${esc(d.status || 'Rendering...')} (${pct}%)`;
+
+        if (d.state === 'complete') {
+          clearInterval(renderPollTimer);
+          fill.style.width = '100%';
+          text.style.color = 'var(--success)';
+          if (d.filename) {
+            text.innerHTML = `Done! <a href="/video/${encodeURIComponent(d.filename)}" style="color:var(--accent);font-weight:600">Watch video &rarr;</a>`;
+          } else {
+            text.textContent = 'Render complete!';
+          }
+          result.textContent = 'Done';
+          result.style.color = 'rgba(255,255,255,0.7)';
+          btn.disabled = false;
+        } else if (d.state === 'failed') {
+          clearInterval(renderPollTimer);
+          text.textContent = 'Failed: ' + (d.error || 'Unknown error');
+          text.style.color = 'var(--fail)';
+          btn.disabled = false;
+        }
+      } catch {
+        clearInterval(renderPollTimer);
+        text.textContent = 'Lost connection to server.';
+        text.style.color = 'var(--fail)';
+        btn.disabled = false;
+      }
+    }, 2000);
+  }
+</script>
+{% endblock %}

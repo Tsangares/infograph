@@ -1,0 +1,199 @@
+{
+  "topic": "test_cartoons",
+  "ttsScript": "A scientist discovers something strange. The scholar reads the evidence. The warrior prepares for battle. A crowd celebrates the victory. But the hero falls. The thinker wonders what went wrong.",
+  "colors": {
+    "bg": "#080A10",
+    "accent": "#FFD700",
+    "secondary": "#3B82F6"
+  },
+  "scenes": [
+    {
+      "type": "illustration",
+      "label": "DISCOVERY",
+      "props": {
+        "elements": [
+          {
+            "svg": "figureWithBeaker",
+            "position": { "x": -120, "y": -20 },
+            "size": 350,
+            "color": "#3B82F6",
+            "enter": "slideLeft",
+            "holdMotion": "float"
+          },
+          {
+            "svg": "atom",
+            "position": { "x": 140, "y": -40 },
+            "size": 120,
+            "color": "#FFD700",
+            "delay": 0.4,
+            "enter": "stamp",
+            "holdMotion": "glow"
+          }
+        ],
+        "zone": "MID"
+      },
+      "text": [
+        { "content": "THE DISCOVERY", "zone": "UPPER", "style": "headline", "entrance": "fade" }
+      ]
+    },
+    {
+      "type": "illustration",
+      "label": "EVIDENCE",
+      "props": {
+        "elements": [
+          {
+            "svg": "figureWithBook",
+            "position": { "x": 0, "y": -10 },
+            "size": 380,
+            "color": "#F0F0F0",
+            "enter": "grow",
+            "holdMotion": "breathe"
+          },
+          {
+            "svg": "scroll",
+            "position": { "x": -180, "y": 60 },
+            "size": 80,
+            "color": "#FFD700",
+            "delay": 0.3,
+            "enter": "pop",
+            "holdMotion": "drift"
+          },
+          {
+            "svg": "scroll",
+            "position": { "x": 180, "y": 40 },
+            "size": 80,
+            "color": "#FFD700",
+            "delay": 0.5,
+            "enter": "pop",
+            "holdMotion": "drift"
+          }
+        ],
+        "zone": "MID"
+      }
+    },
+    {
+      "type": "illustration",
+      "label": "BATTLE",
+      "props": {
+        "elements": [
+          {
+            "svg": "figureWithShield",
+            "position": { "x": -100, "y": 0 },
+            "size": 350,
+            "color": "#EF4444",
+            "enter": "stamp",
+            "holdMotion": "tremble"
+          },
+          {
+            "svg": "sword",
+            "position": { "x": 120, "y": -30 },
+            "size": 120,
+            "color": "#F0F0F0",
+            "delay": 0.3,
+            "enter": "shatter",
+            "holdMotion": "swing"
+          }
+        ],
+        "zone": "MID"
+      }
+    },
+    {
+      "type": "illustration",
+      "label": "VICTORY",
+      "props": {
+        "elements": [
+          {
+            "svg": "figureCelebrate",
+            "position": { "x": -150, "y": 0 },
+            "size": 280,
+            "color": "#FFD700",
+            "enter": "pop",
+            "holdMotion": "float"
+          },
+          {
+            "svg": "figureCelebrate",
+            "position": { "x": 0, "y": -20 },
+            "size": 320,
+            "color": "#22C55E",
+            "delay": 0.2,
+            "enter": "pop",
+            "holdMotion": "float"
+          },
+          {
+            "svg": "figureCelebrate",
+            "position": { "x": 150, "y": 0 },
+            "size": 280,
+            "color": "#3B82F6",
+            "delay": 0.4,
+            "enter": "pop",
+            "holdMotion": "float"
+          },
+          {
+            "svg": "crown",
+            "position": { "x": 0, "y": -140 },
+            "size": 80,
+            "color": "#FFD700",
+            "delay": 0.6,
+            "enter": "drop",
+            "holdMotion": "glow"
+          }
+        ],
+        "zone": "MID"
+      }
+    },
+    {
+      "type": "transformReveal",
+      "label": "THE FALL",
+      "props": {
+        "from": {
+          "icon": "figureStanding",
+          "label": "THE HERO",
+          "color": "#FFD700"
+        },
+        "to": {
+          "icon": "figureFallen",
+          "label": "DEFEATED",
+          "color": "#EF4444"
+        },
+        "effect": "shatter",
+        "transformAt": 0.5,
+        "zone": "MID"
+      }
+    },
+    {
+      "type": "illustration",
+      "label": "AFTERMATH",
+      "props": {
+        "elements": [
+          {
+            "svg": "figureThinking",
+            "position": { "x": 0, "y": 0 },
+            "size": 380,
+            "color": "#F0F0F0",
+            "enter": "fadeIn",
+            "holdMotion": "breathe"
+          },
+          {
+            "svg": "warning",
+            "position": { "x": -160, "y": -80 },
+            "size": 60,
+            "color": "#EF4444",
+            "delay": 0.5,
+            "enter": "pop",
+            "holdMotion": "pulse"
+          },
+          {
+            "svg": "warning",
+            "position": { "x": 160, "y": -60 },
+            "size": 50,
+            "color": "#EF4444",
+            "delay": 0.7,
+            "enter": "pop",
+            "holdMotion": "pulse"
+          }
+        ],
+        "zone": "MID"
+      }
+    }
+  ]
+}

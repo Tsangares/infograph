@@ -1,0 +1,410 @@
+{% extends "base.html" %}
+{% set active_page = 'dashboard' %}
+
+{% block title %}clips — Library{% endblock %}
+
+{% block head %}
+<style>
+  /* --- SEARCH / FILTER --- */
+  .toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .search-box {
+    flex: 1;
+    position: relative;
+  }
+
+  .search-box input {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px 14px 10px 38px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+    font-family: var(--font-body);
+  }
+
+  .search-box input:focus {
+    border-color: var(--accent);
+  }
+
+  .search-box input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .search-box svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    stroke: var(--text-muted);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+
+  .sort-btn {
+    white-space: nowrap;
+  }
+
+  /* --- VIDEO GRID --- */
+  .video-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .video-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    overflow: hidden;
+  }
+
+  .video-card .thumb {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    background: var(--bg-raised);
+    overflow: hidden;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .video-card .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .video-card .thumb .duration {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  .video-card .thumb .short-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    background: var(--accent);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+  }
+
+  .video-card .thumb .remotion-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    background: rgba(56, 189, 248, 0.9);
+    color: #0c1222;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+  }
+
+  .fw-filters {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    font-family: var(--font-mono);
+  }
+  .fw-pill {
+    font-size: 12px; padding: 6px 14px;
+    border-radius: 100px; border: 1px solid var(--border); background: transparent;
+    color: var(--text-dim); cursor: pointer; transition: all 0.15s;
+  }
+  .fw-pill:hover { border-color: var(--text-muted); }
+  .fw-pill.active { color: var(--fg); border-color: var(--fg); background: var(--surface); }
+  .fw-pill.active[data-engine="remotion"] { color: #38bdf8; border-color: rgba(56,189,248,0.5); background: rgba(56,189,248,0.08); }
+  .fw-pill.active[data-engine="manim"] { color: #a78bfa; border-color: rgba(167,139,250,0.5); background: rgba(167,139,250,0.08); }
+  .engine-badge-m {
+    position: absolute; top: 6px; left: 6px; font-size: 9px; font-weight: 700;
+    font-family: var(--font-mono); padding: 2px 5px; border-radius: 4px;
+    letter-spacing: 0.3px; z-index: 2;
+  }
+  .engine-badge-m.remotion { background: rgba(56,189,248,0.85); color: #fff; }
+  .engine-badge-m.manim { background: rgba(167,139,250,0.85); color: #fff; }
+
+  .video-card .thumb .no-thumb {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 32px;
+  }
+
+  .video-card .info {
+    padding: 10px 12px 12px;
+  }
+
+  .video-card .info .filename {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.35;
+  }
+
+  .video-card .info .meta {
+    display: flex;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    flex-wrap: wrap;
+  }
+
+  .video-card .info .meta .posted-dot {
+    color: #4ade80;
+  }
+
+  .video-card .info .rendered-ago {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    margin-bottom: 2px;
+  }
+
+  .video-card .info .card-desc {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.3;
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .video-card .thumb .new-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    background: var(--accent);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+    z-index: 3;
+  }
+
+  .video-card[data-new="true"] {
+    border-color: rgba(232, 131, 74, 0.3);
+    box-shadow: 0 0 12px rgba(232, 131, 74, 0.08);
+  }
+
+  .video-card[data-new="true"] .short-badge {
+    top: 28px;
+  }
+
+  /* --- EMPTY STATE --- */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+  .empty-state .icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+    opacity: 0.25;
+  }
+
+  .empty-state h2 {
+    margin-bottom: 6px;
+    font-size: 18px;
+    color: var(--text-dim);
+  }
+
+  .empty-state p {
+    color: var(--text-muted);
+    font-size: 14px;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  /* No results for search */
+  .no-results {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: 14px;
+    display: none;
+  }
+
+  /* --- RESPONSIVE --- */
+  @media (min-width: 520px) {
+    .video-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .video-grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .video-card .info { padding: 12px 14px 14px; }
+    .video-card .info .filename { font-size: 13px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Library</h1>
+  <span class="count">{{ videos|length }}{% if not show_all %} / {{ total_count }}{% endif %}</span>
+</div>
+
+<div class="fw-filters">
+  <button class="fw-pill active" data-engine="remotion" onclick="toggleDashEngine('remotion')">Remotion</button>
+  <button class="fw-pill active" data-engine="manim" onclick="toggleDashEngine('manim')">Manim</button>
+</div>
+
+{% if videos %}
+<div class="toolbar">
+  <div class="search-box">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input type="text" id="search" placeholder="Search videos..." oninput="filterVideos()">
+  </div>
+  <button class="btn btn-ghost btn-sm sort-btn" onclick="toggleSort()" id="sort-btn">Newest</button>
+  {% if show_all %}
+  <a href="/" class="btn btn-primary btn-sm">Finals Only</a>
+  {% else %}
+  <a href="/?all=true" class="btn btn-ghost btn-sm">Show All ({{ total_count }})</a>
+  {% endif %}
+</div>
+
+<div class="video-grid" id="video-grid">
+  {% for v in videos %}
+  <a href="/video/{{ v.filename }}" class="card card-interactive video-card" data-name="{{ v.filename|lower }}" data-date="{{ v.sort_key or '' }}" data-engine="{{ v.engine or 'unknown' }}" data-new="{{ 'true' if v.is_new else 'false' }}">
+    <div class="thumb" style="position:relative">
+      {% if v.thumbnail %}
+      <img src="/thumbs/{{ v.thumbnail }}" alt="{{ v.filename }}" loading="lazy" decoding="async">
+      {% else %}
+      <img src="/api/video/{{ v.filename }}/thumbnail" alt="{{ v.filename }}" loading="lazy" decoding="async" onerror="this.parentElement.innerHTML='<div class=no-thumb>&#9654;</div>'">
+      {% endif %}
+      {% if v.duration %}
+      <span class="duration">{{ v.duration }}</span>
+      {% endif %}
+      {% if v.is_new %}
+      <span class="new-badge">NEW</span>
+      {% endif %}
+      {% if v.short_filename %}
+      <span class="short-badge">SHORT</span>
+      {% endif %}
+      {% if v.posted %}
+      <span class="short-badge" style="background:rgba(74,222,128,0.85);top:auto;bottom:8px;right:auto;left:8px">POSTED</span>
+      {% endif %}
+      {% if v.engine == 'remotion' %}
+      <span class="engine-badge-m remotion">R{% if v.format == 'word-triggered' %}w{% endif %}</span>
+      {% elif v.engine == 'manim' %}
+      <span class="engine-badge-m manim">M</span>
+      {% endif %}
+    </div>
+    <div class="info">
+      <div class="filename">{{ v.title or v.filename }}</div>
+      {% if v.description %}
+      <div class="card-desc">{{ v.description[:80] }}{% if v.description|length > 80 %}...{% endif %}</div>
+      {% endif %}
+      {% if v.rendered_ago %}
+      <div class="rendered-ago">{{ v.rendered_ago }}</div>
+      {% endif %}
+      <div class="meta">
+        {% if v.duration %}<span>{{ v.duration }}</span>{% endif %}
+        {% if v.size %}<span>{{ v.size }}</span>{% endif %}
+      </div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+<div class="no-results" id="no-results">No videos match your search.</div>
+
+{% else %}
+<div class="empty-state card">
+  <div class="icon">&#9654;</div>
+  <h2>No videos yet</h2>
+  <p>Rendered videos will appear here. Go to Editor to write and render your first clip.</p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let sortAsc = false;
+  const activeEngines = new Set(['remotion', 'manim']);
+
+  function filterVideos() {
+    const q = document.getElementById('search').value.toLowerCase();
+    const cards = document.querySelectorAll('.video-card');
+    let visible = 0;
+    cards.forEach(card => {
+      const nameMatch = card.dataset.name.includes(q);
+      const engineMatch = activeEngines.has(card.dataset.engine);
+      const show = nameMatch && engineMatch;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    document.getElementById('no-results').style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  function toggleDashEngine(engine) {
+    if (activeEngines.has(engine)) {
+      // Don't allow deselecting both
+      if (activeEngines.size > 1) activeEngines.delete(engine);
+    } else {
+      activeEngines.add(engine);
+    }
+    document.querySelectorAll('.fw-pill').forEach(p => p.classList.toggle('active', activeEngines.has(p.dataset.engine)));
+    filterVideos();
+  }
+
+  function toggleSort() {
+    sortAsc = !sortAsc;
+    document.getElementById('sort-btn').textContent = sortAsc ? 'Oldest' : 'Newest';
+    const grid = document.getElementById('video-grid');
+    const cards = [...grid.querySelectorAll('.video-card')];
+    cards.sort((a, b) => {
+      const da = a.dataset.date || '';
+      const db = b.dataset.date || '';
+      return sortAsc ? da.localeCompare(db) : db.localeCompare(da);
+    });
+    cards.forEach(c => grid.appendChild(c));
+  }
+</script>
+{% endblock %}

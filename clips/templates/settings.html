@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+{% set active_page = 'settings' %}
+
+{% block title %}clips — Settings{% endblock %}
+
+{% block head %}
+<style>
+  .settings-group {
+    margin-bottom: 28px;
+  }
+  .settings-group h2 {
+    font-size: 16px;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .setting-row:last-child {
+    border-bottom: none;
+  }
+  .setting-label {
+    flex: 1;
+  }
+  .setting-label .name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .setting-label .desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .setting-control select,
+  .setting-control input {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    padding: 6px 10px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    outline: none;
+  }
+  .setting-control select {
+    min-width: 120px;
+  }
+  .setting-control input {
+    width: 80px;
+    text-align: right;
+  }
+  .save-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Settings</h1>
+</div>
+
+<div class="card" style="padding:24px 28px;max-width:640px">
+  <div class="settings-group">
+    <h2>Studio Chat</h2>
+    <div class="setting-row">
+      <div class="setting-label">
+        <div class="name">Model</div>
+        <div class="desc">Claude model for the workbench chat assistant</div>
+      </div>
+      <div class="setting-control">
+        <select id="studio-model">
+          <option value="haiku" {% if settings.studio_model == 'haiku' %}selected{% endif %}>Haiku</option>
+          <option value="sonnet" {% if settings.studio_model == 'sonnet' %}selected{% endif %}>Sonnet</option>
+          <option value="opus" {% if settings.studio_model == 'opus' %}selected{% endif %}>Opus</option>
+        </select>
+      </div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">
+        <div class="name">Budget</div>
+        <div class="desc">Max spend per chat message (USD)</div>
+      </div>
+      <div class="setting-control">
+        <input type="text" id="studio-budget" value="{{ settings.studio_budget }}">
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <h2>Metadata Generator</h2>
+    <div class="setting-row">
+      <div class="setting-label">
+        <div class="name">Model</div>
+        <div class="desc">Claude model for generating titles, descriptions, and tags</div>
+      </div>
+      <div class="setting-control">
+        <select id="meta-model">
+          <option value="haiku" {% if settings.meta_model == 'haiku' %}selected{% endif %}>Haiku</option>
+          <option value="sonnet" {% if settings.meta_model == 'sonnet' %}selected{% endif %}>Sonnet</option>
+          <option value="opus" {% if settings.meta_model == 'opus' %}selected{% endif %}>Opus</option>
+        </select>
+      </div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">
+        <div class="name">Budget</div>
+        <div class="desc">Max spend per metadata generation (USD)</div>
+      </div>
+      <div class="setting-control">
+        <input type="text" id="meta-budget" value="{{ settings.meta_budget }}">
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <h2>Video Rendering</h2>
+    <div class="setting-row">
+      <div class="setting-label">
+        <div class="name">Default Framework for New Videos</div>
+        <div class="desc">Controls which framework Claude uses when writing new screenplays. Existing videos always use their original framework.</div>
+      </div>
+      <div class="setting-control">
+        <select id="rendering-engine">
+          <option value="remotion" {% if settings.rendering_engine == 'remotion' %}selected{% endif %}>Remotion (default)</option>
+          <option value="manim" {% if settings.rendering_engine == 'manim' %}selected{% endif %}>Manim (legacy)</option>
+        </select>
+      </div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">
+        <div class="name">CRF (Quality)</div>
+        <div class="desc">18 = best quality, 28 = smallest file (default 23)</div>
+      </div>
+      <div class="setting-control">
+        <input type="number" id="render-crf" value="{{ settings.render_crf }}" min="18" max="28" step="1">
+      </div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">
+        <div class="name">Encoding Preset</div>
+        <div class="desc">Slower = smaller file, better compression</div>
+      </div>
+      <div class="setting-control">
+        <select id="render-preset">
+          <option value="ultrafast" {% if settings.render_preset == 'ultrafast' %}selected{% endif %}>ultrafast</option>
+          <option value="fast" {% if settings.render_preset == 'fast' %}selected{% endif %}>fast</option>
+          <option value="medium" {% if settings.render_preset == 'medium' %}selected{% endif %}>medium</option>
+          <option value="slow" {% if settings.render_preset == 'slow' %}selected{% endif %}>slow</option>
+        </select>
+      </div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">
+        <div class="name">Max Concurrent Renders</div>
+        <div class="desc">Parallel render jobs allowed (1–4)</div>
+      </div>
+      <div class="setting-control">
+        <input type="number" id="max-concurrent-renders" value="{{ settings.max_concurrent_renders }}" min="1" max="4" step="1">
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <h2>TTS Audio</h2>
+    <div class="setting-row">
+      <div class="setting-label">
+        <div class="name">Voice</div>
+        <div class="desc">Current Fish Audio voice model</div>
+      </div>
+      <div class="setting-control">
+        <select id="fish-voice">
+          <option value="dc74574cfe664e93bd4179fe28542524" data-name="Him-phm" {% if settings.fish_voice_id == 'dc74574cfe664e93bd4179fe28542524' %}selected{% endif %}>Him-phm</option>
+          <option value="d8a1340984ee4b63ad1ffae27a6a4339" data-name="ELITE" {% if settings.fish_voice_id == 'd8a1340984ee4b63ad1ffae27a6a4339' %}selected{% endif %}>ELITE</option>
+        </select>
+      </div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">
+        <div class="name">MP3 Bitrate</div>
+        <div class="desc">Fish Audio output bitrate in kbps</div>
+      </div>
+      <div class="setting-control">
+        <input type="number" id="fish-bitrate" value="{{ settings.fish_bitrate }}" min="64" max="320" step="32">
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <h2>Shorts</h2>
+    <div class="setting-row">
+      <div class="setting-label">
+        <div class="name">Max Duration</div>
+        <div class="desc">Maximum short length in seconds</div>
+      </div>
+      <div class="setting-control">
+        <input type="number" id="short-max-duration" value="{{ settings.short_max_duration }}" min="10" max="60" step="1">
+      </div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">
+        <div class="name">Fade Duration</div>
+        <div class="desc">Fade-to-black at end in seconds</div>
+      </div>
+      <div class="setting-control">
+        <input type="number" id="short-fade-duration" value="{{ settings.short_fade_duration }}" min="0" max="5" step="0.1">
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <h2>AV Sync</h2>
+    <div class="setting-row">
+      <div class="setting-label">
+        <div class="name">Silence Threshold</div>
+        <div class="desc">Noise floor for silence detection in dB</div>
+      </div>
+      <div class="setting-control">
+        <input type="number" id="silence-threshold-db" value="{{ settings.silence_threshold_db }}" min="-60" max="-10" step="1">
+      </div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">
+        <div class="name">Min Silence Gap</div>
+        <div class="desc">Minimum silence duration in seconds to detect a boundary</div>
+      </div>
+      <div class="setting-control">
+        <input type="number" id="silence-min-duration" value="{{ settings.silence_min_duration }}" min="0.1" max="2.0" step="0.1">
+      </div>
+    </div>
+  </div>
+
+  <div class="save-row">
+    <button class="btn btn-primary btn-sm" id="save-btn" onclick="saveSettings()">Save</button>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  async function saveSettings() {
+    const btn = document.getElementById('save-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studio_model: document.getElementById('studio-model').value,
+          studio_budget: document.getElementById('studio-budget').value,
+          meta_model: document.getElementById('meta-model').value,
+          meta_budget: document.getElementById('meta-budget').value,
+          rendering_engine: document.getElementById('rendering-engine').value,
+          render_crf: document.getElementById('render-crf').value,
+          render_preset: document.getElementById('render-preset').value,
+          max_concurrent_renders: document.getElementById('max-concurrent-renders').value,
+          fish_bitrate: document.getElementById('fish-bitrate').value,
+          fish_voice_id: document.getElementById('fish-voice').value,
+          fish_voice_name: document.getElementById('fish-voice').selectedOptions[0].dataset.name,
+          short_max_duration: document.getElementById('short-max-duration').value,
+          short_fade_duration: document.getElementById('short-fade-duration').value,
+          silence_threshold_db: document.getElementById('silence-threshold-db').value,
+          silence_min_duration: document.getElementById('silence-min-duration').value,
+        }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      showToast('Settings saved', 'success');
+    } catch (err) {
+      showToast('Save failed: ' + err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Save';
+    }
+  }
+</script>
+{% endblock %}

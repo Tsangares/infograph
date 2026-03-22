@@ -1,0 +1,20 @@
+{
+  "topic": "gut_carpet_bomb",
+  "filename": "gut_carpet_bomb_manim.py",
+  "arc": {
+    "scene1_hook": "Open on a lush ecosystem at center frame \u2014 a cross-section of the gut lining with thousands of colorful bacteria dots (greens, blues, purples) forming a dense, thriving community. The number \"100 TRILLION\" appears below in huge Bebas Neue type. This is the microbiome \u2014 it weighs as much as your brain. Label: \"YOUR OTHER ORGAN\" at ZONE_TITLE.",
+    "scene2_mystery": "A single pill drops from above and dissolves into the ecosystem. A blue shockwave expands outward from the point of impact. Bacteria dots start flickering and going dark at the edges of the wave. The wave keeps expanding. The narrator: this isn't the infection site. This is collateral damage. Label: \"THE BLAST\".",
+    "scene3_wrong_answer": "The assumption: your gut bounces back quickly, like grass after a mow. Show the devastated gut with a fast-forward clock \u2014 bacteria quickly repopulate, colors return, ecosystem restored. A \"2 WEEKS\" label suggests rapid recovery. This is what people imagine. Label: \"QUICK RECOVERY?\".",
+    "scene4_contradiction": "Smash it. The clock rewinds. Show the real timeline: at 6 weeks, the ecosystem looks similar but something's off \u2014 gaps where certain species used to be. At 6 MONTHS, those gaps are still there. Highlight 9 specific species (named dots) that were present in every subject before treatment. They never came back. Flash: \"6 MONTHS. STILL MISSING.\" The recovery isn't recovery \u2014 it's convergence on a DIFFERENT ecosystem. Label: \"THE TRUTH\".",
+    "scene5_proof": "The damage in numbers. A comparison of antibiotic types by gut devastation \u2014 bar chart at ZONE_LOWER. Clindamycin (C. diff risk 8.81x) towers. Fluoroquinolones (4.05x). Cephalosporins (5.86x). Then at the bottom: doxycycline (1.0x reference \u2014 minimal damage). Not all antibiotics are equal. Above: \"AMERICAN CHILDREN: 17 COURSES BY AGE 20\" in impact text. Label: \"THE SCALE\".",
+    "scene6_betrayal": "The long-term cost. Show a child figure receiving antibiotics repeatedly \u2014 each course removes more species from their gut ecosystem. Martin Blaser's research: the connection to obesity, asthma, allergies, IBD. The gut never fully resets \u2014 it accumulates damage over a lifetime. A stripped-down ecosystem at the end, much less diverse than where it started. Label: \"PERMANENT LOSS\"."
+  },
+  "shapes": [
+    "gut_cross_section",
+    "bacteria_community",
+    "pill_shape",
+    "child_figure"
+  ],
+  "tts_script": "Your gut contains a hundred trillion bacteria. Over a thousand species. It weighs two to three pounds \u2014 about as much as your brain. And when you swallow a broad-spectrum antibiotic, you carpet-bomb it. Most people think the gut bounces back in a couple weeks. Like mowing grass. Researchers followed twelve healthy men after a four-day antibiotic course. At six weeks, their guts looked mostly normal. But at six months, nine species that had been present in every single subject were still gone. Completely undetectable. The gut didn't recover. It converged on a different ecosystem. And not all antibiotics do equal damage. Clindamycin increases your C. diff risk almost nine times. Fluoroquinolones, four times. But doxycycline barely touches it. Here's what makes this a crisis. American children receive an average of seventeen courses of antibiotics before age twenty. Each one strips more species. Each one the gut recovers a little less. A five-day prescription reshapes an ecosystem that took years to build. And some of what's lost never comes back.",
+  "word_count": 170
+}

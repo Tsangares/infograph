@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" fill="none">
+  <!-- Shield body -->
+  <rect x="20" y="20" width="260" height="360" rx="8" fill="#6B7B8D" stroke="#4A5A6B" stroke-width="3"/>
+  <!-- Pb symbol -->
+  <text x="150" y="200" text-anchor="middle" font-family="serif" font-size="80" font-weight="bold" fill="#2A3A4A">Pb</text>
+  <!-- Window slot -->
+  <rect x="80" y="80" width="140" height="40" rx="4" fill="#1A2A3A" stroke="#4A5A6B" stroke-width="2"/>
+  <!-- Leaded glass tint -->
+  <rect x="82" y="82" width="136" height="36" rx="3" fill="#8899AA" opacity="0.3"/>
+  <!-- Rivets -->
+  <circle cx="50" cy="50" r="6" fill="#5A6A7A" stroke="#3A4A5A" stroke-width="1.5"/>
+  <circle cx="250" cy="50" r="6" fill="#5A6A7A" stroke="#3A4A5A" stroke-width="1.5"/>
+  <circle cx="50" cy="350" r="6" fill="#5A6A7A" stroke="#3A4A5A" stroke-width="1.5"/>
+  <circle cx="250" cy="350" r="6" fill="#5A6A7A" stroke="#3A4A5A" stroke-width="1.5"/>
+</svg>

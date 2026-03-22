@@ -1,0 +1,20 @@
+{
+  "topic": "immune_real_killer",
+  "filename": "immune_real_killer_manim.py",
+  "arc": {
+    "scene1_hook": "A dramatic scene: a pill drops into frame and dissolves into glowing particles that wash over a cluster of bacteria at center. The bacteria shrink and die. Simple story: drug kills bacteria, patient healed. But then \u2014 freeze. Rewind. The narrator asks: is that actually what happens? The bacteria UN-die, the particles pull back. Something is missing from this picture. Label: \"WHO KILLS?\" at ZONE_TITLE.",
+    "scene2_mystery": "Show two lab mice side by side \u2014 simple mouse shapes. Both are infected (red infection dots). Both get the same antibiotic (blue pill). Mouse A has a normal immune system (shield icon glows beside it). Mouse B has no immune system (shield icon is cracked and dark). Same drug, same dose, same bacteria. What happens? Label: \"THE EXPERIMENT\".",
+    "scene3_wrong_answer": "The obvious answer: both mice survive, because the antibiotic does the killing. Show both mice with check marks \u2014 healthy, cured. The antibiotic is the hero. The immune system is just... there. Label: \"WHAT YOU'D EXPECT\".",
+    "scene4_contradiction": "Smash it. Mouse A (with immune system) gets a green check \u2014 survives. Mouse B (no immune system) gets a red X \u2014 dies. Same drug. Same bacteria. The bacteria were fully susceptible to the antibiotic. It just didn't matter. Without immune cells to finish the job, the antibiotic alone FAILED. Flash: \"THE DRUG ISN'T ENOUGH\" at center. Label: \"THE RESULT\".",
+    "scene5_proof": "Show the real mechanism. Antibiotics don't sterilize \u2014 they REDUCE the bacterial population (a bar chart showing bacteria count dropping from millions to thousands). Then neutrophils (round immune cells) swarm in and engulf the weakened survivors. Show immune cells physically eating the remaining bacteria at ZONE_MID. A comparison: \"BACTERICIDAL vs BACTERIOSTATIC\" \u2014 33 trials, identical cure rates (RR 0.99). The distinction barely matters because the immune system does the real killing either way. Label: \"THE TRUTH\".",
+    "scene6_betrayal": "The gut punch: for immunocompromised patients (chemo, transplants), the rules completely change. Show the shield icon cracked \u2014 now antibiotics must be bactericidal, higher doses, longer courses, started within ONE HOUR of fever. The drug has to do ALL the work alone. A stat: treatment fails even against susceptible bacteria when immune cells are absent. Label: \"WHEN IT BREAKS\"."
+  },
+  "shapes": [
+    "mouse_shape",
+    "neutrophil_cell",
+    "shield_icon",
+    "bacteria_cluster"
+  ],
+  "tts_script": "Here's what you think happens when you take an antibiotic. The drug floods in, kills the bacteria, and you're cured. Simple. But in two thousand twenty-five, researchers gave the same antibiotic to two groups of mice with the same infection. Same drug. Same dose. Same bacteria. The mice with functioning immune systems survived. The mice without immune systems died. The bacteria were fully susceptible to the antibiotic. It just didn't matter. Because antibiotics don't actually cure infections. They reduce the bacterial population \u2014 knock it down from millions to thousands. Then your immune system finishes the job. Neutrophils swarm in and eat what's left. Thirty-three clinical trials compared bactericidal drugs, the ones that kill, to bacteriostatic drugs, the ones that just stop growth. Identical cure rates. Because either way, your immune cells do the actual killing. That's why immunocompromised patients \u2014 chemo, transplants \u2014 play by totally different rules. Higher doses. Longer courses. Started within one hour of fever. When you have no immune system, the drug has to do everything alone. And it usually can't.",
+  "word_count": 176
+}

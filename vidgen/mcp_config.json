@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "tkk-studio": {
+      "command": "/opt/tkk/vidgen/.venv/bin/python3",
+      "args": ["/opt/tkk/vidgen/mcp_server.py"]
+    }
+  }
+}

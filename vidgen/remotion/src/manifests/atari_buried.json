@@ -1,0 +1,282 @@
+{
+  "topic": "atari_buried",
+  "ttsScript": "Atari was worth two billion dollars. The fastest-growing company in American history. One in three households owned one. Then they drove trucks into the New Mexico desert and buried millions of cartridges in a landfill. People blame E.T., the game made in five weeks. But E.T. wasn't the cause. It was the symptom. Atari had no quality control. Anyone could make a game. By nineteen eighty-two, there were more cartridges than customers. Revenue dropped from two billion to one hundred million in two years. The entire industry collapsed ninety-seven percent. In twenty fourteen, excavators dug up that landfill. The cartridges were real. A company worth billions, buried in a hole in the desert.",
+  "colors": {
+    "bg": "#0A0F1A",
+    "accent": "#E63946",
+    "secondary": "#F4A261"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "label": "THE EMPIRE",
+      "type": "counter",
+      "scene_anchor": "Atari",
+      "scene_end_anchor": "one.",
+      "elements": [
+        {
+          "type": "counter",
+          "start": 0,
+          "end": 2,
+          "unit": "BILLION",
+          "description": "Atari peak valuation — 1982",
+          "color": "#F4A261",
+          "zone": "MID",
+          "anchor": "two",
+          "attack": 0.0,
+          "count_end_anchor": "dollars.",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "1 in 3 US households",
+          "zone": "LOWER",
+          "style": "stat",
+          "color": "#F4A261",
+          "anchor": "three",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "mystery",
+      "label": "THE MYSTERY",
+      "type": "illustration",
+      "scene_anchor": "drove",
+      "scene_end_anchor": "landfill.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Trucks into the desert",
+          "zone": "UPPER",
+          "style": "caption",
+          "color": "#94A3B8",
+          "anchor": "drove",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "truck",
+          "zone": "MID",
+          "anchor": "trucks",
+          "attack": 0.1,
+          "enter": "slideLeft",
+          "hold": "until_scene_end",
+          "size": 120,
+          "color": "#F4A261",
+          "position": {"x": 0, "y": -30},
+          "holdMotion": "none"
+        },
+        {
+          "type": "svg",
+          "svg": "gamepad",
+          "zone": "MID",
+          "anchor": "buried",
+          "attack": 0.2,
+          "enter": "drop",
+          "hold": "until_scene_end",
+          "size": 70,
+          "color": "#E63946",
+          "position": {"x": 0, "y": 80},
+          "repeat": 4,
+          "stagger": 0.2,
+          "holdMotion": "none"
+        },
+        {
+          "type": "text",
+          "content": "Millions of cartridges buried",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "millions",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "scapegoat",
+      "label": "THE SCAPEGOAT",
+      "type": "timeline",
+      "scene_anchor": "People",
+      "scene_end_anchor": "symptom.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "E.T. — symptom, not cause",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "People",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "Jul '82",
+          "label": "E.T. licensed — $25M",
+          "color": "#F4A261",
+          "anchor": "blame",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "Sep '82",
+          "label": "5 weeks to build",
+          "color": "#E63946",
+          "anchor": "game",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "Dec '82",
+          "label": "4M units shipped",
+          "color": "#E63946",
+          "anchor": "weeks.",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "timeline_marker",
+          "year": "Jan '83",
+          "label": "Millions returned",
+          "color": "#64748B",
+          "anchor": "cause.",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "flood",
+      "label": "THE FLOOD",
+      "type": "stackedAccumulation",
+      "scene_anchor": "Atari",
+      "scene_end_anchor": "customers.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "10,000 titles — no QC",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#E63946",
+          "anchor": "Atari",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "stacked_accumulation",
+          "icon": "gamepad",
+          "count": 20,
+          "label": "Uncontrolled flood",
+          "displayValue": "More cartridges than customers",
+          "color": "#E63946",
+          "zone": "MID",
+          "anchor": "quality",
+          "attack": 0.2,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "More cartridges than customers",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#F4A261",
+          "anchor": "cartridges",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "collapse",
+      "label": "THE COLLAPSE",
+      "type": "causeEffect",
+      "scene_anchor": "Revenue",
+      "scene_end_anchor": "percent.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "97% industry collapse",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#E63946",
+          "anchor": "Revenue",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "cause_effect",
+          "zone": "MID",
+          "anchor": "dropped",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "dominoes": [
+            {"label": "No QC", "icon": "warning", "color": "#F4A261"},
+            {"label": "Market flood", "icon": "gamepad", "color": "#E63946"},
+            {"label": "Returns", "icon": "trendDown", "color": "#EF4444"},
+            {"label": "Collapse", "icon": "skull", "color": "#64748B"}
+          ],
+          "chainSpeed": 0.12
+        }
+      ]
+    },
+    {
+      "id": "punch",
+      "label": "THE BURIAL",
+      "type": "transformReveal",
+      "scene_anchor": "2014,",
+      "scene_end_anchor": "desert.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Dug up in 2014 — they were real",
+          "zone": "UPPER",
+          "style": "caption",
+          "color": "#94A3B8",
+          "anchor": "2014,",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "transform",
+          "zone": "MID",
+          "anchor": "excavators",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "from_icon": "coins",
+          "from_label": "$2 billion empire",
+          "from_color": "#F4A261",
+          "to_icon": "mountain",
+          "to_label": "Buried in the desert",
+          "to_color": "#64748B",
+          "effect": "shatter",
+          "transformAt": 0.45
+        },
+        {
+          "type": "text",
+          "content": "Alamogordo, New Mexico",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "desert.",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    }
+  ]
+}

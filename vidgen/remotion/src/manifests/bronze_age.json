@@ -1,0 +1,290 @@
+{
+  "topic": "bronze_age",
+  "ttsScript": "In 1177 BC, every major civilization collapsed at the same time. Textbooks blame the Sea Peoples — raiders who burned everything. Nobody knows who they were. Hittites. Mycenaeans. Egyptians. Babylonians. All fell within fifty years. Every empire depended on the others. Tin from Afghanistan. Copper from Cyprus. Grain from Egypt. One break and everything starved. Writing disappeared for 400 years. A system so connected that when one part failed, everything fell. Sound familiar?",
+  "colors": {
+    "bg": "#0A0A10",
+    "accent": "#D4A017",
+    "secondary": "#C0532A"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "label": "THE HOOK",
+      "type": "textEffect",
+      "scene_anchor": "In",
+      "scene_end_anchor": "time.",
+      "elements": [
+        {
+          "type": "text_effect",
+          "text": "1177 BC",
+          "effect": "stamp",
+          "color": "#D4A017",
+          "zone": "MID",
+          "anchor": "1177",
+          "attack": 0.0,
+          "hold": "until_scene_end",
+          "effectDuration": 0.3
+        },
+        {
+          "type": "text",
+          "content": "4 empires fell simultaneously",
+          "zone": "LOWER",
+          "style": "stat",
+          "color": "#E8734A",
+          "anchor": "collapsed",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "wrong_answer",
+      "label": "THE WRONG ANSWER",
+      "type": "illustration",
+      "scene_anchor": "Textbooks",
+      "scene_end_anchor": "were.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "THE SEA PEOPLES",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#94A3B8",
+          "anchor": "Textbooks",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "figureWithShield",
+          "zone": "MID",
+          "anchor": "Sea",
+          "attack": 0.1,
+          "enter": "slideLeft",
+          "hold": "until_scene_end",
+          "size": 90,
+          "color": "#C0532A",
+          "position": {"x": -80, "y": 0},
+          "holdMotion": "none"
+        },
+        {
+          "type": "svg",
+          "svg": "sword",
+          "zone": "MID",
+          "anchor": "raiders",
+          "attack": 0.0,
+          "enter": "slideRight",
+          "hold": "until_scene_end",
+          "size": 80,
+          "color": "#D4A017",
+          "position": {"x": 80, "y": -20},
+          "holdMotion": "none"
+        },
+        {
+          "type": "svg",
+          "svg": "fire",
+          "zone": "MID",
+          "anchor": "burned",
+          "attack": 0.0,
+          "enter": "pop",
+          "hold": "until_scene_end",
+          "size": 70,
+          "color": "#EF4444",
+          "position": {"x": 0, "y": 80},
+          "holdMotion": "pulse"
+        },
+        {
+          "type": "text",
+          "content": "Identity unknown",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "Nobody",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "empires",
+      "label": "THE EMPIRES",
+      "type": "barChart",
+      "scene_anchor": "Hitites,",
+      "scene_end_anchor": "years.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "All fell within 50 years",
+          "zone": "UPPER",
+          "style": "stat",
+          "color": "#E8734A",
+          "anchor": "All",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "bar",
+          "label": "Hittites",
+          "value": 500,
+          "color": "#D4A017",
+          "anchor": "Hitites,",
+          "attack": 0.0
+        },
+        {
+          "type": "bar",
+          "label": "Mycenaeans",
+          "value": 400,
+          "color": "#C0532A",
+          "anchor": "messinians,",
+          "attack": 0.0
+        },
+        {
+          "type": "bar",
+          "label": "Egyptians",
+          "value": 2000,
+          "color": "#FBBF24",
+          "anchor": "Egyptians,",
+          "attack": 0.0
+        },
+        {
+          "type": "bar",
+          "label": "Babylonians",
+          "value": 1200,
+          "color": "#94A3B8",
+          "anchor": "Babylonians,",
+          "attack": 0.0
+        }
+      ]
+    },
+    {
+      "id": "chain",
+      "label": "THE CHAIN",
+      "type": "flowDiagram",
+      "scene_anchor": "Every",
+      "scene_end_anchor": "starved.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Bronze Age supply chain",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "Every",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "flow_diagram",
+          "zone": "MID",
+          "anchor": "depended",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "nodes": [
+            {"label": "Tin", "icon": "mountain", "color": "#94A3B8"},
+            {"label": "Copper", "icon": "coins", "color": "#D4A017"},
+            {"label": "Trade", "icon": "ship", "color": "#C0532A"},
+            {"label": "Grain", "icon": "factory", "color": "#FBBF24"}
+          ],
+          "direction": "horizontal",
+          "arrowColor": "#64748B"
+        },
+        {
+          "type": "text",
+          "content": "One break = everything starved",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#D4A017",
+          "anchor": "starved.",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "dark_age",
+      "label": "THE DARK AGE",
+      "type": "transformReveal",
+      "scene_anchor": "Writing",
+      "scene_end_anchor": "fell.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "400 YEARS",
+          "zone": "UPPER",
+          "style": "stat",
+          "color": "#EF4444",
+          "anchor": "Writing",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "transform",
+          "zone": "MID",
+          "anchor": "disappeared",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "from_icon": "book",
+          "from_label": "Knowledge",
+          "from_color": "#D4A017",
+          "to_icon": "skull",
+          "to_label": "Lost forever",
+          "to_color": "#EF4444",
+          "effect": "shatter",
+          "transformAt": 0.45
+        },
+        {
+          "type": "text",
+          "content": "Writing vanished",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#EF4444",
+          "anchor": "fell.",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "punch",
+      "label": "THE PUNCH",
+      "type": "causeEffect",
+      "scene_anchor": "Sound",
+      "scene_end_anchor": "familiar?",
+      "elements": [
+        {
+          "type": "cause_effect",
+          "zone": "MID",
+          "anchor": "Sound",
+          "attack": 0.0,
+          "hold": "until_scene_end",
+          "dominoes": [
+            {"label": "Hittites", "icon": "crown", "color": "#D4A017"},
+            {"label": "Mycenaeans", "icon": "crown", "color": "#C0532A"},
+            {"label": "Egyptians", "icon": "crown", "color": "#FBBF24"},
+            {"label": "Babylonians", "icon": "crown", "color": "#94A3B8"}
+          ],
+          "chainSpeed": 0.15
+        },
+        {
+          "type": "text",
+          "content": "Sound familiar?",
+          "zone": "FOOTER",
+          "style": "headline",
+          "color": "#D4A017",
+          "anchor": "familiar?",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    }
+  ]
+}

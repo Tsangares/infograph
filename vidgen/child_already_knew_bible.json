@@ -1,0 +1,20 @@
+{
+  "topic": "child_already_knew",
+  "filename": "child_already_knew_manim.py",
+  "arc": {
+    "scene1_hook": "A child sits on the floor, stacking blocks into a tower. No plan. No metric. No audience. Just building. Above her, in faded layers, ghostly images of philosophers \u2014 Nietzsche, Sartre, Camus, Laozi \u2014 debating, writing, arguing for centuries. All that elaborate machinery of thought, all that deconstruction. And beneath them, a toddler who already had the answer. Title pill: \"SHE ALREADY KNEW\".",
+    "scene2_mystery": "The philosophical journey replays in fast-forward as a spiral staircase descending. Level 1: Gold star (naive success). Level 2: Broken compass (installed ambition). Level 3: Rigged scale (systemic metrics). Level 4: Broken yardstick (nihilism). Level 5: Personal torch (existentialism). Level 6: Flowing river (Tao). Level 7: Smiling boulder-pusher (absurdism). Seven levels of philosophy to answer one question. The spiral keeps going down, down \u2014 and at the very bottom, the floor is a child's playroom.",
+    "scene3_wrong_answer": "The assumption: the answer requires sophistication. A towering bookshelf fills the screen \u2014 philosophy, psychology, sociology, economics. Each book is a system for understanding success. The intellectual believes the answer is in the NEXT book, the deeper analysis, the more rigorous framework. More layers of deconstruction. More nuance. More theory. The bookshelf grows taller and taller, impossibly high. But the answer isn't at the top. It never was.",
+    "scene4_contradiction": "The bookshelf topples. Books scatter. And underneath all of them \u2014 the child. Still building her tower. She didn't want success. She wanted to see how high it goes. The desire is pre-rational, older than language, rooted in the body's own appetite for expansion. Every philosopher was trying to get back to what she never left. The elaborate apparatus \u2014 deconstruction, critique, reclamation, surrender, rebellion \u2014 was the long way around to what she already knew. The tower is the point. Not the height.",
+    "scene5_proof": "The child's tower at center, glowing. Around it, each philosophical position orbits like a satellite: naive belief (too close, burned), nihilism (too far, frozen), existentialism (circling, searching), absurdism (approaching, smiling). They all converge on the same point: the tower. A final equation builds: \"THE BUILDING = THE POINT.\" Not the height. Not the measurement. Not who's watching. The activity itself. The hands. The minutes. The spending of a life on something fully chosen and fully inhabited.",
+    "scene6_betrayal": "The child finishes her tower. It's not tall. It's not impressive by any metric. She looks at it. Smiles. Knocks it down. Starts again. This is the gut punch: she doesn't need it to last. She doesn't need it to be measured. The whole philosophical journey \u2014 thousands of years of human thought \u2014 arrives at what a toddler already knows: the building is the point. \"I was the one building, and the building was mine, and the hands were mine, and the minutes were mine, and no yardstick in the world can measure what it meant to spend them.\""
+  },
+  "shapes": [
+    "block_tower",
+    "spiral_staircase",
+    "bookshelf_tall",
+    "child_figure"
+  ],
+  "tts_script": "We come back, finally, to the child. She is still there, beneath all the layers. She didn't want success. She wanted to see how high the tower could go. The whole elaborate philosophical apparatus \u2014 the deconstruction, the critique, the existential reclamation, the Taoist surrender, the absurdist rebellion \u2014 all of it was just the long way around to what she already knew. The tower is the point. Not the height. The tower. I may build something that lasts or something that collapses by Tuesday. But I was the one building, and the building was mine, and the hands were mine, and the minutes were mine. And no yardstick in the world can measure what it meant to spend them.",
+  "word_count": 120
+}

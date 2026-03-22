@@ -1,0 +1,20 @@
+{
+  "topic": "finish_antibiotics_myth",
+  "filename": "finish_antibiotics_myth_manim.py",
+  "arc": {
+    "scene1_hook": "A prescription bottle with \"TAKE ALL 14 PILLS\" on the label sits at center frame. Below, a stern doctor figure points at the label. Everyone's heard this: finish your antibiotics or the bacteria will become resistant. It's the most repeated medical advice of the twentieth century. But what if it's wrong? Label: \"THE SACRED RULE\" at ZONE_TITLE.",
+    "scene2_mystery": "The origin story. Show a hospital bed with a patient figure (Albert Alexander, 1941). Penicillin vials appear \u2014 the patient improves dramatically (color returns, infection fades). Then the vials run out \u2014 empty. The patient relapses and dies. This tragedy cemented the rule: always finish the course. Plus: TB treatment, where stopping early genuinely breeds resistance. These two cases built the dogma. Label: \"THE ORIGIN\".",
+    "scene3_wrong_answer": "The logic everyone believes: if you stop early, the strongest bacteria survive and become resistant. Show a battlefield \u2014 weak bacteria die first (gray dots disappearing), then medium bacteria, then the last few \"strong\" survivors grow resistant and multiply. It's intuitive, it makes sense, and for most infections it's wrong. Label: \"THE LOGIC\".",
+    "scene4_contradiction": "The twist. A 2017 BMJ paper materializes. The real source of resistance isn't undertreating your infection \u2014 it's COLLATERAL EXPOSURE. Every extra day of antibiotics puts selective pressure on bacteria throughout your entire body, not just at the infection site. Longer courses = more collateral resistance. Show the body silhouette with the infection healed (day 5) but the pills continuing for 9 more days \u2014 each extra day the gut bacteria are being pressured to evolve resistance. The extra days CAUSE resistance, not prevent it. Label: \"THE REVERSAL\".",
+    "scene5_proof": "The evidence. Show \"120+ RCTs\" in huge text at ZONE_MID. Below, a comparison chart \u2014 shorter vs longer courses across infections: Pneumonia (3-5 vs 7-14 days: EQUAL), Cystitis (3 vs 7 days: EQUAL), Cellulitis (6 vs 12 days: EQUAL), Bacteremia (7 vs 14 days: EQUAL). Each pair gets a check mark. Brad Spellberg's finding: the 7-14 day convention traces to the Roman 7-day week, not science. Label: \"THE EVIDENCE\".",
+    "scene6_betrayal": "The gut punch: for decades, doctors prescribed extra days of antibiotics that did nothing for the infection but bred resistance in the patient's own body. The well-meaning advice \u2014 finish your course \u2014 may have accelerated the very crisis it was meant to prevent. Exception pills remain visible: TB, endocarditis, bone infections (where longer courses ARE needed). But for common infections, shorter is better. Label: \"THE COST\"."
+  },
+  "shapes": [
+    "prescription_bottle",
+    "patient_bed",
+    "bacteria_battlefield",
+    "calendar_strip"
+  ],
+  "tts_script": "Always finish your antibiotics. It's the most repeated advice in medicine. The logic sounds bulletproof: stop early and the strongest bacteria survive and become resistant. But in twenty seventeen, researchers published a landmark paper in the BMJ. Their finding? For most common infections, there's little evidence that stopping early causes resistance. The real driver is the opposite. Every extra day of antibiotics puts pressure on bacteria throughout your entire body \u2014 not just at the infection. Longer courses breed more resistance, not less. Over a hundred and twenty randomized trials now show that shorter courses work just as well. Pneumonia: three to five days equals seven to fourteen. Cystitis: three days equals seven. Cellulitis: six days equals twelve. The seven-to-fourteen-day convention? It traces to the Roman calendar, not science. For eighty years, doctors prescribed extra days that did nothing for the infection but put selective pressure on your gut bacteria. The advice meant to prevent resistance may have accelerated it.",
+  "word_count": 160
+}

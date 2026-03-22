@@ -1,0 +1,20 @@
+{
+  "topic": "antibiotics_no_gps",
+  "filename": "antibiotics_no_gps_manim.py",
+  "arc": {
+    "scene1_hook": "A human body silhouette stands at center frame. A small red infection dot pulses on the ear. A pill drops in from the top and dissolves \u2014 then DYE floods outward from the gut through the entire body silhouette, coloring everything blue: arms, legs, brain, gut, kidneys. The infection dot is a tiny speck in a body drenched in drug. Label: \"NO GPS\" at ZONE_TITLE. The visual: antibiotics have no targeting system.",
+    "scene2_mystery": "Zoom into the gut region of the body silhouette. Show the intestinal lining with thousands of tiny friendly bacteria dots (green). The blue antibiotic dye is flooding through here too \u2014 washing over all those green dots. Above, a question: why would an ear infection pill affect your gut? The gut bacteria start flickering. Label: \"THE FLOOD\".",
+    "scene3_wrong_answer": "The \"obvious\" assumption: maybe the drug mostly goes to the infection. Show an arrow from pill to ear with a big \"90%\" label, and a thin trickle to the rest of the body labeled \"10%\". This is what people imagine \u2014 a guided missile. The arrow is bold and confident. Label: \"WHAT YOU THINK\".",
+    "scene4_contradiction": "Smash the assumption. The 90% arrow shatters. Replace with the real picture: the pill dissolves, enters the bloodstream, and the heart pumps it EVERYWHERE equally. Arrows spray out in all directions \u2014 to the ear (tiny arrow, same as every other organ), to the gut, kidneys, liver, knees, brain. Every organ gets the same flood. The ear infection site is just one stop among dozens. Flash: \"EVERY TISSUE\" at center. Label: \"THE TRUTH\".",
+    "scene5_proof": "The damage in numbers. The gut bacteria field from Scene 2 reappears \u2014 but now the green dots are rapidly turning gray and disappearing as the blue flood washes through. A stat bar chart at ZONE_LOWER: \"DIARRHEA 5-39%\", \"YEAST INFECTIONS 10-30%\", \"C. DIFF 500,000/yr\". These are the side effects of flooding every tissue. Source: \"collateral damage.\" Label: \"THE COST\".",
+    "scene6_betrayal": "Final gut punch. The body silhouette returns, with the ear infection now gone (healed). But the gut region is devastated \u2014 nearly empty of green bacteria. A timeline bar shows \"6+ MONTHS TO RECOVER.\" Some species: \"NEVER RETURN.\" The ear is fine. The gut is wrecked. The cure worked everywhere except where you needed protection. Label: \"THE AFTERMATH\"."
+  },
+  "shapes": [
+    "body_silhouette",
+    "gut_lining",
+    "bacteria_dot",
+    "heart_pump"
+  ],
+  "tts_script": "When you swallow an antibiotic for an ear infection, the drug does not go to your ear. It dissolves in your gut, crosses into your bloodstream, and your heart pumps it to every single tissue in your body. Your knees. Your liver. Your brain. Your gut. The antibiotic floods everywhere equally \u2014 the ear infection is just one stop among dozens. This is why ear infection pills give you diarrhea. The drug can't tell the difference between the bacteria making you sick and the hundred trillion bacteria keeping your gut alive. It kills indiscriminately. Five to thirty-nine percent of patients get diarrhea. Ten to thirty percent of women get yeast infections. Five hundred thousand Americans get C. diff every year. And when the infection heals? Your gut takes six months to recover. Some species never come back. The drug cured your ear. But it carpet-bombed everything else.",
+  "word_count": 147
+}

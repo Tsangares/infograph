@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+{% set active_page = 'about' %}
+
+{% block title %}clips — Manim Engine{% endblock %}
+
+{% block head %}
+<style>
+  .about-nav {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .about-nav::-webkit-scrollbar { display: none; }
+  .about-nav-item {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 100px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .about-nav-item:hover { border-color: var(--border-hover); color: var(--text); }
+  .about-nav-item.active { background: var(--accent-subtle); border-color: var(--accent); color: var(--accent); }
+
+  .about-section {
+    margin-bottom: 32px;
+  }
+  .about-section h2 {
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+  .about-section h3 {
+    margin-bottom: 8px;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .about-section p, .about-section li {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .about-section p + p {
+    margin-top: 10px;
+  }
+  .about-section ul {
+    list-style: none;
+    margin-top: 8px;
+  }
+  .about-section ul li {
+    padding-left: 16px;
+    position: relative;
+    margin-bottom: 4px;
+  }
+  .about-section ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .zone-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 13px;
+  }
+  .zone-table th {
+    text-align: left;
+    padding: 8px 12px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  .zone-table td {
+    padding: 8px 12px;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+  }
+  .zone-table tr:last-child td { border-bottom: none; }
+  .zone-table td:first-child {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .zone-table td:nth-child(2) {
+    font-family: var(--font-mono);
+    color: var(--text);
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--surface);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .anim-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  @media (min-width: 520px) {
+    .anim-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .anim-item {
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+  }
+  .anim-item .anim-name {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .anim-item .anim-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .pros-cons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  @media (min-width: 520px) {
+    .pros-cons { grid-template-columns: 1fr 1fr; }
+  }
+  .pros-cons .col h3 {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  .pros-cons .col.strengths h3 { color: var(--success); }
+  .pros-cons .col.weaknesses h3 { color: var(--warn); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Manim Engine</h1>
+</div>
+
+<div class="about-nav">
+  <a href="/about" class="about-nav-item">Overview</a>
+  <a href="/about/engines" class="about-nav-item active">Engines</a>
+  <a href="/about/pipeline" class="about-nav-item">Pipeline</a>
+  <a href="/about/values" class="about-nav-item">Values</a>
+  <a href="/about/roadmap" class="about-nav-item">Roadmap</a>
+</div>
+
+<div class="about-section">
+  <h2>What is Manim?</h2>
+  <p>Manim (Mathematical Animation Engine) is an open-source Python library originally created by 3Blue1Brown for making math explainer videos on YouTube. It lets you write code that produces smooth, precise animations — shapes morphing, text appearing, graphs drawing themselves.</p>
+  <p>TKK uses Manim Community Edition v0.20 because every frame is defined in code, which means videos are reproducible, tweakable, and can be generated without any manual work.</p>
+</div>
+
+<div class="about-section">
+  <h2>How a Screenplay Works</h2>
+  <p>Each video is a single Python file (<code>{topic}_manim.py</code>, ~600 lines) containing:</p>
+  <ul>
+    <li>A docstring with VTT timing cues mapping narration to scenes</li>
+    <li>A <code>TTS_SCRIPT</code> variable with the full narration text</li>
+    <li>6 Scene classes, each extending Manim's <code>Scene</code></li>
+    <li>A <code>render_previews()</code> function for quick PNG snapshots</li>
+    <li>A <code>__main__</code> block that renders all scenes, concatenates, and merges audio</li>
+  </ul>
+  <p>Each Scene class has a <code>construct()</code> method that creates objects (text, shapes, images) and plays animations timed to the narration. A <code>DURATION</code> constant on each scene controls its allocated time slice.</p>
+</div>
+
+<div class="about-section">
+  <h2>Zone Layout System</h2>
+  <p>The frame is 9x16 (1080x1920). Content must fill the full vertical space using 5 named zones. All positioning uses <code>safe_place(mob, "ZONE")</code> from <code>anim_primitives.py</code>.</p>
+  <div class="card" style="overflow-x: auto;">
+    <table class="zone-table">
+      <thead>
+        <tr><th>Zone</th><th>Y Center</th><th>Use</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>TITLE</td><td>6.2</td><td>Scene label pills</td></tr>
+        <tr><td>UPPER</td><td>3.5</td><td>Hero visual top</td></tr>
+        <tr><td>MID</td><td>0.0</td><td>Central focal point</td></tr>
+        <tr><td>LOWER</td><td>-3.5</td><td>Supporting visuals</td></tr>
+        <tr><td>FOOTER</td><td>-6.0</td><td>Captions, source labels</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="about-section">
+  <h2>Animation Verbs</h2>
+  <p>Common Manim animations used in TKK screenplays:</p>
+  <div class="anim-grid">
+    <div class="anim-item">
+      <div class="anim-name">FadeIn / FadeOut</div>
+      <div class="anim-desc">Opacity transitions, optionally with direction shift</div>
+    </div>
+    <div class="anim-item">
+      <div class="anim-name">GrowFromCenter</div>
+      <div class="anim-desc">Scale up from zero at center point</div>
+    </div>
+    <div class="anim-item">
+      <div class="anim-name">Write / Unwrite</div>
+      <div class="anim-desc">Handwriting-style text appearance</div>
+    </div>
+    <div class="anim-item">
+      <div class="anim-name">LaggedStart</div>
+      <div class="anim-desc">Stagger multiple animations with delay</div>
+    </div>
+    <div class="anim-item">
+      <div class="anim-name">Transform</div>
+      <div class="anim-desc">Morph one object into another</div>
+    </div>
+    <div class="anim-item">
+      <div class="anim-name">Create / Uncreate</div>
+      <div class="anim-desc">Draw/undraw strokes of a shape</div>
+    </div>
+    <div class="anim-item">
+      <div class="anim-name">CountingAnimation</div>
+      <div class="anim-desc">Animate a number counting up/down</div>
+    </div>
+    <div class="anim-item">
+      <div class="anim-name">AnimatedBoundary</div>
+      <div class="anim-desc">Glowing animated border effect</div>
+    </div>
+  </div>
+</div>
+
+<div class="about-section">
+  <h2>QA Pipeline</h2>
+  <p>Three automated checks run on every screenplay before final render:</p>
+  <ul>
+    <li><strong>Layout QA</strong> — verifies content fills the vertical frame, checks zone coverage and balance</li>
+    <li><strong>Readability QA</strong> — contrast ratios, margin clearance, text size minimums</li>
+    <li><strong>Sync QA</strong> — AV drift (video vs audio duration), dead time (animations finishing early), number sync (visual numbers in correct scene), scene budget (minimum 1.5s per scene)</li>
+  </ul>
+</div>
+
+<div class="about-section">
+  <h2>Strengths & Weaknesses</h2>
+  <div class="pros-cons">
+    <div class="col strengths">
+      <h3>Strengths</h3>
+      <ul>
+        <li>Precision — every pixel is code-defined</li>
+        <li>Proven — {{ video_count }}+ published videos</li>
+        <li>Mature QA — 3 automated checkers</li>
+        <li>Rich animation vocabulary</li>
+        <li>Reproducible — same code = same video</li>
+      </ul>
+    </div>
+    <div class="col weaknesses">
+      <h3>Weaknesses</h3>
+      <ul>
+        <li>~600 lines of Python per video</li>
+        <li>1-2 min render time</li>
+        <li>High code complexity per video</li>
+        <li>Harder to iterate quickly</li>
+        <li>Each video is a bespoke program</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

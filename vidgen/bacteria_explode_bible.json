@@ -1,0 +1,20 @@
+{
+  "topic": "bacteria_explode",
+  "filename": "bacteria_explode_manim.py",
+  "arc": {
+    "scene1_hook": "A single bacterium shape sits at center frame \u2014 a rounded rod with a thick cell wall drawn as a visible outer ring. Inside, tiny arrows push outward in all directions showing internal pressure. The number \"20 ATM\" appears huge below it. That's twenty times the pressure in a car tire, packed inside something microscopic. Label: \"PRESSURE BOMB\" at ZONE_TITLE.",
+    "scene2_mystery": "Show the bacterium alive and dividing. The cell wall (outer ring) glows \u2014 it's the only thing holding this pressure in. Tiny construction-worker enzymes (PBP shapes \u2014 small wrenches) are constantly reinforcing the wall, cross-linking new bricks into place. It's a construction site that never stops. If the wall fails for even a moment, the pressure wins. Label: \"THE WALL\".",
+    "scene3_wrong_answer": "The assumption: antibiotics poison bacteria like pesticide poisons bugs \u2014 some chemical kills them from the inside. Show a generic \"poison skull\" icon dissolving into the bacterium, implying chemical death. The bacterium just melts away. Clean, simple, wrong. Label: \"WHAT YOU THINK\".",
+    "scene4_contradiction": "The twist: show a penicillin molecule (beta-lactam ring shape) drifting in. Instead of poisoning the bacterium, it snaps onto one of the PBP wrenches \u2014 locking it shut. The wrench stops working. Then another penicillin locks another wrench. The construction workers are being handcuffed one by one. The wall isn't being destroyed \u2014 it's just not being REPAIRED anymore. Meanwhile the bacterium keeps growing. The wall stretches, thins. Label: \"NOT POISON\".",
+    "scene5_proof": "The payoff. The bacterium has grown but its wall is paper-thin \u2014 the PBPs are all locked. The internal pressure arrows intensify. The wall bulges outward. Then \u2014 BURST. The bacterium ruptures in an expanding ring animation, contents spraying outward. Show this happening to 3-4 bacteria in sequence, a chain of explosions. The visual is visceral: the drug didn't kill them, their own pressure did. A comparison at ZONE_LOWER: \"CAR TIRE: 2 ATM\" tiny bar vs \"BACTERIUM: 20 ATM\" massive bar. Label: \"THE PROOF\".",
+    "scene6_betrayal": "The gut punch: vancomycin works differently but achieves the same end \u2014 show it physically covering the building bricks so the wrenches can't even reach them. Same result: no new wall, pressure wins, rupture. Two totally different mechanisms, same explosive death. The drug turns the bacterium into a bomb. Label: \"SAME END\"."
+  },
+  "shapes": [
+    "bacterium_rod",
+    "cell_wall_ring",
+    "pbp_wrench",
+    "beta_lactam_ring"
+  ],
+  "tts_script": "Inside every bacterium is a bomb. Twenty atmospheres of pressure \u2014 ten times what's in your car tire \u2014 pushing outward against the cell wall. The only thing keeping the bacterium alive is a team of enzymes constantly repairing and reinforcing that wall. Like construction workers who can never stop building. Most people think antibiotics work like poison \u2014 some chemical kills the bacteria from the inside. That's wrong. Penicillin does something much more sinister. It's shaped like a fake building block. When the repair enzymes grab it, it locks them shut. One by one, the construction crew gets handcuffed. The wall stops being repaired. But the bacterium keeps growing. The pressure keeps building. And then \u2014 it explodes. The cell wall ruptures and the bacterium bursts open. The antibiotic didn't kill it. Twenty atmospheres of its own internal pressure did. The drug just removed the only thing holding it together.",
+  "word_count": 151
+}
