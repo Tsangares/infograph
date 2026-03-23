@@ -1,0 +1,267 @@
+{
+  "topic": "chernobyl",
+  "ttsScript": "Reactor Four surged to thirty thousand megawatts in four seconds. One hundred times its safe limit. Everyone blamed the operators. Reckless. Incompetent. But the operators were following direct orders from their supervisor, Dyatlov. The real killer was the RBMK reactor itself. Its control rods had graphite tips. Pushing them in caused a power spike instead of stopping it. The Soviet government knew about this flaw for years. They classified the report and told no one. The coverup killed more people than the explosion ever did.",
+  "colors": {
+    "bg": "#0A0F1A",
+    "accent": "#22C55E",
+    "secondary": "#F97316"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "label": "THE SURGE",
+      "type": "number_ticker",
+      "scene_anchor": "Reactor",
+      "scene_end_anchor": "limit.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "APRIL 26, 1986",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "Reactor",
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "number_ticker",
+          "tickerValue": 30000,
+          "suffix": " MW",
+          "unit": "thermal power",
+          "color": "#EF4444",
+          "zone": "MID",
+          "anchor": "surged"
+        },
+        {
+          "type": "text",
+          "content": "100x SAFE LIMIT",
+          "zone": "LOWER",
+          "style": "headline",
+          "color": "#F97316",
+          "anchor": "times",
+          "enter": "slideUp",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "4 seconds",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#EF4444",
+          "anchor": "seconds.",
+          "enter": "fade"
+        }
+      ]
+    },
+    {
+      "id": "wrong_answer",
+      "label": "THE BLAME",
+      "type": "split_screen",
+      "scene_anchor": "Everyone",
+      "scene_end_anchor": "incompetent,",
+      "elements": [
+        {
+          "type": "text",
+          "content": "THE OFFICIAL STORY",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#EF4444",
+          "anchor": "Everyone",
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "split_screen",
+          "zone": "MID",
+          "anchor": "blamed",
+          "leftPanel": {
+            "label": "OPERATORS",
+            "value": "BLAMED",
+            "color": "#EF4444",
+            "subtext": "Scapegoated by state"
+          },
+          "rightPanel": {
+            "label": "GOVERNMENT",
+            "value": "SILENT",
+            "color": "#22C55E",
+            "subtext": "Protected the system"
+          }
+        },
+        {
+          "type": "text",
+          "content": "Reckless. Incompetent.",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#94A3B8",
+          "anchor": "reckless,",
+          "enter": "wordByWord"
+        }
+      ]
+    },
+    {
+      "id": "contradiction",
+      "label": "FOLLOWING ORDERS",
+      "type": "cause_effect",
+      "scene_anchor": "operators",
+      "scene_end_anchor": "supervisor,",
+      "elements": [
+        {
+          "type": "text",
+          "content": "THEY FOLLOWED ORDERS",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#22C55E",
+          "anchor": "following",
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "cause_effect",
+          "zone": "MID",
+          "anchor": "direct",
+          "dominoes": [
+            { "label": "Dyatlov orders test", "color": "#3B82F6" },
+            { "label": "Operators comply", "color": "#22C55E" },
+            { "label": "Power drops to 30MW", "color": "#F97316" },
+            { "label": "Dyatlov: keep going", "color": "#EF4444" }
+          ]
+        },
+        {
+          "type": "text",
+          "content": "Supervisor Dyatlov",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#F97316",
+          "anchor": "supervisor,",
+          "enter": "slideUp"
+        }
+      ]
+    },
+    {
+      "id": "proof",
+      "label": "THE FATAL FLAW",
+      "type": "bar_race",
+      "scene_anchor": "killer",
+      "scene_end_anchor": "stopping",
+      "elements": [
+        {
+          "type": "text",
+          "content": "GRAPHITE-TIPPED RODS",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#F97316",
+          "anchor": "graphite",
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "bar_race",
+          "zone": "MID",
+          "anchor": "spike",
+          "raceBars": [
+            { "label": "Chernobyl core", "value": 20000, "color": "#EF4444" },
+            { "label": "Dental X-ray", "value": 0.005, "color": "#3B82F6" },
+            { "label": "CT scan", "value": 10, "color": "#A855F7" },
+            { "label": "Background/yr", "value": 2.4, "color": "#22C55E" }
+          ],
+          "barUnit": " mSv"
+        },
+        {
+          "type": "text",
+          "content": "Power spike, not shutdown",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#EF4444",
+          "anchor": "stopping",
+          "enter": "fade"
+        }
+      ]
+    },
+    {
+      "id": "betrayal",
+      "label": "THE COVERUP",
+      "type": "map_highlight",
+      "scene_anchor": "Soviet",
+      "scene_end_anchor": "one.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "BURIED FOR YEARS",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#EF4444",
+          "anchor": "classified",
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "map_highlight",
+          "zone": "MID",
+          "anchor": "Soviet",
+          "pins": [
+            { "x": 0.54, "y": 0.24, "label": "Chernobyl", "color": "#EF4444" },
+            { "x": 0.56, "y": 0.27, "label": "Pripyat", "color": "#F97316" },
+            { "x": 0.53, "y": 0.28, "label": "Kyiv", "color": "#22C55E" }
+          ],
+          "connectPins": true,
+          "size": 400
+        },
+        {
+          "type": "pie_chart",
+          "zone": "LOWER",
+          "anchor": "flaw",
+          "segments": [
+            { "value": 60, "label": "Iodine-131", "color": "#22C55E" },
+            { "value": 25, "label": "Cesium-137", "color": "#F97316" },
+            { "value": 10, "label": "Strontium-90", "color": "#3B82F6" },
+            { "value": 5, "label": "Plutonium", "color": "#EF4444" }
+          ],
+          "centerValue": "5.2M",
+          "centerLabel": "Ci released",
+          "size": 200
+        }
+      ]
+    },
+    {
+      "id": "punch",
+      "label": "THE REAL COST",
+      "type": "counter",
+      "scene_anchor": "cover",
+      "scene_end_anchor": "did.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "THE COVERUP KILLED MORE",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#EF4444",
+          "anchor": "cover",
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "counter",
+          "start": 0,
+          "end": 93000,
+          "unit": "excess cancer deaths",
+          "description": "Estimated total",
+          "color": "#EF4444",
+          "zone": "MID",
+          "anchor": "killed",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "Than the explosion itself",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#F97316",
+          "anchor": "explosion",
+          "enter": "slideUp",
+          "hold": "until_scene_end"
+        }
+      ]
+    }
+  ]
+}
