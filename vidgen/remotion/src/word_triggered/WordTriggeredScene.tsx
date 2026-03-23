@@ -35,6 +35,12 @@ import { SvgPathDraw } from '../components/SvgPathDraw';
 import { NoiseOverlay } from '../components/NoiseOverlay';
 import { VignetteOverlay } from '../components/VignetteOverlay';
 import { EmphasisLine } from '../components/EmphasisLine';
+import { SvgMorph } from '../components/SvgMorph';
+import { SplitScreenReveal } from '../components/SplitScreenReveal';
+import { AnimatedPieChart } from '../components/AnimatedPieChart';
+import { NumberTicker } from '../components/NumberTicker';
+import { AnimatedBarRace } from '../components/AnimatedBarRace';
+import { MapHighlight } from '../components/MapHighlight';
 import type { ResolvedScene, ResolvedElement } from './types';
 
 interface WordTriggeredSceneProps {
@@ -419,6 +425,104 @@ const ElementRenderer: React.FC<{
               zone={elem.zone ?? 'MID'}
               width={elem.lineWidth ?? 0.6}
               style={(elem.lineStyle as 'underline' | 'strike') ?? 'underline'}
+            />
+          </Wrap>
+        </Sequence>
+      );
+
+    case 'svg_morph':
+      return (
+        <Sequence from={delayFrames} durationInFrames={durationInFrames}>
+          <Wrap>
+            <SvgMorph
+              fromPath={elem.fromPath ?? ''}
+              toPath={elem.toPath ?? ''}
+              viewBox={elem.viewBox ?? '0 0 200 200'}
+              size={elem.size ?? 250}
+              zone={elem.zone ?? 'MID'}
+              morphAt={elem.morphAt ?? 0.3}
+              morphDuration={elem.morphDuration ?? 0.3}
+              fromColor={elem.fromColor ?? elem.color}
+              toColor={elem.toColor ?? elem.color}
+              filled={elem.filled ?? false}
+            />
+          </Wrap>
+        </Sequence>
+      );
+
+    case 'split_screen':
+      return (
+        <Sequence from={delayFrames} durationInFrames={durationInFrames}>
+          <Wrap>
+            <SplitScreenReveal
+              left={elem.leftPanel ?? { label: '', color: '#FFD700' }}
+              right={elem.rightPanel ?? { label: '', color: '#3B82F6' }}
+              zone={elem.zone ?? 'MID'}
+              direction={(elem.splitDirection as 'horizontal' | 'vertical') ?? 'horizontal'}
+            />
+          </Wrap>
+        </Sequence>
+      );
+
+    case 'pie_chart':
+      return (
+        <Sequence from={delayFrames} durationInFrames={durationInFrames}>
+          <Wrap>
+            <AnimatedPieChart
+              segments={elem.segments ?? []}
+              zone={elem.zone ?? 'MID'}
+              size={elem.size ?? 280}
+              innerRadius={elem.innerRadius ?? 0.55}
+              centerLabel={elem.centerLabel}
+              centerValue={elem.centerValue}
+              showLabels={elem.showLabels ?? true}
+            />
+          </Wrap>
+        </Sequence>
+      );
+
+    case 'number_ticker':
+      return (
+        <Sequence from={delayFrames} durationInFrames={durationInFrames}>
+          <Wrap>
+            <NumberTicker
+              value={elem.tickerValue ?? elem.end ?? 0}
+              prefix={elem.prefix}
+              suffix={elem.suffix}
+              unit={elem.unit}
+              color={elem.color}
+              zone={elem.zone ?? 'MID'}
+              decimals={elem.decimals ?? 0}
+            />
+          </Wrap>
+        </Sequence>
+      );
+
+    case 'bar_race':
+      return (
+        <Sequence from={delayFrames} durationInFrames={durationInFrames}>
+          <Wrap>
+            <AnimatedBarRace
+              bars={elem.raceBars ?? []}
+              zone={elem.zone ?? 'MID'}
+              sortAfterGrow={elem.sortAfterGrow ?? true}
+              showValues={elem.showValues ?? true}
+              unit={elem.barUnit ?? ''}
+            />
+          </Wrap>
+        </Sequence>
+      );
+
+    case 'map_highlight':
+      return (
+        <Sequence from={delayFrames} durationInFrames={durationInFrames}>
+          <Wrap>
+            <MapHighlight
+              pins={elem.pins ?? []}
+              zone={elem.zone ?? 'MID'}
+              size={elem.size ?? 400}
+              accentColor={elem.color}
+              connectPins={elem.connectPins ?? false}
             />
           </Wrap>
         </Sequence>

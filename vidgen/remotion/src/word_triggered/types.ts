@@ -13,7 +13,7 @@ export interface ResolvedTiming {
 }
 
 export interface ResolvedElement {
-  type: 'text' | 'counter' | 'svg' | 'custom_svg' | 'timeline_marker' | 'bar' | 'gauge' | 'text_effect' | 'transform' | 'progress_ring' | 'flow_diagram' | 'scale_comparison' | 'stacked_accumulation' | 'cause_effect' | 'population_drop' | 'path_draw' | 'emphasis_line';
+  type: 'text' | 'counter' | 'svg' | 'custom_svg' | 'timeline_marker' | 'bar' | 'gauge' | 'text_effect' | 'transform' | 'progress_ring' | 'flow_diagram' | 'scale_comparison' | 'stacked_accumulation' | 'cause_effect' | 'population_drop' | 'path_draw' | 'emphasis_line' | 'svg_morph' | 'split_screen' | 'pie_chart' | 'number_ticker' | 'bar_race' | 'map_highlight';
   _resolved: ResolvedTiming;
 
   // Text props
@@ -106,6 +106,43 @@ export interface ResolvedElement {
   // EmphasisLine props
   lineWidth?: number;
   lineStyle?: string;
+
+  // SvgMorph props
+  fromPath?: string;
+  toPath?: string;
+  morphAt?: number;
+  morphDuration?: number;
+  fromColor?: string;
+  toColor?: string;
+  filled?: boolean;
+
+  // SplitScreenReveal props
+  leftPanel?: { label: string; value?: string; color: string; subtext?: string };
+  rightPanel?: { label: string; value?: string; color: string; subtext?: string };
+  splitDirection?: string;
+
+  // AnimatedPieChart props
+  segments?: Array<{ value: number; label: string; color: string }>;
+  innerRadius?: number;
+  centerLabel?: string;
+  centerValue?: string;
+  showLabels?: boolean;
+
+  // NumberTicker props
+  tickerValue?: number;
+  prefix?: string;
+  suffix?: string;
+  decimals?: number;
+
+  // AnimatedBarRace props
+  raceBars?: Array<{ label: string; value: number; color: string }>;
+  sortAfterGrow?: boolean;
+  showValues?: boolean;
+  barUnit?: string;
+
+  // MapHighlight props
+  pins?: Array<{ x: number; y: number; label: string; color?: string; delay?: number }>;
+  connectPins?: boolean;
 
   // Common
   anchor?: string;
