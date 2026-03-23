@@ -13,7 +13,7 @@ export interface ResolvedTiming {
 }
 
 export interface ResolvedElement {
-  type: 'text' | 'counter' | 'svg' | 'custom_svg' | 'timeline_marker' | 'bar' | 'gauge' | 'text_effect' | 'transform' | 'progress_ring';
+  type: 'text' | 'counter' | 'svg' | 'custom_svg' | 'timeline_marker' | 'bar' | 'gauge' | 'text_effect' | 'transform' | 'progress_ring' | 'flow_diagram' | 'scale_comparison' | 'stacked_accumulation' | 'cause_effect' | 'population_drop' | 'path_draw';
   _resolved: ResolvedTiming;
 
   // Text props
@@ -76,7 +76,32 @@ export interface ResolvedElement {
 
   // Custom SVG props
   viewBox?: string;
-  paths?: Array<{ d: string; fill?: string; stroke?: string; strokeWidth?: number; opacity?: number; fillRule?: string }>;
+  paths?: Array<{ d: string; fill?: string; stroke?: string; strokeWidth?: number; opacity?: number; fillRule?: 'evenodd' | 'nonzero' }>;
+
+  // FlowDiagram props
+  nodes?: Array<{ label: string; icon?: string; color?: string }>;
+  direction?: string;
+  arrowColor?: string;
+
+  // ScaleComparison props
+  left?: { label: string; value: number; icon?: string; color?: string };
+  right?: { label: string; value: number; icon?: string; color?: string };
+
+  // StackedAccumulation props
+  icon?: string;
+  count?: number;
+  displayValue?: string;
+
+  // CauseEffect props
+  dominoes?: Array<{ label: string; icon?: string; color?: string }>;
+  chainSpeed?: number;
+
+  // PopulationDrop props
+  startValue?: number;
+  endValue?: number;
+
+  // SvgPathDraw props
+  drawDuration?: number;
 
   // Common
   anchor?: string;

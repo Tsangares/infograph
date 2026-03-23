@@ -29,6 +29,9 @@ import { PopulationDrop } from '../components/PopulationDrop';
 import { CustomSvg } from '../components/CustomSvg';
 import { WordBar } from './WordBar';
 import { WordTimelineMarker } from './WordTimelineMarker';
+import { SlowZoom } from '../components/SlowZoom';
+import { ParallaxLayer } from '../components/ParallaxLayer';
+import { SvgPathDraw } from '../components/SvgPathDraw';
 import type { ResolvedScene, ResolvedElement } from './types';
 
 interface WordTriggeredSceneProps {
@@ -388,6 +391,22 @@ const ElementRenderer: React.FC<{
         </Sequence>
       );
 
+    case 'path_draw':
+      return (
+        <Sequence from={delayFrames} durationInFrames={durationInFrames}>
+          <Wrap>
+            <SvgPathDraw
+              paths={elem.paths ?? []}
+              viewBox={elem.viewBox ?? '0 0 400 400'}
+              size={elem.size ?? 300}
+              zone={elem.zone ?? 'MID'}
+              drawDuration={elem.drawDuration ?? 0.6}
+              color={elem.color}
+            />
+          </Wrap>
+        </Sequence>
+      );
+
     default:
       return null;
   }
@@ -413,17 +432,22 @@ export const WordTriggeredScene: React.FC<WordTriggeredSceneProps> = ({
   const getOrigIdx = (elem: ResolvedElement) => scene.elements.indexOf(elem);
 
   return (
+    <SlowZoom from={1.0} to={1.06}>
     <AbsoluteFill>
-      {/* Background layers */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-        <GradientBg color={bgColor} accentColor={accentColor} secondaryColor={secondaryColor} />
-      </div>
-      <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
-        <GridLines />
-      </div>
-      <div style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
-        <ParticleField color={accentColor} />
-      </div>
+      {/* Background layers — parallax depth for cinematic feel */}
+      <ParallaxLayer depth={0.3} direction="diagonal" distance={25}>
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+          <GradientBg color={bgColor} accentColor={accentColor} secondaryColor={secondaryColor} />
+        </div>
+        <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
+          <GridLines />
+        </div>
+      </ParallaxLayer>
+      <ParallaxLayer depth={0.6} direction="up" distance={20}>
+        <div style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
+          <ParticleField color={accentColor} count={30} speed={1.5} />
+        </div>
+      </ParallaxLayer>
 
       {/* Scene label pill */}
       <LabelPill text={scene.label} />
@@ -472,5 +496,6 @@ export const WordTriggeredScene: React.FC<WordTriggeredSceneProps> = ({
         ))}
       </div>
     </AbsoluteFill>
+    </SlowZoom>
   );
 };
