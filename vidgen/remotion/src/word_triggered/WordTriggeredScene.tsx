@@ -32,6 +32,9 @@ import { WordTimelineMarker } from './WordTimelineMarker';
 import { SlowZoom } from '../components/SlowZoom';
 import { ParallaxLayer } from '../components/ParallaxLayer';
 import { SvgPathDraw } from '../components/SvgPathDraw';
+import { NoiseOverlay } from '../components/NoiseOverlay';
+import { VignetteOverlay } from '../components/VignetteOverlay';
+import { EmphasisLine } from '../components/EmphasisLine';
 import type { ResolvedScene, ResolvedElement } from './types';
 
 interface WordTriggeredSceneProps {
@@ -407,6 +410,20 @@ const ElementRenderer: React.FC<{
         </Sequence>
       );
 
+    case 'emphasis_line':
+      return (
+        <Sequence from={delayFrames} durationInFrames={durationInFrames}>
+          <Wrap>
+            <EmphasisLine
+              color={elem.color}
+              zone={elem.zone ?? 'MID'}
+              width={elem.lineWidth ?? 0.6}
+              style={(elem.lineStyle as 'underline' | 'strike') ?? 'underline'}
+            />
+          </Wrap>
+        </Sequence>
+      );
+
     default:
       return null;
   }
@@ -494,6 +511,14 @@ export const WordTriggeredScene: React.FC<WordTriggeredSceneProps> = ({
             zIndex={20 + i}
           />
         ))}
+      </div>
+
+      {/* Cinematic overlays — top layer */}
+      <div style={{ position: 'absolute', inset: 0, zIndex: 90 }}>
+        <VignetteOverlay intensity={0.35} spread={0.25} />
+      </div>
+      <div style={{ position: 'absolute', inset: 0, zIndex: 91 }}>
+        <NoiseOverlay opacity={0.03} />
       </div>
     </AbsoluteFill>
     </SlowZoom>

@@ -17,6 +17,7 @@ import { WIDTH, HEIGHT } from '../lib/zones';
 import { fontFaces } from '../lib/fonts';
 import { SPRINGS } from '../lib/springs';
 import { WordTriggeredScene } from './WordTriggeredScene';
+import { ProgressBar } from '../components/ProgressBar';
 import type { ResolvedManifest } from './types';
 
 interface WordTriggeredVideoProps {
@@ -96,6 +97,9 @@ export const WordTriggeredVideo: React.FC<WordTriggeredVideoProps> = ({
           );
         })}
       </TransitionSeries>
+
+      {/* Global progress bar — spans entire video, above transitions */}
+      <ProgressBar color={manifest.colors.accent} />
     </AbsoluteFill>
   );
 };

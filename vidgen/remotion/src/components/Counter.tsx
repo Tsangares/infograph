@@ -47,15 +47,30 @@ export const Counter: React.FC<CounterProps> = ({
   const bloomScale = countDone
     ? spring({ frame: bloomFrame, fps, config: SPRINGS.dramatic })
     : 0;
-  // Bloom overshoots to 1.15x then settles back to 1.0
+  // Bloom overshoots to 1.25x then settles back to 1.0
   const bloomEffect = countDone
-    ? 1 + interpolate(bloomScale, [0, 1], [0.15, 0], { extrapolateRight: 'clamp' })
+    ? 1 + interpolate(bloomScale, [0, 1], [0.25, 0], { extrapolateRight: 'clamp' })
     : 1;
 
-  // Bloom glow: brief bright shadow that fades out
+  // Bloom glow: brief bright shadow that fades out (brighter & wider)
   const bloomGlow = countDone
-    ? interpolate(bloomFrame, [0, 8, 20], [0, 1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })
+    ? interpolate(bloomFrame, [0, 6, 18], [0, 1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })
     : 0;
+
+  // Screen shake on bloom: decaying high-freq oscillation
+  const shakeDecay = countDone
+    ? interpolate(bloomFrame, [0, 12], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })
+    : 0;
+  const shakeX = shakeDecay * Math.sin(bloomFrame * 1.8) * 4;
+  const shakeY = shakeDecay * Math.cos(bloomFrame * 2.3) * 3;
+
+  // Counting tick: micro-bounce when displayed number changes frame-to-frame
+  const prevValue = interpolate(Math.max(0, frame - 1), [0, Math.max(1, countFrames)], [start, end], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  const numberChanged = !countDone && Math.round(value) !== Math.round(prevValue);
+  const tickBounce = numberChanged ? 1.03 : 1;
 
   // Exit: scale down + fade
   const exitScale = interpolate(exit, [0, 1], [1, 0.9], { extrapolateRight: 'clamp' });
@@ -71,7 +86,7 @@ export const Counter: React.FC<CounterProps> = ({
       flexDirection: 'column',
       gap: 12,
       opacity: entryOpacity * exitOpacity,
-      transform: `scale(${entryScale * exitScale * bloomEffect})`,
+      transform: `translate(${shakeX}px, ${shakeY}px) scale(${entryScale * exitScale * bloomEffect * tickBounce})`,
     }}>
       <div style={{
         fontFamily: FONTS.mono,
@@ -81,7 +96,7 @@ export const Counter: React.FC<CounterProps> = ({
         textAlign: 'center',
         letterSpacing: 4,
         textShadow: bloomGlow > 0
-          ? `0 0 ${30 * bloomGlow}px ${color}, 0 0 ${60 * bloomGlow}px ${color}40`
+          ? `0 0 ${50 * bloomGlow}px ${color}, 0 0 ${100 * bloomGlow}px ${color}80, 0 0 ${150 * bloomGlow}px ${color}30`
           : 'none',
       }}>
         {unit && ['$', '€', '£', '¥'].includes(unit) ? (

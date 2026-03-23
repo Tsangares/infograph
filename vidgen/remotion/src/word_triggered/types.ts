@@ -13,7 +13,7 @@ export interface ResolvedTiming {
 }
 
 export interface ResolvedElement {
-  type: 'text' | 'counter' | 'svg' | 'custom_svg' | 'timeline_marker' | 'bar' | 'gauge' | 'text_effect' | 'transform' | 'progress_ring' | 'flow_diagram' | 'scale_comparison' | 'stacked_accumulation' | 'cause_effect' | 'population_drop' | 'path_draw';
+  type: 'text' | 'counter' | 'svg' | 'custom_svg' | 'timeline_marker' | 'bar' | 'gauge' | 'text_effect' | 'transform' | 'progress_ring' | 'flow_diagram' | 'scale_comparison' | 'stacked_accumulation' | 'cause_effect' | 'population_drop' | 'path_draw' | 'emphasis_line';
   _resolved: ResolvedTiming;
 
   // Text props
@@ -102,6 +102,10 @@ export interface ResolvedElement {
 
   // SvgPathDraw props
   drawDuration?: number;
+
+  // EmphasisLine props
+  lineWidth?: number;
+  lineStyle?: string;
 
   // Common
   anchor?: string;
