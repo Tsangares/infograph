@@ -1,0 +1,257 @@
+{
+  "topic": "doom_cartoons",
+  "ttsScript": "MF DOOM sampled Fantastic Four cartoons on almost every album. People thought it was a gimmick. But Daniel Dumile and his brother grew up sharing a clock radio in Long Beach, recording hip hop on cassette tapes, reading comic books together. In 1993, his brother was killed crossing a highway. He was nineteen. Elektra dropped their group. Dumile went homeless. When he came back, he wore a mask modeled on Doctor Doom, a villain who built a machine to contact the dead. Every cartoon sample was a portal back to a bedroom where his brother was still alive. DOOM said there is no more after 1993. So he built a world entirely out of before.",
+  "colors": {
+    "bg": "#0A0A14",
+    "accent": "#F59E0B",
+    "secondary": "#7C3AED"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "label": "THE SAMPLES",
+      "type": "illustration",
+      "scene_anchor": "Doom",
+      "scene_end_anchor": "gimmick.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "FANTASTIC FOUR ON REPEAT",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#F59E0B",
+          "anchor": "Doom",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "figureWithBook",
+          "zone": "MID",
+          "color": "#F59E0B",
+          "anchor": "Fantastic",
+          "attack": 0.2,
+          "enter": "pop",
+          "size": 180,
+          "holdMotion": "float",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "Every. Single. Album.",
+          "zone": "LOWER",
+          "style": "caption",
+          "color": "#94A3B8",
+          "anchor": "every",
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "wrong_answer",
+      "label": "THE WRONG ANSWER",
+      "type": "illustration",
+      "scene_anchor": "Daniel",
+      "scene_end_anchor": "together.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "TWO BROTHERS, ONE RADIO",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#F59E0B",
+          "anchor": "Daniel",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "split_screen",
+          "zone": "MID",
+          "anchor": "brother",
+          "attack": 0.3,
+          "hold": "until_scene_end",
+          "leftPanel": {
+            "label": "Daniel",
+            "value": "ZEV LOVE X",
+            "color": "#7C3AED",
+            "subtext": "DJ + rapper"
+          },
+          "rightPanel": {
+            "label": "Dingilizwe",
+            "value": "DJ SUBROC",
+            "color": "#F59E0B",
+            "subtext": "Beat maker"
+          }
+        },
+        {
+          "type": "text",
+          "content": "Long Beach, New York",
+          "zone": "LOWER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "Beach,",
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "contradiction",
+      "label": "THE CONTRADICTION",
+      "type": "causeEffect",
+      "scene_anchor": "1993,",
+      "scene_end_anchor": "homeless.",
+      "elements": [
+        {
+          "type": "text_effect",
+          "effect": "stamp",
+          "content": "1993",
+          "zone": "UPPER",
+          "color": "#EF4444",
+          "anchor": "1993,",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "cause_effect",
+          "zone": "MID",
+          "anchor": "killed",
+          "attack": 0.3,
+          "hold": "until_scene_end",
+          "dominoes": [
+            {"label": "Brother killed", "icon": "skull", "color": "#EF4444"},
+            {"label": "He was 19", "icon": "warning", "color": "#F97316"},
+            {"label": "Label drops KMD", "icon": "chain", "color": "#94A3B8"},
+            {"label": "Homeless", "icon": "figureFallen", "color": "#7C3AED"}
+          ],
+          "chainSpeed": 0.15
+        }
+      ]
+    },
+    {
+      "id": "proof",
+      "label": "THE MASK",
+      "type": "illustration",
+      "scene_anchor": "came",
+      "scene_end_anchor": "dead.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "HE CAME BACK AS A VILLAIN",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#F59E0B",
+          "anchor": "came",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "helmet",
+          "zone": "MID",
+          "color": "#F59E0B",
+          "anchor": "mask",
+          "attack": 0.2,
+          "enter": "stamp",
+          "size": 200,
+          "shake": true,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "A machine to contact the dead",
+          "zone": "LOWER",
+          "style": "caption",
+          "color": "#EF4444",
+          "anchor": "contact",
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "betrayal",
+      "label": "THE PORTAL",
+      "type": "illustration",
+      "scene_anchor": "cartoon",
+      "scene_end_anchor": "alive.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "TIME MACHINE",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#7C3AED",
+          "anchor": "cartoon",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text_effect",
+          "effect": "redacted",
+          "content": "EVERY SAMPLE WAS A PORTAL",
+          "zone": "MID",
+          "color": "#F59E0B",
+          "anchor": "portal",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "Where his brother was alive",
+          "zone": "LOWER",
+          "style": "caption",
+          "color": "#EAEAF0",
+          "anchor": "alive.",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "punch",
+      "label": "THE PUNCH",
+      "type": "illustration",
+      "scene_anchor": "said",
+      "scene_end_anchor": "before.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "No more after 1993",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "said",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text_effect",
+          "effect": "stamp",
+          "content": "BUILT FROM BEFORE",
+          "zone": "MID",
+          "color": "#F59E0B",
+          "anchor": "world",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "emphasis_line",
+          "zone": "MID",
+          "color": "#F59E0B",
+          "anchor": "entirely",
+          "lineStyle": "strike",
+          "lineWidth": 0.5,
+          "hold": "until_scene_end"
+        }
+      ]
+    }
+  ]
+}
