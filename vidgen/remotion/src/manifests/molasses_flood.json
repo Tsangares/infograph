@@ -1,0 +1,243 @@
+{
+  "topic": "molasses_flood",
+  "ttsScript": "Two point three million gallons of molasses crushed an entire neighborhood in fifteen seconds. January fifteenth, nineteen nineteen, a steel tank in Boston's North End exploded without warning. The company blamed anarchists. A bomb, they said. But there was no bomb. The tank was built too thin. Engineers later proved the steel was only half the thickness required. The molasses moved at thirty five miles per hour. A wave two stories tall. It bent steel rail tracks. It threw a truck into the harbor. Twenty one people died. Horses drowned standing up. It took eighty seven years before the company was finally held responsible. One structural failure. One cover up. Twenty one lives.",
+  "colors": {
+    "bg": "#0A0808",
+    "accent": "#D97706",
+    "secondary": "#7C2D12"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "label": "THE HOOK",
+      "type": "counter",
+      "scene_anchor": "2",
+      "scene_end_anchor": "seconds.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "JANUARY 15, 1919",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#D9770688",
+          "anchor": "2",
+          "enter": "fade"
+        },
+        {
+          "type": "number_ticker",
+          "tickerValue": 2300000,
+          "unit": "GALLONS",
+          "color": "#D97706",
+          "zone": "MID",
+          "anchor": "million"
+        },
+        {
+          "type": "text",
+          "content": "of molasses",
+          "zone": "LOWER",
+          "style": "caption",
+          "color": "#EAEAF0",
+          "anchor": "molasses",
+          "enter": "fade"
+        },
+        {
+          "type": "text",
+          "content": "15 SECONDS",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#7C2D12",
+          "anchor": "15",
+          "enter": "fade"
+        }
+      ]
+    },
+    {
+      "id": "wrong_answer",
+      "label": "THE WRONG ANSWER",
+      "type": "illustration",
+      "scene_anchor": "January",
+      "scene_end_anchor": "said.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "BOSTON'S NORTH END",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#D97706",
+          "anchor": "Boston's",
+          "enter": "fade"
+        },
+        {
+          "type": "svg",
+          "svg": "bomb",
+          "size": 180,
+          "color": "#7C2D12",
+          "zone": "MID",
+          "anchor": "anarchists,",
+          "enter": "pop",
+          "holdMotion": "pulse",
+          "shake": true
+        },
+        {
+          "type": "text_effect",
+          "text": "ANARCHISTS",
+          "effect": "stamp",
+          "color": "#EF4444",
+          "zone": "LOWER",
+          "anchor": "bomb"
+        }
+      ]
+    },
+    {
+      "id": "contradiction",
+      "label": "THE CONTRADICTION",
+      "type": "gauge",
+      "scene_anchor": "But",
+      "scene_end_anchor": "required.",
+      "elements": [
+        {
+          "type": "text_effect",
+          "text": "NO BOMB",
+          "effect": "redacted",
+          "color": "#EAEAF0",
+          "zone": "UPPER",
+          "anchor": "But"
+        },
+        {
+          "type": "split_screen",
+          "leftPanel": {
+            "label": "REQUIRED",
+            "value": "1.0\"",
+            "color": "#22C55E",
+            "subtext": "Minimum safe thickness"
+          },
+          "rightPanel": {
+            "label": "ACTUAL",
+            "value": "0.5\"",
+            "color": "#EF4444",
+            "subtext": "What they built"
+          },
+          "splitDirection": "horizontal",
+          "zone": "MID",
+          "anchor": "thin."
+        }
+      ]
+    },
+    {
+      "id": "proof",
+      "label": "THE PROOF",
+      "type": "counter",
+      "scene_anchor": "The",
+      "scene_end_anchor": "harbor.",
+      "elements": [
+        {
+          "type": "counter",
+          "start": 0,
+          "end": 35,
+          "unit": "MPH",
+          "description": "WALL OF MOLASSES",
+          "color": "#D97706",
+          "zone": "UPPER",
+          "anchor": "35",
+          "count_end_anchor": "hour."
+        },
+        {
+          "type": "text",
+          "content": "TWO STORIES TALL",
+          "zone": "MID",
+          "style": "headline",
+          "color": "#EAEAF0",
+          "anchor": "tall.",
+          "enter": "fade"
+        },
+        {
+          "type": "cause_effect",
+          "dominoes": [
+            { "label": "WAVE", "icon": "wave", "color": "#D97706" },
+            { "label": "STEEL BENT", "icon": "train", "color": "#EF4444" },
+            { "label": "TRUCK THROWN", "icon": "truck", "color": "#7C2D12" }
+          ],
+          "zone": "LOWER",
+          "anchor": "bent",
+          "chainSpeed": 0.15
+        }
+      ]
+    },
+    {
+      "id": "betrayal",
+      "label": "THE BETRAYAL",
+      "type": "counter",
+      "scene_anchor": "21",
+      "scene_end_anchor": "up.",
+      "elements": [
+        {
+          "type": "counter",
+          "start": 0,
+          "end": 21,
+          "unit": "DEAD",
+          "color": "#EF4444",
+          "zone": "UPPER",
+          "anchor": "21",
+          "count_end_anchor": "died."
+        },
+        {
+          "type": "svg",
+          "svg": "skull",
+          "size": 150,
+          "color": "#EF4444",
+          "zone": "MID",
+          "anchor": "died.",
+          "enter": "stamp",
+          "holdMotion": "breathe",
+          "repeat": 3,
+          "stagger": 60
+        },
+        {
+          "type": "text",
+          "content": "Horses drowned standing up.",
+          "zone": "LOWER",
+          "style": "caption",
+          "color": "#EAEAF088",
+          "anchor": "Horses",
+          "enter": "wordByWord"
+        }
+      ]
+    },
+    {
+      "id": "punch",
+      "label": "THE PUNCH",
+      "type": "counter",
+      "scene_anchor": "It",
+      "scene_end_anchor": "lives.",
+      "elements": [
+        {
+          "type": "counter",
+          "start": 0,
+          "end": 87,
+          "unit": "YEARS",
+          "description": "TO HOLD THEM ACCOUNTABLE",
+          "color": "#D97706",
+          "zone": "UPPER",
+          "anchor": "87",
+          "count_end_anchor": "responsible."
+        },
+        {
+          "type": "emphasis_line",
+          "color": "#D97706",
+          "zone": "MID",
+          "lineWidth": 0.5,
+          "lineStyle": "strike",
+          "anchor": "responsible."
+        },
+        {
+          "type": "text_effect",
+          "text": "21 LIVES",
+          "effect": "stamp",
+          "color": "#EF4444",
+          "zone": "LOWER",
+          "anchor": "One"
+        }
+      ]
+    }
+  ]
+}
