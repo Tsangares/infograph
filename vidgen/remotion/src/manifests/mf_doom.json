@@ -1,0 +1,277 @@
+{
+  "topic": "mf_doom",
+  "ttsScript": "MF DOOM sent imposters to his own concerts. Fans paid for a mask and sometimes it wasn't him. People called it a gimmick. But Daniel Dumile had a deal at nineteen. Brother died. Label dropped him. Homeless. He came back masked. Not hiding. Armor. Viktor Vaughn. King Geedorah. Metal Fingers. No Grammy. No plaque. Kanye sampled him. Tyler worships him. He died October 2020. Family told no one until New Year's Eve. Even his death was a plot twist. ALL CAPS when you spell the man's name.",
+  "colors": {
+    "bg": "#0F0F14",
+    "accent": "#D4A017",
+    "secondary": "#7C3AED"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "label": "THE HOOK",
+      "type": "illustration",
+      "scene_anchor": "MF",
+      "scene_end_anchor": "him.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "THE IMPOSTER CONCERTS",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#D4A017",
+          "anchor": "MF",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "helmet",
+          "zone": "MID",
+          "color": "#D4A017",
+          "anchor": "mask",
+          "attack": 0.2,
+          "enter": "scaleUp",
+          "size": 180,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "It wasn't even him",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#94A3B8",
+          "anchor": "wasn't",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "wrong_answer",
+      "label": "THE WRONG ANSWER",
+      "type": "splitScreen",
+      "scene_anchor": "People",
+      "scene_end_anchor": "19.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "TWO LIVES, ONE MAN",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "People",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "split_screen",
+          "zone": "MID",
+          "anchor": "Daniel",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "leftPanel": {
+            "label": "Zev Love X",
+            "value": "1988",
+            "color": "#7C3AED"
+          },
+          "rightPanel": {
+            "label": "MF DOOM",
+            "value": "1999",
+            "color": "#D4A017"
+          },
+          "unit": ""
+        },
+        {
+          "type": "text",
+          "content": "Record deal at 19",
+          "zone": "LOWER",
+          "style": "stat",
+          "color": "#D4A017",
+          "anchor": "19.",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "contradiction",
+      "label": "THE CONTRADICTION",
+      "type": "causeEffect",
+      "scene_anchor": "Brother",
+      "scene_end_anchor": "armor,",
+      "elements": [
+        {
+          "type": "text",
+          "content": "THE FALL AND REBIRTH",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#D4A017",
+          "anchor": "Brother",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "cause_effect",
+          "zone": "MID",
+          "anchor": "Label",
+          "attack": 0.3,
+          "hold": "until_scene_end",
+          "dominoes": [
+            {"label": "Brother dies", "svg": "skull", "color": "#EF4444"},
+            {"label": "Label drops him", "icon": "warning", "color": "#F97316"},
+            {"label": "Goes homeless", "icon": "mountain", "color": "#94A3B8"},
+            {"label": "Becomes DOOM", "icon": "shield", "color": "#D4A017"}
+          ],
+          "chainSpeed": 0.15
+        },
+        {
+          "type": "text",
+          "content": "The mask was armor",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#7C3AED",
+          "anchor": "armor,",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "proof",
+      "label": "THE PROOF",
+      "type": "counter",
+      "scene_anchor": "Victor",
+      "scene_end_anchor": "fingers,",
+      "elements": [
+        {
+          "type": "text",
+          "content": "A DOZEN IDENTITIES",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "Victor",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "counter",
+          "start": 0,
+          "end": 12,
+          "unit": "aliases",
+          "description": "Producer, rapper, villain",
+          "color": "#D4A017",
+          "zone": "MID",
+          "anchor": "King",
+          "attack": 0.0,
+          "count_end_anchor": "fingers,",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "Viktor. Geedorah. Metal.",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#7C3AED",
+          "anchor": "Metal",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "betrayal",
+      "label": "THE BETRAYAL",
+      "type": "barRace",
+      "scene_anchor": "Grammy,",
+      "scene_end_anchor": "worships",
+      "elements": [
+        {
+          "type": "text",
+          "content": "NO GRAMMYS. NO PLAQUES.",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#EF4444",
+          "anchor": "Grammy,",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "bar_race",
+          "zone": "MID",
+          "anchor": "Kanye",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "raceBars": [
+            {"label": "Kanye", "value": 95, "color": "#D4A017"},
+            {"label": "Tyler", "value": 90, "color": "#7C3AED"},
+            {"label": "Madlib", "value": 88, "color": "#F59E0B"},
+            {"label": "Earl Sweatshirt", "value": 85, "color": "#94A3B8"}
+          ],
+          "unit": "influence"
+        },
+        {
+          "type": "text",
+          "content": "They all worship DOOM",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#D4A017",
+          "anchor": "worships",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "punch",
+      "label": "THE PUNCH",
+      "type": "illustration",
+      "scene_anchor": "died",
+      "scene_end_anchor": "name.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "October 2020",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "October",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "skull",
+          "zone": "MID",
+          "color": "#7C3AED",
+          "anchor": "Year's",
+          "attack": 0.2,
+          "enter": "scaleUp",
+          "size": 160,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text_effect",
+          "effect": "stamp",
+          "content": "ALL CAPS",
+          "zone": "FOOTER",
+          "color": "#D4A017",
+          "anchor": "ALL",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        }
+      ]
+    }
+  ]
+}
