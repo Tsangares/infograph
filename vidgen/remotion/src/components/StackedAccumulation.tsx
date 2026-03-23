@@ -93,10 +93,11 @@ export const StackedAccumulation: React.FC<StackedAccumulationProps> = ({
       <div style={{
         position: 'relative',
         width: 700,
-        height: 450,
+        height: 200,
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
+        overflow: 'hidden',
       }}>
         {positions.map((pos, i) => {
           const itemStart = Math.round(i * staggerDelay);
@@ -133,7 +134,7 @@ export const StackedAccumulation: React.FC<StackedAccumulationProps> = ({
       {displayValue && (
         <div style={{
           fontFamily: FONTS.mono,
-          fontSize: FONT_SIZE.stat,
+          fontSize: FONT_SIZE.headline,
           fontWeight: 'bold',
           color,
           textAlign: 'center',
@@ -147,7 +148,7 @@ export const StackedAccumulation: React.FC<StackedAccumulationProps> = ({
       {label && (
         <div style={{
           fontFamily: FONTS.body,
-          fontSize: FONT_SIZE.body,
+          fontSize: FONT_SIZE.caption,
           color: TKK_WHITE + 'CC',
           textAlign: 'center',
           opacity: interpolate(frame, [dropWindow, dropWindow + 15], [0, 1], { extrapolateRight: 'clamp' }),

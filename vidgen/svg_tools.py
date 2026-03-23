@@ -308,9 +308,10 @@ def import_icon(source: str, name: str, alias: str = None) -> str:
         jsx = f"  {lib_key}: {helper}('{viewbox}', <>\n    {elems}\n  </>),"
 
     content = SVG_LIBRARY_PATH.read_text()
-    closing_match = re.search(r'\n};\s*\n', content)
+    # Find the }; that closes SVG_LIBRARY (followed by export type line)
+    closing_match = re.search(r'\n};\s*\nexport type SvgIconName', content)
     if not closing_match:
-        return "Error: Could not find closing }; in svgLibrary.tsx"
+        return "Error: Could not find SVG_LIBRARY closing }; in svgLibrary.tsx"
 
     insert_pos = closing_match.start()
     new_content = content[:insert_pos] + f"\n\n  // {comment_source}: {name}\n{jsx}\n" + content[insert_pos:]
@@ -419,9 +420,9 @@ def add_custom_svg(name: str, svg_markup: str) -> str:
     jsx = f'  {name}: icon(\'{viewbox}\', <>\n    {inner}\n  </>),'
 
     content = SVG_LIBRARY_PATH.read_text()
-    closing_match = re.search(r'\n};\s*\n', content)
+    closing_match = re.search(r'\n};\s*\nexport type SvgIconName', content)
     if not closing_match:
-        return "Error: Could not find closing }; in svgLibrary.tsx"
+        return "Error: Could not find SVG_LIBRARY closing }; in svgLibrary.tsx"
 
     insert_pos = closing_match.start()
     new_content = content[:insert_pos] + f"\n\n  // Custom: {name}\n{jsx}\n" + content[insert_pos:]

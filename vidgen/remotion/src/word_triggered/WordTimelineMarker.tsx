@@ -46,6 +46,12 @@ export const WordTimelineMarker: React.FC<WordTimelineMarkerProps> = ({
     extrapolateRight: 'clamp',
   });
 
+  // Scale fonts and spacing based on marker count
+  const fontScale = totalMarkers <= 3 ? 1.0 : totalMarkers <= 5 ? 0.8 : 0.65;
+  const yearSize = Math.round(FONT_SIZE.dataLabel * fontScale);
+  const labelSize = Math.round(FONT_SIZE.dataValue * fontScale);
+  const labelMax = totalMarkers <= 3 ? 200 : Math.round((SAFE.width - 40) / totalMarkers);
+
   const pct = totalMarkers === 1 ? 0.5 : index / (totalMarkers - 1);
   const xOffset = (pct - 0.5) * (SAFE.width - 100);
 
@@ -68,7 +74,7 @@ export const WordTimelineMarker: React.FC<WordTimelineMarkerProps> = ({
       }} />
       <div style={{
         fontFamily: FONTS.mono,
-        fontSize: FONT_SIZE.dataLabel,
+        fontSize: yearSize,
         fontWeight: 'bold',
         color,
         whiteSpace: 'nowrap',
@@ -77,11 +83,15 @@ export const WordTimelineMarker: React.FC<WordTimelineMarkerProps> = ({
       </div>
       <div style={{
         fontFamily: FONTS.body,
-        fontSize: FONT_SIZE.dataValue,
+        fontSize: labelSize,
         color: TKK_WHITE + 'BB',
         textAlign: 'center',
-        maxWidth: 200,
+        maxWidth: labelMax,
         lineHeight: 1.2,
+        overflow: 'hidden',
+        display: '-webkit-box',
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: 'vertical' as const,
       }}>
         {label}
       </div>

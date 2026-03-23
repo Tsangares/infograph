@@ -38,16 +38,40 @@
           "holdMotion": "none"
         },
         {
-          "type": "svg",
-          "svg": "brain",
+          "type": "custom_svg",
           "zone": "MID",
           "anchor": "cells",
           "attack": 0.0,
           "enter": "pop",
           "hold": "until_scene_end",
-          "size": 60,
-          "position": {"x": 0, "y": -250},
-          "holdMotion": "pulse"
+          "size": 160,
+          "position": {"x": -120, "y": -80},
+          "holdMotion": "pulse",
+          "viewBox": "0 0 200 200",
+          "paths": [
+            {"d": "M100 20 C55 20 20 55 20 100 C20 145 55 180 100 180 C145 180 180 145 180 100 C180 55 145 20 100 20 Z", "fill": "#E879F9", "opacity": 0.3},
+            {"d": "M100 20 C55 20 20 55 20 100 C20 145 55 180 100 180 C145 180 180 145 180 100 C180 55 145 20 100 20 Z", "stroke": "#E879F9", "strokeWidth": 3, "fill": "none"},
+            {"d": "M100 60 C80 60 65 75 65 95 C65 115 80 130 100 130 C120 130 135 115 135 95 C135 75 120 60 100 60 Z", "fill": "#E879F9", "opacity": 0.5},
+            {"d": "M75 80 Q60 100 75 120", "stroke": "#E879F9", "strokeWidth": 1.5, "fill": "none", "opacity": 0.4},
+            {"d": "M125 80 Q140 100 125 120", "stroke": "#E879F9", "strokeWidth": 1.5, "fill": "none", "opacity": 0.4},
+            {"d": "M85 55 Q100 40 115 55", "stroke": "#E879F9", "strokeWidth": 1.5, "fill": "none", "opacity": 0.4}
+          ]
+        },
+        {
+          "type": "custom_svg",
+          "zone": "MID",
+          "anchor": "cells",
+          "attack": 0.3,
+          "enter": "pop",
+          "hold": "until_scene_end",
+          "size": 100,
+          "position": {"x": 130, "y": -120},
+          "holdMotion": "pulse",
+          "viewBox": "0 0 200 200",
+          "paths": [
+            {"d": "M100 30 C60 30 30 60 30 100 C30 140 60 170 100 170 C140 170 170 140 170 100 C170 60 140 30 100 30 Z", "fill": "#E879F9", "opacity": 0.2},
+            {"d": "M100 30 C60 30 30 60 30 100 C30 140 60 170 100 170 C140 170 170 140 170 100 C170 60 140 30 100 30 Z", "stroke": "#E879F9", "strokeWidth": 2, "fill": "none"}
+          ]
         },
         {
           "type": "text",
@@ -82,27 +106,33 @@
         },
         {
           "type": "svg",
-          "svg": "factory",
+          "svg": "hospital",
           "zone": "MID",
           "anchor": "Hopkins",
           "attack": 0.0,
           "enter": "slideUp",
           "hold": "until_scene_end",
-          "size": 80,
-          "position": {"x": 0, "y": -200},
+          "size": 120,
+          "color": "#94A3B8",
+          "position": {"x": 0, "y": -80},
           "holdMotion": "none"
         },
         {
-          "type": "svg",
-          "svg": "warning",
+          "type": "custom_svg",
           "zone": "MID",
           "anchor": "knowledge.",
           "attack": 0.0,
           "enter": "pop",
           "hold": "until_scene_end",
-          "size": 60,
-          "position": {"x": 0, "y": 100},
-          "holdMotion": "none"
+          "size": 140,
+          "position": {"x": 0, "y": 150},
+          "holdMotion": "none",
+          "viewBox": "0 0 200 200",
+          "paths": [
+            {"d": "M100 30 L130 50 L130 90 L170 90 L170 120 L130 120 L130 170 L100 190 L70 170 L70 120 L30 120 L30 90 L70 90 L70 50 Z", "stroke": "#EF4444", "strokeWidth": 3, "fill": "none"},
+            {"d": "M85 100 L115 100 M100 85 L100 115", "stroke": "#EF4444", "strokeWidth": 4, "fill": "none"},
+            {"d": "M50 65 L35 50 M150 65 L165 50 M50 140 L35 155 M150 140 L165 155", "stroke": "#EF4444", "strokeWidth": 2, "fill": "none", "opacity": 0.6}
+          ]
         },
         {
           "type": "text",

@@ -30,6 +30,8 @@ export const SPRINGS = {
   heavy: { damping: 8, stiffness: 200, mass: 2 },
   /** Elastic snap — tight bounce for playful impacts */
   elastic: { damping: 5, stiffness: 300, mass: 0.5 },
+  /** Scene transitions — quick crossfade so scenes stay visible longer */
+  transition: { damping: 30, stiffness: 300, mass: 0.5 },
 } as const;
 
 export type SpringPreset = keyof typeof SPRINGS;

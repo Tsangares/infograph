@@ -61,7 +61,6 @@ export const CauseEffect: React.FC<CauseEffectProps> = ({
       gap: spacing - dominoWidth,
       opacity: enterOpacity * exitOpacity,
       transform: `scale(${enterScale})`,
-      overflow: 'visible',
       paddingLeft: 20,
       paddingRight: 20,
     }}>
@@ -71,7 +70,7 @@ export const CauseEffect: React.FC<CauseEffectProps> = ({
         const fallProgress = spring({ frame: fallFrame, fps, config: { damping: 12, stiffness: 120, mass: 1 } });
 
         // Domino tilts forward (0° upright → 60° fallen)
-        const rotation = fallProgress * 60;
+        const rotation = fallProgress * 25;
         const isFalling = frame >= fallStart;
         const isFallen = fallProgress > 0.9;
 
@@ -93,7 +92,6 @@ export const CauseEffect: React.FC<CauseEffectProps> = ({
             alignItems: 'center',
             gap: 8,
             zIndex: isFallen ? 1 : n - i + 5,
-            overflow: 'visible',
           }}>
             {/* Domino piece */}
             <div style={{
@@ -132,8 +130,12 @@ export const CauseEffect: React.FC<CauseEffectProps> = ({
               fontWeight: 'bold',
               color: isFallen ? color : TKK_WHITE + 'CC',
               textAlign: 'center',
-              maxWidth: dominoWidth + 20,
+              maxWidth: dominoWidth + 40,
               lineHeight: 1.2,
+              overflow: 'hidden',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical' as const,
               opacity: interpolate(frame, [0, 20 + i * 3], [0, 1], { extrapolateRight: 'clamp' }),
             }}>
               {domino.label}

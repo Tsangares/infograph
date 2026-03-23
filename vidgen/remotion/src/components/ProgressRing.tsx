@@ -120,18 +120,40 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({
         })}
 
         {/* Center value (show primary ring value) */}
-        {rings.length === 1 && (
-          <text
-            x={cx} y={cy + 12}
-            textAnchor="middle"
-            fontFamily={FONTS.mono}
-            fontSize={72}
-            fontWeight="bold"
-            fill={rings[0].color ?? TKK_GOLD}
-          >
-            {Math.round(rings[0].value * spring({ frame: Math.min(frame, fillFrames), fps, config: SPRINGS.smooth }))}{unit}
-          </text>
-        )}
+        {rings.length === 1 && (() => {
+          const displayVal = Math.round(rings[0].value * spring({ frame: Math.min(frame, fillFrames), fps, config: SPRINGS.smooth }));
+          const numStr = displayVal.toLocaleString();
+          // Scale font to fit inside ring: ~5 chars at 72px, shrink for longer strings
+          const fontSize = Math.min(72, Math.floor(320 / Math.max(numStr.length, 1)));
+          const unitSize = Math.min(36, fontSize * 0.5);
+          return (
+            <>
+              <text
+                x={cx} y={cy}
+                textAnchor="middle"
+                dominantBaseline="central"
+                fontFamily={FONTS.mono}
+                fontSize={fontSize}
+                fontWeight="bold"
+                fill={rings[0].color ?? TKK_GOLD}
+              >
+                {numStr}
+              </text>
+              {unit && (
+                <text
+                  x={cx} y={cy + fontSize * 0.55}
+                  textAnchor="middle"
+                  fontFamily={FONTS.body}
+                  fontSize={unitSize}
+                  fill={TKK_WHITE}
+                  opacity={0.7}
+                >
+                  {unit}
+                </text>
+              )}
+            </>
+          );
+        })()}
       </svg>
 
       {/* Labels */}
@@ -165,7 +187,7 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({
                 fontWeight: 'bold',
                 color: TKK_WHITE,
               }}>
-                {ring.label}: <span style={{ color }}>{displayVal}{unit}</span>
+                {ring.label}: <span style={{ color }}>{displayVal.toLocaleString()} {unit}</span>
               </div>
             </div>
           );

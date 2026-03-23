@@ -70,30 +70,22 @@
           "hold": "until_scene_end"
         },
         {
-          "type": "svg",
-          "svg": "figurePointing",
+          "type": "custom_svg",
           "zone": "MID",
           "anchor": "engineers",
           "attack": 0.1,
           "enter": "slideUp",
           "hold": "until_scene_end",
-          "size": 90,
-          "position": {"x": -100, "y": 0},
-          "holdMotion": "none"
-        },
-        {
-          "type": "svg",
-          "svg": "thermometer",
-          "zone": "MID",
-          "anchor": "begged",
-          "attack": 0.2,
-          "enter": "pop",
-          "hold": "until_scene_end",
-          "size": 80,
-          "color": "#EF4444",
-          "position": {"x": 100, "y": -20},
-          "holdMotion": "pulse",
-          "shake": true
+          "size": 220,
+          "position": {"x": 0, "y": 0},
+          "holdMotion": "none",
+          "viewBox": "0 0 200 200",
+          "paths": [
+            {"d": "M100 30 C60 30 30 60 30 100 C30 140 60 170 100 170 C140 170 170 140 170 100 C170 60 140 30 100 30 Z M100 50 C129 50 150 71 150 100 C150 129 129 150 100 150 C71 150 50 129 50 100 C50 71 71 50 100 50 Z", "fill": "#D4A017"},
+            {"d": "M80 85 L75 100 L80 115 M120 85 L125 100 L120 115", "stroke": "#EF4444", "strokeWidth": 3, "fill": "none"},
+            {"d": "M60 95 L55 100 L60 105", "stroke": "#EF4444", "strokeWidth": 2, "fill": "none"},
+            {"d": "M140 95 L145 100 L140 105", "stroke": "#EF4444", "strokeWidth": 2, "fill": "none"}
+          ]
         },
         {
           "type": "text",
@@ -117,9 +109,9 @@
       "elements": [
         {
           "type": "text",
-          "content": "O-ring temp threshold: 53°F",
+          "content": "O-ring threshold: 53°F",
           "zone": "UPPER",
-          "style": "stat",
+          "style": "label",
           "color": "#D4A017",
           "anchor": "But",
           "attack": 0.0,
@@ -275,7 +267,7 @@
           "hold": "until_scene_end",
           "left": {
             "label": "O-ring",
-            "icon": "ring",
+            "icon": "target",
             "value": 0.06,
             "color": "#D4A017"
           },

@@ -23,7 +23,7 @@ export const WordTriggeredVideo: React.FC<WordTriggeredVideoProps> = ({
 }) => {
   const { fps } = useVideoConfig();
 
-  const transitionFrames = measureSpring({ fps, config: SPRINGS.gentle });
+  const transitionFrames = measureSpring({ fps, config: SPRINGS.transition });
   const numTransitions = Math.max(0, manifest.scenes.length - 1);
   const totalOverlapFrames = numTransitions * transitionFrames;
 
@@ -54,7 +54,7 @@ export const WordTriggeredVideo: React.FC<WordTriggeredVideoProps> = ({
               {i < manifest.scenes.length - 1 && (
                 <TransitionSeries.Transition
                   presentation={fade()}
-                  timing={springTiming({ config: SPRINGS.gentle })}
+                  timing={springTiming({ config: SPRINGS.transition })}
                 />
               )}
             </React.Fragment>

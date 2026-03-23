@@ -41,7 +41,7 @@ export const ScaleComparison: React.FC<ScaleComparisonProps> = ({
   // Determine which is bigger
   const maxVal = Math.max(left.value, right.value);
   const minVal = Math.min(left.value, right.value);
-  const ratio = Math.min(maxVal / Math.max(0.001, minVal), 3); // cap at 3x visual to prevent overflow
+  const ratio = Math.min(maxVal / Math.max(0.001, minVal), 2.5); // cap visual growth to prevent zone overflow
 
   // Phase 1: both appear equal (first 30% of scene)
   // Phase 2: larger one grows (30-70%)
@@ -50,9 +50,12 @@ export const ScaleComparison: React.FC<ScaleComparisonProps> = ({
   const growProgress = spring({ frame: growFrame, fps, config: SPRINGS.dramatic });
 
   const baseSize = 120;
+  const maxCardSize = 200; // cap so card + text fits in zone
+  const maxScale = maxCardSize / baseSize; // ~1.67x
+  const clampedRatio = Math.min(ratio, maxScale);
   const leftIsLarger = left.value >= right.value;
-  const leftScale = leftIsLarger ? 1 + (ratio - 1) * growProgress : 1;
-  const rightScale = !leftIsLarger ? 1 + (ratio - 1) * growProgress : 1;
+  const leftScale = leftIsLarger ? 1 + (clampedRatio - 1) * growProgress : 1;
+  const rightScale = !leftIsLarger ? 1 + (clampedRatio - 1) * growProgress : 1;
 
   // Entrance
   const enterOpacity = interpolate(frame, [0, 12], [0, 1], { extrapolateRight: 'clamp' });
@@ -64,12 +67,15 @@ export const ScaleComparison: React.FC<ScaleComparisonProps> = ({
   const LeftIcon = left.icon ? SVG_LIBRARY[left.icon] : null;
   const RightIcon = right.icon ? SVG_LIBRARY[right.icon] : null;
 
+  const isCurrency = unit && ['$', '€', '£', '¥'].includes(unit);
+  const prefix = isCurrency ? unit : '';
+  const suffix = unit && !isCurrency ? unit : '';
   const formatValue = (v: number) =>
-    v >= 1_000_000_000 ? `$${(v / 1_000_000_000).toFixed(0)}B` :
-    v >= 1_000_000 ? `${(v / 1_000_000).toFixed(1)}M` :
-    v >= 1_000 ? `${(v / 1_000).toFixed(v >= 10_000 ? 0 : 1)}K` :
-    v < 1 ? `${v}` :
-    v.toLocaleString();
+    v >= 1_000_000_000 ? `${prefix}${(v / 1_000_000_000).toFixed(0)}B` :
+    v >= 1_000_000 ? `${prefix}${(v / 1_000_000).toFixed(1)}M` :
+    v >= 1_000 ? `${prefix}${(v / 1_000).toFixed(v >= 10_000 ? 0 : 1)}K` :
+    v < 1 ? `${prefix}${v}` :
+    `${prefix}${v.toLocaleString()}`;
 
   const renderItem = (
     item: ComparisonItem,
@@ -86,10 +92,10 @@ export const ScaleComparison: React.FC<ScaleComparisonProps> = ({
         gap: 12,
         maxWidth: 350,
       }}>
-        {/* Icon scales, text doesn't */}
+        {/* Icon grows via width/height (not transform scale) to respect layout flow */}
         <div style={{
-          width: baseSize,
-          height: baseSize,
+          width: baseSize * scale,
+          height: baseSize * scale,
           borderRadius: 20,
           backgroundColor: TKK_SURFACE,
           border: `3px solid ${color}44`,
@@ -97,10 +103,11 @@ export const ScaleComparison: React.FC<ScaleComparisonProps> = ({
           alignItems: 'center',
           justifyContent: 'center',
           boxShadow: `0 0 ${16 + scale * 8}px ${color}${Math.round(Math.min(scale * 15, 255)).toString(16).padStart(2, '0')}`,
-          transform: `scale(${scale}) translateY(${float}px)`,
+          transform: `translateY(${float}px)`,
+          overflow: 'hidden',
         }}>
           {IconComp ? (
-            <IconComp color={color} size={baseSize * 0.6} />
+            <IconComp color={color} size={baseSize * scale * 0.6} />
           ) : (
             <div style={{
               fontFamily: FONTS.mono,
@@ -119,7 +126,7 @@ export const ScaleComparison: React.FC<ScaleComparisonProps> = ({
           color,
           textAlign: 'center',
         }}>
-          {formatValue(item.value)}{unit}
+          {formatValue(item.value)}{suffix}
         </div>
         <div style={{
           fontFamily: FONTS.body,

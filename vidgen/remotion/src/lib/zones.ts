@@ -61,5 +61,12 @@ export function zoneStyle(zone: ZoneName): React.CSSProperties {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   };
+}
+
+/** Get the pixel height of a named zone. */
+export function zoneHeight(zone: ZoneName): number {
+  const z = ZONES[zone];
+  return z.range[1] - z.range[0];
 }

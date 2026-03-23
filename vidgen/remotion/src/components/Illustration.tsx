@@ -228,7 +228,9 @@ export const Illustration: React.FC<IllustrationProps> = ({
     const count = el.repeat ?? 1;
     const stagger = el.stagger ?? 0.15;
     for (let i = 0; i < count; i++) {
-      const spacing = count > 1 ? (i - (count - 1) / 2) * (el.size ?? 100) * 1.2 : 0;
+      const iconSize = Math.max(40, el.size ?? 100); // minimum 40px for visibility
+      const spacingStep = Math.max(80, iconSize * 1.2); // minimum 80px between icons
+      const spacing = count > 1 ? (i - (count - 1) / 2) * spacingStep : 0;
       expandedElements.push({
         key: keyCounter++,
         element: {

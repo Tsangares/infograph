@@ -52,6 +52,26 @@
           "holdMotion": "none"
         },
         {
+          "type": "custom_svg",
+          "zone": "LOWER",
+          "anchor": "Carthage",
+          "attack": 0.2,
+          "enter": "fade",
+          "hold": "until_scene_end",
+          "size": 200,
+          "holdMotion": "none",
+          "viewBox": "0 0 240 120",
+          "paths": [
+            {"d": "M20 100 h200 v10 h-200 z", "fill": "#C0532A", "opacity": 0.3},
+            {"d": "M40 100 v-50 h30 v50", "fill": "none", "stroke": "#C0532A", "strokeWidth": 2, "opacity": 0.6},
+            {"d": "M90 100 v-40 h25 v40", "fill": "none", "stroke": "#C0532A", "strokeWidth": 2, "opacity": 0.4},
+            {"d": "M140 100 v-55 h35 v55", "fill": "none", "stroke": "#D4A017", "strokeWidth": 2, "opacity": 0.5},
+            {"d": "M195 100 v-35 h25 v35", "fill": "none", "stroke": "#D4A017", "strokeWidth": 2, "opacity": 0.4},
+            {"d": "M50 50 q5-20 10 0 q5-15 10 0", "fill": "#EF4444", "opacity": 0.5},
+            {"d": "M150 45 q5-25 10 0 q5-20 10 0", "fill": "#EF4444", "opacity": 0.5}
+          ]
+        },
+        {
           "type": "text",
           "content": "Only Roman accounts survive",
           "zone": "FOOTER",
@@ -180,9 +200,9 @@
       "elements": [
         {
           "type": "text",
-          "content": "146 BC — Total destruction",
+          "content": "146 BC — DESTROYED",
           "zone": "UPPER",
-          "style": "stat",
+          "style": "headline",
           "color": "#EF4444",
           "anchor": "ploughed",
           "attack": 0.0,
@@ -257,6 +277,23 @@
       "scene_anchor": "losers",
       "scene_end_anchor": "it.",
       "elements": [
+        {
+          "type": "custom_svg",
+          "zone": "UPPER",
+          "anchor": "losers",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end",
+          "size": 140,
+          "holdMotion": "tremble",
+          "viewBox": "0 0 120 140",
+          "paths": [
+            {"d": "M25 15 h70 v100 h-70 z", "fill": "#1a1510", "stroke": "#D4A017", "strokeWidth": 2},
+            {"d": "M35 35 h50 M35 50 h50 M35 65 h50 M35 80 h45 M35 95 h30", "fill": "none", "stroke": "#D4A017", "strokeWidth": 1.5, "opacity": 0.5},
+            {"d": "M30 30 h60 v75 h-60 z", "fill": "none", "stroke": "#EF4444", "strokeWidth": 3, "strokeDasharray": "0", "opacity": 0.8},
+            {"d": "M25 55 l70 55 M25 45 l70 55", "fill": "none", "stroke": "#EF4444", "strokeWidth": 3, "opacity": 0.7}
+          ]
+        },
         {
           "type": "text_effect",
           "text": "HISTORY ERASED",

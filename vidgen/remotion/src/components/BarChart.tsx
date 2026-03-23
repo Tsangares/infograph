@@ -36,7 +36,7 @@ export const BarChart: React.FC<BarChartProps> = ({
   const barHeight = 44;
   const gap = 12;
   const maxLabelChars = Math.max(...bars.map(b => b.label.length));
-  const labelWidth = Math.min(SAFE.width * 0.35, Math.max(120, maxLabelChars * 18));
+  const labelWidth = Math.min(SAFE.width * 0.4, Math.max(120, maxLabelChars * 18));
 
   // Exit: fade + scale
   const exitOpacity = interpolate(exit, [0, 1], [1, 0], { extrapolateRight: 'clamp' });
@@ -86,15 +86,22 @@ export const BarChart: React.FC<BarChartProps> = ({
         // Hold: subtle shimmer per bar
         const shimmer = 1 + Math.sin((hold * Math.PI * 2) + i * 0.8) * 0.015;
 
-        const barWidth = (bar.value / max) * (SAFE.width - labelWidth - 40);
+        const availableWidth = SAFE.width - labelWidth - 60;
+        const barWidth = (bar.value / max) * availableWidth;
+        const renderedBarWidth = barWidth * width * shimmer;
+        // If bar is too narrow for the value text, show value outside (to the right)
+        const valueStr = bar.value.toLocaleString();
+        const estimatedTextWidth = valueStr.length * 18;
+        const valueInside = renderedBarWidth > estimatedTextWidth + 24;
 
         return (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%' }}>
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 16, width: '100%' }}>
             <div style={{
               fontFamily: FONTS.body,
               fontSize: FONT_SIZE.dataValue,
               color: TKK_WHITE + 'CC',
               width: labelWidth,
+              minWidth: labelWidth,
               textAlign: 'right',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
@@ -105,24 +112,42 @@ export const BarChart: React.FC<BarChartProps> = ({
             </div>
             <div style={{
               height: barHeight,
-              width: barWidth * width * shimmer,
+              width: renderedBarWidth,
+              minWidth: 8,
               background: bar.color ?? TKK_GOLD,
               borderRadius: barHeight / 2,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'flex-end',
-              paddingRight: 12,
+              paddingRight: valueInside ? 12 : 0,
+              overflow: 'hidden',
             }}>
+              {valueInside && (
+                <span style={{
+                  fontFamily: FONTS.mono,
+                  fontSize: FONT_SIZE.dataValue,
+                  color: '#000',
+                  fontWeight: 'bold',
+                  opacity: labelOpacity,
+                  whiteSpace: 'nowrap',
+                }}>
+                  {valueStr}
+                </span>
+              )}
+            </div>
+            {!valueInside && (
               <span style={{
                 fontFamily: FONTS.mono,
                 fontSize: FONT_SIZE.dataValue,
-                color: '#000',
+                color: (bar.color ?? TKK_GOLD),
                 fontWeight: 'bold',
                 opacity: labelOpacity,
+                whiteSpace: 'nowrap',
+                marginLeft: -8,
               }}>
-                {bar.value.toLocaleString()}
+                {valueStr}
               </span>
-            </div>
+            )}
           </div>
         );
       })}

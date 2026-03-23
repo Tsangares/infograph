@@ -17,6 +17,7 @@ from pathlib import Path
 from dataclasses import dataclass, field
 
 FPS = 30
+SCENE_TAIL_BUFFER_S = 0.4  # hold scene visuals after final anchor word ends
 VIDGEN_DIR = Path(__file__).parent
 
 
@@ -133,7 +134,7 @@ def resolve(manifest: dict, words: list[WordHit]) -> list[ResolvedScene]:
             continue
 
         scene_start = start_word.offset_s
-        scene_end = end_word.end_s
+        scene_end = end_word.end_s + SCENE_TAIL_BUFFER_S
 
         scene = ResolvedScene(
             scene_id=scene_id,
@@ -166,6 +167,25 @@ def resolve(manifest: dict, words: list[WordHit]) -> list[ResolvedScene]:
                 print(f"  WARN: anchor '{anchor}' not found for element in scene '{scene_id}'")
                 continue
 
+            # Boundary check: reject anchors that resolved far outside scene
+            if anchor_word.index > end_word.index + 2:
+                print(f"  WARN: anchor '{anchor}' in scene '{scene_id}' resolved to "
+                      f"{anchor_word.offset_s:.2f}s (word index {anchor_word.index}), "
+                      f"but scene ends at {end_word.end_s:.2f}s (word index {end_word.index}). "
+                      f"Clamping to scene start.")
+                trigger_s = scene_start + attack
+                resolved = ResolvedElement(
+                    element=elem,
+                    trigger_s=trigger_s,
+                    trigger_frame=int(trigger_s * FPS),
+                    scene_id=scene_id,
+                    anchor_word=f"[CLAMPED:{anchor}]",
+                    anchor_time_s=scene_start,
+                    attack_s=attack,
+                )
+                scene.elements.append(resolved)
+                continue
+
             trigger_s = anchor_word.offset_s + attack
 
             resolved = ResolvedElement(
@@ -188,6 +208,14 @@ def resolve(manifest: dict, words: list[WordHit]) -> list[ResolvedScene]:
 
         # Sort elements by trigger time
         scene.elements.sort(key=lambda e: e.trigger_s)
+
+        # Post-resolve: check for elements that will never appear
+        for elem in scene.elements:
+            rel_frame = elem.trigger_frame - scene.start_frame
+            if rel_frame > scene.duration_frames:
+                print(f"  WARN: element '{elem.anchor_word}' in scene '{scene.scene_id}' "
+                      f"has delay_frames={rel_frame} but scene only has "
+                      f"{scene.duration_frames} frames — element will never appear")
 
         scenes.append(scene)
         last_scene_end_idx = end_word.index + 1
@@ -233,6 +261,39 @@ def check_overlaps(scenes: list[ResolvedScene]):
                             )
 
     return issues
+
+
+GAP_THRESHOLD_S = 0.5  # auto-extend scenes to cover gaps larger than this
+
+
+def close_gaps(scenes: list[ResolvedScene], words: list[WordHit]):
+    """
+    Auto-extend scenes to cover narration gaps between them.
+
+    When scene N ends at "poison." but scene N+1 doesn't start until "again.",
+    the words "Then he did it" fall in a gap — the viewer sees the scene fading
+    out while the narrator is still mid-thought. This extends scene N's end_s
+    to cover those gap words, keeping the scene visually alive longer.
+    """
+    for i in range(len(scenes) - 1):
+        gap = scenes[i + 1].start_s - scenes[i].end_s
+        if gap > GAP_THRESHOLD_S:
+            # Find words spoken during the gap
+            gap_words = [w for w in words
+                         if w.offset_s >= scenes[i].end_s - 0.1
+                         and w.end_s <= scenes[i + 1].start_s + 0.1]
+            if gap_words:
+                new_end = gap_words[-1].end_s + SCENE_TAIL_BUFFER_S
+                # Don't extend past the next scene's start
+                new_end = min(new_end, scenes[i + 1].start_s)
+                old_end = scenes[i].end_s
+                scenes[i].end_s = new_end
+                scenes[i].duration_s = new_end - scenes[i].start_s
+                scenes[i].duration_frames = int(scenes[i].duration_s * FPS)
+                scenes[i].end_frame = int(new_end * FPS)
+                print(f"  AUTO-EXTEND: scene '{scenes[i].scene_id}' "
+                      f"{old_end:.2f}s → {new_end:.2f}s "
+                      f"(+{new_end - old_end:.2f}s, covers {len(gap_words)} gap words)")
 
 
 def generate_remotion_input(scenes: list[ResolvedScene], manifest: dict, audio_duration: float = None) -> dict:
@@ -361,6 +422,8 @@ def resolve_word_triggers(manifest_path: str, whisper_path: str = None) -> str:
 
     scenes = resolve(manifest, words)
     print(f"  Resolved {len(scenes)} scenes, {sum(len(s.elements) for s in scenes)} elements")
+
+    close_gaps(scenes, words)
 
     issues = check_overlaps(scenes)
     if issues:

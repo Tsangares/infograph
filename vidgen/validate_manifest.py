@@ -101,6 +101,8 @@ def validate_manifest(topic: str) -> dict:
                             bad_svgs.append(f"scene {si+1}: '{svg_name}'")
 
             for elem in elements:
+                if elem.get("type") == "custom_svg":
+                    continue  # custom_svg elements don't use the library
                 svg_name = elem.get("svg")
                 if svg_name and svg_name not in valid_svgs:
                     bad_svgs.append(f"scene {si+1}: '{svg_name}'")
@@ -110,6 +112,33 @@ def validate_manifest(topic: str) -> dict:
                           "detail": f"Unknown SVGs: {', '.join(bad_svgs)}. Valid: {', '.join(sorted(valid_svgs))}"})
         else:
             checks.append({"check": "svg_names", "status": "PASS", "detail": "All SVG names valid"})
+
+    # 3b. Custom SVG validation
+    custom_svg_issues = []
+    for si, scene in enumerate(data.get("scenes", [])):
+        elements = scene.get("elements", [])
+        if not elements and "props" in scene:
+            elements = scene["props"].get("elements", [])
+        for ei, elem in enumerate(elements):
+            if elem.get("type") != "custom_svg":
+                continue
+            vb = elem.get("viewBox", "")
+            paths = elem.get("paths", [])
+            if not vb or len(vb.split()) != 4:
+                custom_svg_issues.append(f"scene {si+1} elem {ei+1}: missing or invalid viewBox '{vb}'")
+            if not paths:
+                custom_svg_issues.append(f"scene {si+1} elem {ei+1}: empty paths array")
+            for pi, p in enumerate(paths):
+                if not p.get("d"):
+                    custom_svg_issues.append(f"scene {si+1} elem {ei+1} path {pi+1}: missing 'd' attribute")
+            total_path_len = sum(len(p.get("d", "")) for p in paths)
+            if total_path_len > 5000:
+                custom_svg_issues.append(f"scene {si+1} elem {ei+1}: path data {total_path_len} chars (warn >5KB)")
+            if len(paths) > 20:
+                custom_svg_issues.append(f"scene {si+1} elem {ei+1}: {len(paths)} paths (warn >20)")
+    if custom_svg_issues:
+        checks.append({"check": "custom_svg", "status": "WARN",
+                       "detail": "; ".join(custom_svg_issues)})
 
     # 4. Anchor validation (word-triggered only)
     if wt:
@@ -145,6 +174,21 @@ def validate_manifest(topic: str) -> dict:
                           "detail": f"Anchors not in ttsScript text (Whisper may transcribe differently): {', '.join(missing)}"})
         else:
             checks.append({"check": "anchor_words", "status": "PASS", "detail": "All anchors found in ttsScript"})
+
+        # Check for ambiguous anchors (words appearing multiple times in ttsScript)
+        ambiguous = []
+        seen_anchors = set()
+        for si2, scene2 in enumerate(data.get("scenes", [])):
+            for elem2 in scene2.get("elements", []):
+                anchor = elem2.get("anchor", "").rstrip(".,!?;:").lower()
+                if anchor and anchor not in seen_anchors:
+                    seen_anchors.add(anchor)
+                    count = sum(1 for w in tts_words_raw if w.rstrip(".,!?;:") == anchor)
+                    if count > 1:
+                        ambiguous.append(f"'{anchor}' appears {count}x")
+        if ambiguous:
+            checks.append({"check": "anchor_ambiguity", "status": "WARN",
+                          "detail": f"Ambiguous anchors (appear multiple times in ttsScript, may resolve to wrong occurrence): {', '.join(ambiguous)}"})
 
     # 5. Text length vs style
     text_issues = []

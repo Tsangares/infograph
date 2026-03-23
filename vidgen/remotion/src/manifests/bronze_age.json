@@ -26,8 +26,28 @@
           "effectDuration": 0.3
         },
         {
+          "type": "custom_svg",
+          "zone": "UPPER",
+          "anchor": "In",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end",
+          "size": 280,
+          "holdMotion": "none",
+          "viewBox": "0 0 200 200",
+          "paths": [
+            {"d": "M60 180 L60 80 L70 70 L80 80 L80 180 Z", "fill": "#D4A017", "opacity": 0.6},
+            {"d": "M55 75 L85 75 L85 65 L55 65 Z", "fill": "#D4A017"},
+            {"d": "M80 70 L85 50 L95 55 L90 70", "fill": "#D4A017", "opacity": 0.4},
+            {"d": "M120 180 L120 100 L130 90 L140 100 L140 180 Z", "fill": "#C0532A", "opacity": 0.6},
+            {"d": "M115 95 L145 95 L145 85 L115 85 Z", "fill": "#C0532A"},
+            {"d": "M140 90 L150 70 L155 78", "stroke": "#C0532A", "strokeWidth": 2, "fill": "none", "opacity": 0.4},
+            {"d": "M50 180 L150 180", "stroke": "#D4A017", "strokeWidth": 2, "fill": "none", "opacity": 0.4}
+          ]
+        },
+        {
           "type": "text",
-          "content": "4 empires fell simultaneously",
+          "content": "4 empires fell at once",
           "zone": "LOWER",
           "style": "stat",
           "color": "#E8734A",
@@ -57,43 +77,25 @@
           "hold": "until_scene_end"
         },
         {
-          "type": "svg",
-          "svg": "figureWithShield",
+          "type": "custom_svg",
           "zone": "MID",
           "anchor": "Sea",
           "attack": 0.1,
           "enter": "slideLeft",
           "hold": "until_scene_end",
-          "size": 90,
-          "color": "#C0532A",
-          "position": {"x": -80, "y": 0},
-          "holdMotion": "none"
-        },
-        {
-          "type": "svg",
-          "svg": "sword",
-          "zone": "MID",
-          "anchor": "raiders",
-          "attack": 0.0,
-          "enter": "slideRight",
-          "hold": "until_scene_end",
-          "size": 80,
-          "color": "#D4A017",
-          "position": {"x": 80, "y": -20},
-          "holdMotion": "none"
-        },
-        {
-          "type": "svg",
-          "svg": "fire",
-          "zone": "MID",
-          "anchor": "burned",
-          "attack": 0.0,
-          "enter": "pop",
-          "hold": "until_scene_end",
-          "size": 70,
-          "color": "#EF4444",
-          "position": {"x": 0, "y": 80},
-          "holdMotion": "pulse"
+          "size": 350,
+          "holdMotion": "none",
+          "viewBox": "0 0 300 200",
+          "paths": [
+            {"d": "M50 180 L50 60 L80 40 L150 40 L150 80 L220 80 L250 60 L250 180 Z", "fill": "#C0532A", "opacity": 0.15},
+            {"d": "M50 180 L50 60 L80 40 L150 40 L150 80 L220 80 L250 60 L250 180", "stroke": "#C0532A", "strokeWidth": 3, "fill": "none"},
+            {"d": "M80 180 L80 100 L120 100 L120 180", "stroke": "#C0532A", "strokeWidth": 2, "fill": "none"},
+            {"d": "M170 180 L170 110 L210 110 L210 180", "stroke": "#C0532A", "strokeWidth": 2, "fill": "none"},
+            {"d": "M130 60 L130 40", "stroke": "#D4A017", "strokeWidth": 2, "fill": "none"},
+            {"d": "M120 60 L140 60 L140 50 L120 50 Z", "fill": "#D4A017", "opacity": 0.5},
+            {"d": "M60 170 L70 150 L60 130", "stroke": "#EF4444", "strokeWidth": 2, "fill": "none", "opacity": 0.7},
+            {"d": "M230 170 L240 150 L230 130", "stroke": "#EF4444", "strokeWidth": 2, "fill": "none", "opacity": 0.7}
+          ]
         },
         {
           "type": "text",
@@ -188,7 +190,7 @@
             {"label": "Tin", "icon": "mountain", "color": "#94A3B8"},
             {"label": "Copper", "icon": "coins", "color": "#D4A017"},
             {"label": "Trade", "icon": "ship", "color": "#C0532A"},
-            {"label": "Grain", "icon": "factory", "color": "#FBBF24"}
+            {"label": "Grain", "icon": "seedling", "color": "#FBBF24"}
           ],
           "direction": "horizontal",
           "arrowColor": "#64748B"

@@ -26,15 +26,33 @@
           "effectDuration": 0.4
         },
         {
-          "type": "text",
-          "content": "Ice pick. 3,500 brains.",
+          "type": "custom_svg",
           "zone": "LOWER",
-          "style": "stat",
-          "color": "#EF4444",
           "anchor": "ice",
+          "attack": 0.1,
+          "enter": "pop",
+          "hold": "until_scene_end",
+          "size": 160,
+          "holdMotion": "tremble",
+          "viewBox": "0 0 200 200",
+          "paths": [
+            {"d": "M100 20 v120", "fill": "none", "stroke": "#EF4444", "strokeWidth": 4},
+            {"d": "M85 20 h30", "fill": "none", "stroke": "#EF4444", "strokeWidth": 4},
+            {"d": "M95 140 l5 40 l5-40 z", "fill": "#EF4444"},
+            {"d": "M80 50 h40 v8 h-40 z", "fill": "#94A3B8", "opacity": 0.6}
+          ]
+        },
+        {
+          "type": "text",
+          "content": "3,500 brains",
+          "zone": "LOWER",
+          "style": "caption",
+          "color": "#EF4444",
+          "anchor": "brains.",
           "attack": 0.0,
           "enter": "wordByWord",
-          "hold": "until_scene_end"
+          "hold": "until_scene_end",
+          "position": {"x": 0, "y": 120}
         },
         {
           "type": "text",
@@ -147,9 +165,9 @@
       "elements": [
         {
           "type": "text",
-          "content": "Youngest patient: age 4",
+          "content": "Youngest patient: 4",
           "zone": "UPPER",
-          "style": "stat",
+          "style": "headline",
           "color": "#EF4444",
           "anchor": "Freeman",
           "attack": 0.0,
@@ -158,7 +176,7 @@
         },
         {
           "type": "bar",
-          "label": "Housewives",
+          "label": "Wives",
           "value": 40,
           "color": "#94A3B8",
           "anchor": "housewives,",
@@ -166,7 +184,7 @@
         },
         {
           "type": "bar",
-          "label": "Veterans",
+          "label": "Vets",
           "value": 35,
           "color": "#94A3B8",
           "anchor": "veterans,",
@@ -174,7 +192,7 @@
         },
         {
           "type": "bar",
-          "label": "Children",
+          "label": "Kids",
           "value": 25,
           "color": "#EF4444",
           "anchor": "children.",

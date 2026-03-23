@@ -84,7 +84,11 @@ export const Counter: React.FC<CounterProps> = ({
           ? `0 0 ${30 * bloomGlow}px ${color}, 0 0 ${60 * bloomGlow}px ${color}40`
           : 'none',
       }}>
-        {formatted}{unit && <span style={{ fontSize: FONT_SIZE.subtitle, marginLeft: 8 }}>{unit}</span>}
+        {unit && ['$', '€', '£', '¥'].includes(unit) ? (
+          <><span style={{ fontSize: FONT_SIZE.subtitle }}>{unit}</span>{formatted}</>
+        ) : (
+          <>{formatted}{unit && <span style={{ fontSize: FONT_SIZE.subtitle, marginLeft: 8 }}>{unit}</span>}</>
+        )}
       </div>
       {description && (
         <div style={{

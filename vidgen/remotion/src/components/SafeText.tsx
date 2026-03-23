@@ -38,7 +38,7 @@ export const SafeText: React.FC<SafeTextProps> = ({
   entrance = 'fade',
 }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, durationInFrames: seqDuration } = useVideoConfig();
   const { exit } = useSceneProgress();
 
   const delayFrames = Math.round((BASE_DELAY_S + delay) * fps);
@@ -65,10 +65,12 @@ export const SafeText: React.FC<SafeTextProps> = ({
 
   if (entrance === 'wordByWord') {
     const words = children.split(' ');
+    // Adaptive stagger: reduce delay between words if available frames are short
+    const wordStagger = Math.max(1, Math.min(3, Math.floor(seqDuration / (words.length * 3))));
     content = (
       <span style={baseStyle}>
         {words.map((word, wi) => {
-          const wordFrame = Math.max(0, adjustedFrame - wi * 3);
+          const wordFrame = Math.max(0, adjustedFrame - wi * wordStagger);
           const wordOpacity = interpolate(wordFrame, [0, 6], [0, 1], { extrapolateRight: 'clamp' });
           const wordY = interpolate(wordFrame, [0, 8], [8, 0], { extrapolateRight: 'clamp' });
           // Brief scale bump for the most recently appeared word

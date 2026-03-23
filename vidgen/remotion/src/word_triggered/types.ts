@@ -13,7 +13,7 @@ export interface ResolvedTiming {
 }
 
 export interface ResolvedElement {
-  type: 'text' | 'counter' | 'svg' | 'timeline_marker' | 'bar' | 'gauge' | 'text_effect' | 'transform' | 'progress_ring';
+  type: 'text' | 'counter' | 'svg' | 'custom_svg' | 'timeline_marker' | 'bar' | 'gauge' | 'text_effect' | 'transform' | 'progress_ring';
   _resolved: ResolvedTiming;
 
   // Text props
@@ -73,6 +73,10 @@ export interface ResolvedElement {
 
   // ProgressRing props
   rings?: Array<{ value: number; maxValue?: number; label: string; color?: string }>;
+
+  // Custom SVG props
+  viewBox?: string;
+  paths?: Array<{ d: string; fill?: string; stroke?: string; strokeWidth?: number; opacity?: number; fillRule?: string }>;
 
   // Common
   anchor?: string;

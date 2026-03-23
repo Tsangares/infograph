@@ -454,7 +454,7 @@ def render_preview(filename: str) -> str:
 def render_full(filename: str) -> str:
     """Full render: scenes → final MP4. Takes 1-2 minutes.
 
-    For Remotion manifests (both word-triggered and legacy), uses npx tsx render.mts.
+    For Remotion manifests, uses render_remote.sh (tries llama → juno → local fallback).
     For Manim screenplays, uses python {file}.
 
     Args:
@@ -467,8 +467,8 @@ def render_full(filename: str) -> str:
     stem = fp.stem.replace("_manim", "")
 
     if fp.suffix == '.json':
-        # Remotion manifest — use render.mts
-        cmd = ["npx", "tsx", "remotion/render.mts", stem]
+        # Remotion manifest — use render_remote.sh (auto-picks best host, falls back to local)
+        cmd = ["bash", str(VIDGEN_DIR / "render_remote.sh"), stem]
         r = subprocess.run(
             cmd,
             capture_output=True, text=True, timeout=600, cwd=str(VIDGEN_DIR),

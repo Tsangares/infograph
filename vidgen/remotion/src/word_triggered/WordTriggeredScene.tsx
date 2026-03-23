@@ -26,6 +26,7 @@ import { ScaleComparison } from '../components/ScaleComparison';
 import { StackedAccumulation } from '../components/StackedAccumulation';
 import { CauseEffect } from '../components/CauseEffect';
 import { PopulationDrop } from '../components/PopulationDrop';
+import { CustomSvg } from '../components/CustomSvg';
 import { WordBar } from './WordBar';
 import { WordTimelineMarker } from './WordTimelineMarker';
 import type { ResolvedScene, ResolvedElement } from './types';
@@ -65,7 +66,7 @@ function computeElementDurations(
     for (let i = 0; i < sorted.length; i++) {
       const { idx, elem } = sorted[i];
       const delayFrames = elem._resolved.delay_frames;
-      const defaultDuration = Math.max(1, sceneDurationFrames - delayFrames);
+      const defaultDuration = Math.max(30, sceneDurationFrames - delayFrames); // minimum 1s visibility
 
       if (elem.hold === 'until_replaced') {
         // Find the next element in this zone that replaces
@@ -155,6 +156,45 @@ const ElementRenderer: React.FC<{
         svg: elem.svg!,
         position: elem.position,
         size: elem.size,
+        color: elem.color,
+        enter: (elem.enter as any) ?? 'fadeIn',
+        delay: 0,
+        animate: elem.animate,
+        repeat: elem.repeat,
+        stagger: elem.stagger,
+        shake: elem.shake,
+        holdMotion: elem.holdMotion as any,
+      };
+
+      return (
+        <Sequence from={delayFrames} durationInFrames={durationInFrames}>
+          <Wrap>
+            <Illustration
+              elements={[illustrationElement]}
+              zone={elem.zone ?? 'MID'}
+            />
+          </Wrap>
+        </Sequence>
+      );
+    }
+
+    case 'custom_svg': {
+      // Register a temporary icon component from inline paths, then render
+      // through Illustration so we get the full animation system for free.
+      const vb = elem.viewBox ?? '0 0 200 200';
+      const ps = elem.paths ?? [];
+      const tempKey = `__custom_${Math.random().toString(36).slice(2)}`;
+
+      // Dynamically inject into SVG_LIBRARY for this render
+      const { SVG_LIBRARY } = require('../lib/svgLibrary');
+      SVG_LIBRARY[tempKey] = ({ color: c = '#ffffff', size: s = 200 }: { color?: string; size?: number }) => (
+        <CustomSvg viewBox={vb} paths={ps} color={c} size={s} />
+      );
+
+      const illustrationElement = {
+        svg: tempKey,
+        position: elem.position,
+        size: elem.size ?? 200,
         color: elem.color,
         enter: (elem.enter as any) ?? 'fadeIn',
         delay: 0,

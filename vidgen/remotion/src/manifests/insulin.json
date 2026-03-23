@@ -1,0 +1,355 @@
+{
+  "topic": "insulin",
+  "ttsScript": "In 1923, three scientists sold the insulin patent for one dollar each. They believed no one should profit from a lifesaving medicine. That patent was meant to keep insulin cheap forever. Today, a single vial costs over three hundred dollars in the United States. The same drug. The same molecule. Drug companies found a loophole. They make tiny changes to the formula. Just enough to file a new patent. They call it innovation. Patients call it survival. One in four Americans with diabetes rations their insulin. Some have died. Three men sold their discovery for one dollar. Corporations turned it into a thirty billion dollar industry.",
+  "colors": {
+    "bg": "#080A10",
+    "accent": "#4ADE80",
+    "secondary": "#EF4444"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "label": "THE PATENT",
+      "type": "illustration",
+      "scene_anchor": "1923,",
+      "scene_end_anchor": "each.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "$1.00",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#4ADE80",
+          "anchor": "1923,",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "custom_svg",
+          "zone": "MID",
+          "anchor": "sold",
+          "attack": 0.1,
+          "enter": "pop",
+          "hold": "until_scene_end",
+          "size": 220,
+          "holdMotion": "pulse",
+          "viewBox": "0 0 200 200",
+          "paths": [
+            {"d": "M70 30 h60 v140 h-60 z", "fill": "#1a3a2a", "stroke": "#4ADE80", "strokeWidth": 3},
+            {"d": "M85 30 v-10 a15 15 0 0 1 30 0 v10", "fill": "none", "stroke": "#4ADE80", "strokeWidth": 3},
+            {"d": "M80 70 h40 M80 90 h40 M80 110 h40", "fill": "none", "stroke": "#4ADE80", "strokeWidth": 2, "opacity": 0.6},
+            {"d": "M75 140 h50 v20 h-50 z", "fill": "#4ADE80", "opacity": 0.3},
+            {"d": "M90 150 h20", "fill": "none", "stroke": "#4ADE80", "strokeWidth": 2}
+          ]
+        },
+        {
+          "type": "svg",
+          "svg": "fileInvoiceDollar",
+          "zone": "LOWER",
+          "size": 100,
+          "color": "#94A3B8",
+          "anchor": "patent",
+          "attack": 0.0,
+          "enter": "slideUp",
+          "hold": "until_scene_end",
+          "holdMotion": "float",
+          "position": {"x": 0, "y": 0}
+        },
+        {
+          "type": "text",
+          "content": "One dollar each",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#94A3B8",
+          "anchor": "$1",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "wrong_answer",
+      "label": "THE PROMISE",
+      "type": "illustration",
+      "scene_anchor": "believed",
+      "scene_end_anchor": "forever.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "CHEAP FOREVER",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#4ADE80",
+          "anchor": "believed",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "person",
+          "zone": "MID",
+          "size": 80,
+          "color": "#4ADE80",
+          "anchor": "no",
+          "attack": 0.0,
+          "enter": "fadeIn",
+          "hold": "until_scene_end",
+          "holdMotion": "none",
+          "repeat": 5,
+          "stagger": 0.15,
+          "position": {"x": 0, "y": 0}
+        },
+        {
+          "type": "svg",
+          "svg": "shieldHalved",
+          "zone": "MID",
+          "size": 100,
+          "color": "#4ADE80",
+          "anchor": "profit",
+          "attack": 0.0,
+          "enter": "pop",
+          "hold": "until_scene_end",
+          "holdMotion": "glow",
+          "position": {"x": 0, "y": 200}
+        },
+        {
+          "type": "text",
+          "content": "No one should profit",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#94A3B8",
+          "anchor": "profit",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "contradiction",
+      "label": "THE PRICE",
+      "type": "counter",
+      "scene_anchor": "Today,",
+      "scene_end_anchor": "molecule.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "One vial of insulin",
+          "zone": "UPPER",
+          "style": "label",
+          "color": "#94A3B8",
+          "anchor": "Today,",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "counter",
+          "start": 1,
+          "end": 300,
+          "unit": "$",
+          "description": "United States, 2024",
+          "zone": "MID",
+          "color": "#EF4444",
+          "anchor": "vial",
+          "attack": 0.2,
+          "count_end_anchor": "dollars",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "Same drug. Same molecule.",
+          "zone": "LOWER",
+          "style": "caption",
+          "color": "#F59E0B",
+          "anchor": "same",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "proof",
+      "label": "THE LOOPHOLE",
+      "type": "illustration",
+      "scene_anchor": "companies",
+      "scene_end_anchor": "survival.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "THE LOOPHOLE",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#EF4444",
+          "anchor": "companies",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_replaced"
+        },
+        {
+          "type": "custom_svg",
+          "zone": "MID",
+          "anchor": "tiny",
+          "attack": 0.0,
+          "enter": "fadeIn",
+          "hold": "until_scene_end",
+          "size": 150,
+          "holdMotion": "tremble",
+          "position": {"x": -130, "y": 0},
+          "viewBox": "0 0 120 160",
+          "paths": [
+            {"d": "M20 10 h80 v140 h-80 z", "fill": "#1a1a2a", "stroke": "#94A3B8", "strokeWidth": 2},
+            {"d": "M35 35 h50 M35 50 h50 M35 65 h50 M35 80 h30", "fill": "none", "stroke": "#94A3B8", "strokeWidth": 1.5, "opacity": 0.5},
+            {"d": "M30 110 h60 v25 h-60 z", "fill": "#94A3B8", "opacity": 0.15},
+            {"d": "M45 118 h30", "fill": "none", "stroke": "#94A3B8", "strokeWidth": 1.5}
+          ]
+        },
+        {
+          "type": "svg",
+          "svg": "arrowRight",
+          "zone": "MID",
+          "size": 40,
+          "color": "#EF4444",
+          "anchor": "tiny",
+          "attack": 0.1,
+          "enter": "fade",
+          "hold": "until_scene_end",
+          "holdMotion": "none",
+          "position": {"x": 0, "y": 0}
+        },
+        {
+          "type": "custom_svg",
+          "zone": "MID",
+          "anchor": "new",
+          "attack": 0.0,
+          "enter": "pop",
+          "hold": "until_scene_end",
+          "size": 150,
+          "holdMotion": "glow",
+          "position": {"x": 130, "y": 0},
+          "viewBox": "0 0 120 160",
+          "paths": [
+            {"d": "M20 10 h80 v140 h-80 z", "fill": "#2a1a1a", "stroke": "#EF4444", "strokeWidth": 2},
+            {"d": "M35 35 h50 M35 50 h50 M35 65 h50 M35 80 h30", "fill": "none", "stroke": "#EF4444", "strokeWidth": 1.5, "opacity": 0.5},
+            {"d": "M30 110 h60 v25 h-60 z", "fill": "#EF4444", "opacity": 0.2},
+            {"d": "M42 118 h36", "fill": "none", "stroke": "#EF4444", "strokeWidth": 1.5},
+            {"d": "M55 95 l10-10 l10 10", "fill": "none", "stroke": "#EF4444", "strokeWidth": 2}
+          ]
+        },
+        {
+          "type": "text_effect",
+          "text": "INNOVATION",
+          "effect": "glitch",
+          "color": "#EF4444",
+          "zone": "UPPER",
+          "anchor": "innovation.",
+          "attack": 0.0,
+          "hold": "until_scene_end",
+          "effectDuration": 0.4,
+          "replaces_zone": true
+        },
+        {
+          "type": "text",
+          "content": "Patients call it survival",
+          "zone": "FOOTER",
+          "style": "caption",
+          "color": "#F59E0B",
+          "anchor": "survival.",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "betrayal",
+      "label": "THE COST",
+      "type": "illustration",
+      "scene_anchor": "four",
+      "scene_end_anchor": "died.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "1 in 4 ration insulin",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#EF4444",
+          "anchor": "four",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "person",
+          "zone": "MID",
+          "size": 80,
+          "color": "#EF4444",
+          "anchor": "rations",
+          "attack": 0.0,
+          "enter": "fadeIn",
+          "hold": "until_scene_end",
+          "holdMotion": "tremble",
+          "repeat": 4,
+          "stagger": 0.2,
+          "position": {"x": 0, "y": 0}
+        },
+        {
+          "type": "text",
+          "content": "Some have died",
+          "zone": "LOWER",
+          "style": "caption",
+          "color": "#EF4444",
+          "anchor": "rations",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "punch",
+      "label": "THE PUNCH",
+      "type": "headline",
+      "scene_anchor": "Three",
+      "scene_end_anchor": "industry.",
+      "elements": [
+        {
+          "type": "scale_comparison",
+          "zone": "MID",
+          "anchor": "Three",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "left": {
+            "label": "Original patent",
+            "icon": "fileInvoiceDollar",
+            "value": 1,
+            "color": "#4ADE80"
+          },
+          "right": {
+            "label": "Industry today",
+            "icon": "sackDollar",
+            "value": 30000000000,
+            "color": "#EF4444"
+          },
+          "unit": "$"
+        },
+        {
+          "type": "text",
+          "content": "$1 vs $30 billion",
+          "zone": "FOOTER",
+          "style": "label",
+          "color": "#F59E0B",
+          "anchor": "billion",
+          "attack": 0.0,
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    }
+  ]
+}

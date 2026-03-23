@@ -9,7 +9,7 @@
  */
 import { bundle } from '@remotion/bundler';
 import { renderMedia, selectComposition } from '@remotion/renderer';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, copyFileSync } from 'fs';
 import { execSync } from 'child_process';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -42,6 +42,12 @@ const audioPath = resolve(vidgenDir, audioFile);
 const audioSrc = existsSync(audioPath) ? audioFile : undefined;
 if (audioSrc) {
   console.log(`  Audio: ${audioFile}`);
+  // Ensure audio is in public/ for Remotion bundler
+  const audioPublicPath = resolve(__dirname, 'public', audioFile);
+  if (!existsSync(audioPublicPath)) {
+    copyFileSync(audioPath, audioPublicPath);
+    console.log(`  Copied audio to public/`);
+  }
 } else {
   console.log('  No audio file found — rendering silent');
 }
@@ -109,6 +115,8 @@ async function main() {
     }
 
     const resolvedManifest = JSON.parse(readFileSync(resolvedPath, 'utf-8'));
+    // WordTriggeredVideo.tsx internally compensates for TransitionSeries overlap
+    // by extending the last scene, so total_frames is the exact composition duration.
     const totalFrames = resolvedManifest.total_frames;
     console.log(`  Resolved: ${resolvedManifest.scenes.length} scenes, ${totalFrames} frames (${(totalFrames / 30).toFixed(1)}s)`);
 

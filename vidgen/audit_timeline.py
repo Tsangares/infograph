@@ -201,6 +201,21 @@ def audit(resolved_path: Path, interval_s: float = 2.0):
     else:
         print("\n  [+] No issues found")
 
+    # Scene gap analysis
+    print(f"\n  SCENE GAPS:")
+    has_gaps = False
+    for i in range(len(scenes) - 1):
+        gap = scenes[i + 1]["start_s"] - scenes[i]["end_s"]
+        if gap > 0.3:
+            severity = "FAIL" if gap > 1.5 else "WARN"
+            print(f"    [{severity}] {gap:.2f}s gap between \"{scenes[i]['label']}\" ({scenes[i]['end_s']:.1f}s) "
+                  f"and \"{scenes[i+1]['label']}\" ({scenes[i+1]['start_s']:.1f}s)")
+            has_gaps = True
+            if severity == "FAIL":
+                issues.append(f"Scene gap {gap:.1f}s between '{scenes[i]['label']}' and '{scenes[i+1]['label']}'")
+    if not has_gaps:
+        print(f"    [+] No significant gaps")
+
     # Zone utilization per scene
     print(f"\n  ZONE UTILIZATION PER SCENE:")
     for scene in scenes:

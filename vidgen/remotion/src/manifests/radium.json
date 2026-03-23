@@ -26,31 +26,27 @@
           "hold": "until_scene_end"
         },
         {
-          "type": "svg",
-          "svg": "warning",
+          "type": "custom_svg",
           "zone": "MID",
           "anchor": "radioactive",
           "attack": 0.0,
           "enter": "pop",
           "hold": "until_scene_end",
-          "size": 100,
+          "size": 250,
           "color": "#4ADE80",
-          "position": {"x": 0, "y": -40},
-          "holdMotion": "pulse",
-          "shake": true
-        },
-        {
-          "type": "svg",
-          "svg": "figureGroup",
-          "zone": "MID",
-          "anchor": "mouths.",
-          "attack": 0.1,
-          "enter": "slideUp",
-          "hold": "until_scene_end",
-          "size": 80,
-          "color": "#94A3B8",
-          "position": {"x": 0, "y": 80},
-          "holdMotion": "none"
+          "position": {"x": 0, "y": 0},
+          "holdMotion": "glow",
+          "viewBox": "0 0 200 250",
+          "paths": [
+            {"d": "M100 240 L100 100", "stroke": "#94A3B8", "strokeWidth": 4, "fill": "none"},
+            {"d": "M85 100 Q100 60 115 100", "fill": "#94A3B8"},
+            {"d": "M90 85 Q100 55 110 85", "fill": "#4ADE80", "opacity": 0.8},
+            {"d": "M100 65 m-15 0 a15 15 0 1 1 30 0 a15 15 0 1 1 -30 0", "fill": "#4ADE80", "opacity": 0.3},
+            {"d": "M100 65 m-25 0 a25 25 0 1 1 50 0 a25 25 0 1 1 -50 0", "fill": "#4ADE80", "opacity": 0.15},
+            {"d": "M100 65 m-40 0 a40 40 0 1 1 80 0 a40 40 0 1 1 -80 0", "fill": "#4ADE80", "opacity": 0.07},
+            {"d": "M115 75 L125 65 M120 85 L135 80 M108 60 L115 48", "stroke": "#4ADE80", "strokeWidth": 1.5, "fill": "none", "opacity": 0.5},
+            {"d": "M60 200 L65 190 L70 200 M130 195 L135 185 L140 195 M90 205 L95 195 L100 205", "stroke": "#94A3B8", "strokeWidth": 1, "fill": "none", "opacity": 0.3}
+          ]
         },
         {
           "type": "text",

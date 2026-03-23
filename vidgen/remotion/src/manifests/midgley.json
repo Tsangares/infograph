@@ -39,30 +39,39 @@
           "holdMotion": "none"
         },
         {
-          "type": "svg",
-          "svg": "warning",
+          "type": "custom_svg",
           "zone": "MID",
           "anchor": "environmental",
           "attack": 0.0,
           "enter": "pop",
           "hold": "until_scene_end",
-          "size": 60,
-          "color": "#22C55E",
-          "position": {"x": -90, "y": 60},
-          "holdMotion": "pulse"
+          "size": 120,
+          "holdMotion": "pulse",
+          "position": {"x": -100, "y": 80},
+          "viewBox": "0 0 100 100",
+          "paths": [
+            {"d": "M35 25 h30 v40 h10 l-25 25 l-25-25 h10 z", "fill": "#94A3B8", "opacity": 0.8},
+            {"d": "M30 75 h40 v8 h-40 z", "fill": "#94A3B8"},
+            {"d": "M50 10 v5", "fill": "none", "stroke": "#EF4444", "strokeWidth": 2},
+            {"d": "M50 40 l3-8 h-6 z", "fill": "#EF4444"}
+          ]
         },
         {
-          "type": "svg",
-          "svg": "warning",
+          "type": "custom_svg",
           "zone": "MID",
           "anchor": "damage",
           "attack": 0.0,
           "enter": "pop",
           "hold": "until_scene_end",
-          "size": 60,
-          "color": "#22C55E",
-          "position": {"x": 90, "y": 60},
-          "holdMotion": "pulse"
+          "size": 120,
+          "holdMotion": "pulse",
+          "position": {"x": 100, "y": 80},
+          "viewBox": "0 0 100 100",
+          "paths": [
+            {"d": "M50 10 a40 40 0 1 1 -0.01 0", "fill": "none", "stroke": "#22C55E", "strokeWidth": 3},
+            {"d": "M50 10 a40 40 0 0 1 35 20", "fill": "none", "stroke": "#22C55E", "strokeWidth": 5},
+            {"d": "M65 20 a25 20 0 1 1 10 15", "fill": "#0A0A10", "stroke": "#EF4444", "strokeWidth": 2, "strokeDasharray": "4 3"}
+          ]
         },
         {
           "type": "text",
@@ -177,9 +186,9 @@
       "elements": [
         {
           "type": "text",
-          "content": "50 years before ban",
+          "content": "50 years unregulated",
           "zone": "UPPER",
-          "style": "stat",
+          "style": "headline",
           "color": "#EF4444",
           "anchor": "man.",
           "attack": 0.0,
@@ -187,17 +196,23 @@
           "hold": "until_scene_end"
         },
         {
-          "type": "svg",
-          "svg": "truck",
+          "type": "custom_svg",
           "zone": "MID",
           "anchor": "Lead",
           "attack": 0.0,
           "enter": "slideLeft",
           "hold": "until_scene_end",
-          "size": 90,
-          "color": "#94A3B8",
+          "size": 130,
+          "holdMotion": "none",
           "position": {"x": -80, "y": 0},
-          "holdMotion": "none"
+          "viewBox": "0 0 100 120",
+          "paths": [
+            {"d": "M25 30 h30 v60 h-30 z", "fill": "#1a1a2a", "stroke": "#94A3B8", "strokeWidth": 2},
+            {"d": "M55 50 h20 v10 h-20 z", "fill": "none", "stroke": "#94A3B8", "strokeWidth": 2},
+            {"d": "M75 55 q15-20 15-30", "fill": "none", "stroke": "#94A3B8", "strokeWidth": 2},
+            {"d": "M25 90 h30 v8 h-30 z", "fill": "#94A3B8", "opacity": 0.4},
+            {"d": "M35 50 h10 v15 h-10 z", "fill": "#EF4444", "opacity": 0.6}
+          ]
         },
         {
           "type": "svg",
