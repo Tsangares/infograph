@@ -33,7 +33,7 @@ interface SvgPathDrawProps {
 export const SvgPathDraw: React.FC<SvgPathDrawProps> = ({
   paths,
   viewBox = '0 0 400 400',
-  size = 300,
+  size = 400,
   zone = 'MID',
   drawDuration = 0.6,
   color = '#FFD700',
@@ -61,6 +61,7 @@ export const SvgPathDraw: React.FC<SvgPathDrawProps> = ({
   return (
     <div style={{
       ...zoneStyle(zone),
+      overflow: 'visible',
       flexDirection: 'column',
       alignItems: 'center',
       opacity: entryOpacity * exitOpacity,
@@ -70,7 +71,7 @@ export const SvgPathDraw: React.FC<SvgPathDrawProps> = ({
         width={size}
         height={size}
         style={{
-          filter: holdGlow > 0 ? `drop-shadow(0 0 ${12 * holdGlow}px ${color}66)` : undefined,
+          filter: `drop-shadow(0 0 ${holdGlow > 0 ? 12 * holdGlow : 8}px ${color}${holdGlow > 0 ? '66' : '33'})`,
         }}
       >
         {paths.map((path, i) => {
@@ -82,7 +83,7 @@ export const SvgPathDraw: React.FC<SvgPathDrawProps> = ({
           const drawProgress = spring({
             frame: pathFrame,
             fps,
-            config: SPRINGS.smooth,
+            config: SPRINGS.snappy,
             durationInFrames: drawFrames - pathDelay,
           });
 
@@ -95,7 +96,7 @@ export const SvgPathDraw: React.FC<SvgPathDrawProps> = ({
               key={i}
               d={path.d}
               stroke={path.stroke ?? color}
-              strokeWidth={path.strokeWidth ?? 3}
+              strokeWidth={path.strokeWidth ?? 6}
               fill={path.fill ?? 'none'}
               strokeLinecap="round"
               strokeLinejoin="round"

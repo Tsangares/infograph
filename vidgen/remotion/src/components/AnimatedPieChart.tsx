@@ -109,6 +109,7 @@ export const AnimatedPieChart: React.FC<AnimatedPieChartProps> = ({
   return (
     <div style={{
       ...zoneStyle(zone),
+      overflow: 'visible',
       flexDirection: 'column',
       alignItems: 'center',
       gap: 16,
@@ -117,17 +118,30 @@ export const AnimatedPieChart: React.FC<AnimatedPieChartProps> = ({
     }}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ overflow: 'visible' }}>
         {/* Background circle */}
-        <circle cx={cx} cy={cy} r={outerR} fill="none" stroke="#EAEAF015" strokeWidth={outerR - innerR} />
+        <circle cx={cx} cy={cy} r={outerR} fill="none" stroke="#EAEAF0" strokeOpacity={0.08} strokeWidth={outerR - innerR} />
 
         {/* Animated segments */}
         {arcs.map(({ seg, startAngle, endAngle, labelPos, pct, segProgress, i }) => (
           <React.Fragment key={i}>
             {/* Segment arc */}
             <path
-              d={innerRadius > 0
-                ? `${describeArc(cx, cy, outerR, startAngle, endAngle)} L ${polarToCartesian(cx, cy, innerR, endAngle).x} ${polarToCartesian(cx, cy, innerR, endAngle).y} ${describeArc(cx, cy, innerR, endAngle, startAngle).replace('M', 'A').replace(/A\s/, '')} Z`
-                : `${describeArc(cx, cy, outerR, startAngle, endAngle)} L ${cx} ${cy} Z`
-              }
+              d={(() => {
+                if (innerRadius <= 0) {
+                  return `${describeArc(cx, cy, outerR, startAngle, endAngle)} L ${cx} ${cy} Z`;
+                }
+                const outerStart = polarToCartesian(cx, cy, outerR, endAngle);
+                const outerEnd = polarToCartesian(cx, cy, outerR, startAngle);
+                const innerStart = polarToCartesian(cx, cy, innerR, endAngle);
+                const innerEnd = polarToCartesian(cx, cy, innerR, startAngle);
+                const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+                return [
+                  `M ${outerStart.x} ${outerStart.y}`,
+                  `A ${outerR} ${outerR} 0 ${largeArc} 0 ${outerEnd.x} ${outerEnd.y}`,
+                  `L ${innerEnd.x} ${innerEnd.y}`,
+                  `A ${innerR} ${innerR} 0 ${largeArc} 1 ${innerStart.x} ${innerStart.y}`,
+                  'Z',
+                ].join(' ');
+              })()}
               fill={seg.color}
               fillOpacity={0.8 + holdGlow * 0.2}
               stroke="#080A10"

@@ -104,6 +104,7 @@ export const AnimatedBarRace: React.FC<AnimatedBarRaceProps> = ({
   return (
     <div style={{
       ...zoneStyle(zone),
+      overflow: 'visible',
       flexDirection: 'column',
       alignItems: 'flex-start',
       opacity: entryOpacity * exitOpacity,

@@ -145,6 +145,7 @@ export const SvgMorph: React.FC<SvgMorphProps> = ({
   return (
     <div style={{
       ...zoneStyle(zone),
+      overflow: 'visible',
       flexDirection: 'column',
       alignItems: 'center',
       opacity: entryOpacity * exitOpacity,

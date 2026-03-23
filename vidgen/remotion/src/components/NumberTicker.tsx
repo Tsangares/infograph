@@ -137,6 +137,7 @@ export const NumberTicker: React.FC<NumberTickerProps> = ({
   return (
     <div style={{
       ...zoneStyle(zone),
+      overflow: 'visible',
       flexDirection: 'column',
       alignItems: 'center',
       gap: 12,

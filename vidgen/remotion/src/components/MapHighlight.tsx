@@ -51,8 +51,8 @@ const WORLD_PATHS = [
 export const MapHighlight: React.FC<MapHighlightProps> = ({
   pins,
   zone = 'MID',
-  size = 400,
-  mapColor = '#EAEAF015',
+  size = 650,
+  mapColor = '#EAEAF0',
   accentColor = '#FFD700',
   connectPins = false,
 }) => {
@@ -82,6 +82,7 @@ export const MapHighlight: React.FC<MapHighlightProps> = ({
   return (
     <div style={{
       ...zoneStyle(zone),
+      overflow: 'visible',
       flexDirection: 'column',
       alignItems: 'center',
       opacity: entryOpacity * exitOpacity,
@@ -99,8 +100,10 @@ export const MapHighlight: React.FC<MapHighlightProps> = ({
             key={`map-${i}`}
             d={path}
             fill={mapColor}
-            stroke="#EAEAF020"
-            strokeWidth={1.5}
+            fillOpacity={0.08}
+            stroke={mapColor}
+            strokeOpacity={0.25}
+            strokeWidth={2.5}
             strokeDasharray={3000}
             strokeDashoffset={3000 * (1 - mapDrawProgress)}
           />
@@ -126,7 +129,7 @@ export const MapHighlight: React.FC<MapHighlightProps> = ({
               x2={x1 + (x2 - x1) * lineProgress}
               y2={y1 + (y2 - y1) * lineProgress}
               stroke={`${accentColor}44`}
-              strokeWidth={1.5}
+              strokeWidth={2.5}
               strokeDasharray="6 4"
             />
           );
@@ -157,10 +160,10 @@ export const MapHighlight: React.FC<MapHighlightProps> = ({
               {pinFrame > 15 && (
                 <circle
                   cx={px} cy={py}
-                  r={12 * pulseScale}
+                  r={25 * pulseScale}
                   fill="none"
                   stroke={pinColor}
-                  strokeWidth={1.5}
+                  strokeWidth={2.5}
                   opacity={pulseOpacity}
                 />
               )}
@@ -168,10 +171,10 @@ export const MapHighlight: React.FC<MapHighlightProps> = ({
               {/* Pin dot */}
               <circle
                 cx={px} cy={py}
-                r={8}
+                r={18}
                 fill={pinColor}
                 stroke="#080A10"
-                strokeWidth={2}
+                strokeWidth={3}
                 transform={`translate(0, ${(1 - dropProgress) * -30})`}
                 style={{ transformOrigin: `${px}px ${py}px` }}
               />
@@ -179,7 +182,7 @@ export const MapHighlight: React.FC<MapHighlightProps> = ({
               {/* Glow */}
               <circle
                 cx={px} cy={py}
-                r={15}
+                r={30}
                 fill={`${pinColor}22`}
                 transform={`scale(${pinScale})`}
                 style={{ transformOrigin: `${px}px ${py}px` }}
@@ -188,10 +191,10 @@ export const MapHighlight: React.FC<MapHighlightProps> = ({
               {/* Label */}
               <text
                 x={px}
-                y={py - 22}
+                y={py - 35}
                 textAnchor="middle"
                 fill="#EAEAF0"
-                fontSize={16}
+                fontSize={28}
                 fontFamily="Inter, sans-serif"
                 fontWeight="bold"
                 opacity={interpolate(pinFrame, [8, 20], [0, 1], { extrapolateRight: 'clamp' })}

@@ -1,0 +1,211 @@
+{
+  "topic": "test_new_components",
+  "colors": {
+    "bg": "#080A10",
+    "accent": "#FFD700",
+    "secondary": "#3B82F6"
+  },
+  "fps": 30,
+  "total_duration_s": 36.0,
+  "total_frames": 1080,
+  "scene_durations": [180, 180, 180, 180, 180, 180],
+  "scenes": [
+    {
+      "id": "ticker",
+      "label": "NUMBER TICKER",
+      "type": "number_ticker",
+      "start_s": 0,
+      "end_s": 6,
+      "duration_s": 6,
+      "duration_frames": 180,
+      "elements": [
+        {
+          "type": "text",
+          "content": "COMPONENT SHOWCASE",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "enter": "fade",
+          "_resolved": { "delay_frames": 0, "delay_s": 0, "anchor_word": "Welcome", "anchor_time_s": 0, "absolute_frame": 0, "absolute_s": 0 }
+        },
+        {
+          "type": "number_ticker",
+          "tickerValue": 1986,
+          "unit": "THE YEAR",
+          "color": "#EF4444",
+          "zone": "MID",
+          "_resolved": { "delay_frames": 15, "delay_s": 0.5, "anchor_word": "ticker", "anchor_time_s": 0.5, "absolute_frame": 15, "absolute_s": 0.5 }
+        },
+        {
+          "type": "text",
+          "content": "Slot-machine digit columns",
+          "zone": "LOWER",
+          "style": "caption",
+          "color": "#EAEAF0",
+          "_resolved": { "delay_frames": 45, "delay_s": 1.5, "anchor_word": "dramatic", "anchor_time_s": 1.5, "absolute_frame": 45, "absolute_s": 1.5 }
+        }
+      ]
+    },
+    {
+      "id": "pie",
+      "label": "PIE CHART",
+      "type": "pie_chart",
+      "start_s": 6,
+      "end_s": 12,
+      "duration_s": 6,
+      "duration_frames": 180,
+      "elements": [
+        {
+          "type": "text",
+          "content": "ANIMATED DONUT CHART",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "_resolved": { "delay_frames": 0, "delay_s": 0, "anchor_word": "Next", "anchor_time_s": 6, "absolute_frame": 180, "absolute_s": 6 }
+        },
+        {
+          "type": "pie_chart",
+          "segments": [
+            { "value": 45, "label": "Category A", "color": "#FFD700" },
+            { "value": 25, "label": "Category B", "color": "#3B82F6" },
+            { "value": 20, "label": "Category C", "color": "#EF4444" },
+            { "value": 10, "label": "Category D", "color": "#22C55E" }
+          ],
+          "zone": "MID",
+          "size": 300,
+          "innerRadius": 0.55,
+          "centerLabel": "TOTAL",
+          "centerValue": "100%",
+          "showLabels": true,
+          "_resolved": { "delay_frames": 10, "delay_s": 0.33, "anchor_word": "pie", "anchor_time_s": 6.33, "absolute_frame": 190, "absolute_s": 6.33 }
+        }
+      ]
+    },
+    {
+      "id": "split",
+      "label": "SPLIT SCREEN",
+      "type": "split_screen",
+      "start_s": 12,
+      "end_s": 18,
+      "duration_s": 6,
+      "duration_frames": 180,
+      "elements": [
+        {
+          "type": "split_screen",
+          "leftPanel": {
+            "label": "BEFORE",
+            "value": "$1",
+            "color": "#22C55E",
+            "subtext": "Original cost"
+          },
+          "rightPanel": {
+            "label": "AFTER",
+            "value": "$300",
+            "color": "#EF4444",
+            "subtext": "Current price"
+          },
+          "splitDirection": "horizontal",
+          "zone": "MID",
+          "_resolved": { "delay_frames": 10, "delay_s": 0.33, "anchor_word": "split", "anchor_time_s": 12.33, "absolute_frame": 370, "absolute_s": 12.33 }
+        }
+      ]
+    },
+    {
+      "id": "barrace",
+      "label": "BAR RACE",
+      "type": "bar_race",
+      "start_s": 18,
+      "end_s": 24,
+      "duration_s": 6,
+      "duration_frames": 180,
+      "elements": [
+        {
+          "type": "text",
+          "content": "RACING BAR CHART",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "_resolved": { "delay_frames": 0, "delay_s": 0, "anchor_word": "Watch", "anchor_time_s": 18, "absolute_frame": 540, "absolute_s": 18 }
+        },
+        {
+          "type": "bar_race",
+          "raceBars": [
+            { "label": "Gold", "value": 850, "color": "#FFD700" },
+            { "label": "Silver", "value": 620, "color": "#94A3B8" },
+            { "label": "Bronze", "value": 480, "color": "#CD7F32" },
+            { "label": "Iron", "value": 310, "color": "#6B7280" },
+            { "label": "Tin", "value": 150, "color": "#22C55E" }
+          ],
+          "zone": "MID",
+          "sortAfterGrow": true,
+          "showValues": true,
+          "_resolved": { "delay_frames": 10, "delay_s": 0.33, "anchor_word": "bar", "anchor_time_s": 18.33, "absolute_frame": 550, "absolute_s": 18.33 }
+        }
+      ]
+    },
+    {
+      "id": "map",
+      "label": "MAP HIGHLIGHT",
+      "type": "map_highlight",
+      "start_s": 24,
+      "end_s": 30,
+      "duration_s": 6,
+      "duration_frames": 180,
+      "elements": [
+        {
+          "type": "text",
+          "content": "GLOBAL LOCATIONS",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "_resolved": { "delay_frames": 0, "delay_s": 0, "anchor_word": "The", "anchor_time_s": 24, "absolute_frame": 720, "absolute_s": 24 }
+        },
+        {
+          "type": "map_highlight",
+          "pins": [
+            { "x": 0.22, "y": 0.35, "label": "New York", "color": "#FFD700", "delay": 0 },
+            { "x": 0.48, "y": 0.28, "label": "London", "color": "#3B82F6", "delay": 15 },
+            { "x": 0.65, "y": 0.32, "label": "Tokyo", "color": "#EF4444", "delay": 30 },
+            { "x": 0.52, "y": 0.55, "label": "Cairo", "color": "#22C55E", "delay": 45 }
+          ],
+          "size": 450,
+          "connectPins": true,
+          "zone": "MID",
+          "_resolved": { "delay_frames": 10, "delay_s": 0.33, "anchor_word": "highlights", "anchor_time_s": 24.33, "absolute_frame": 730, "absolute_s": 24.33 }
+        }
+      ]
+    },
+    {
+      "id": "pathdraw",
+      "label": "SVG PATH DRAW",
+      "type": "path_draw",
+      "start_s": 30,
+      "end_s": 36,
+      "duration_s": 6,
+      "duration_frames": 180,
+      "elements": [
+        {
+          "type": "text",
+          "content": "PATH DRAWING",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "_resolved": { "delay_frames": 0, "delay_s": 0, "anchor_word": "Finally", "anchor_time_s": 30, "absolute_frame": 900, "absolute_s": 30 }
+        },
+        {
+          "type": "path_draw",
+          "paths": [
+            { "d": "M 50 200 C 100 50 150 50 200 200 S 300 350 350 200", "stroke": "#FFD700", "strokeWidth": 4 },
+            { "d": "M 30 180 L 100 100 L 200 250 L 300 80 L 370 200", "stroke": "#3B82F6", "strokeWidth": 3, "delay": 0.2 },
+            { "d": "M 200 50 A 80 80 0 1 1 200 210 A 80 80 0 1 1 200 50", "stroke": "#EF4444", "strokeWidth": 3, "delay": 0.4 }
+          ],
+          "viewBox": "0 0 400 400",
+          "size": 350,
+          "zone": "MID",
+          "color": "#FFD700",
+          "_resolved": { "delay_frames": 15, "delay_s": 0.5, "anchor_word": "SVG", "anchor_time_s": 30.5, "absolute_frame": 915, "absolute_s": 30.5 }
+        }
+      ]
+    }
+  ]
+}
