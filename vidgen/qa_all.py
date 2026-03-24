@@ -180,6 +180,39 @@ def _run_word_triggered_audits(topic: str) -> dict:
     return _section("word_triggered_audit", status, checks, fails, warns)
 
 
+def _run_manifest_deep(topic: str) -> dict:
+    """Run deep manifest validation for LLM failure modes."""
+    try:
+        from qa_manifest_deep import analyze_manifest
+        result = analyze_manifest(topic)
+        checks = result.get('checks', [])
+        fails = sum(1 for c in checks if c['status'] == 'FAIL')
+        warns = sum(1 for c in checks if c['status'] == 'WARN')
+        status = "FAIL" if fails else "WARN" if warns else "PASS"
+        return _section("manifest_deep", status, checks, fails, warns)
+    except Exception as e:
+        return _section("manifest_deep", "WARN", [{"check": "manifest_deep", "status": "WARN", "detail": f"Deep manifest QA error: {e}"}], 0, 1)
+
+
+def _run_animation_coverage(topic: str) -> dict:
+    """Run visual complexity and scene similarity analysis on previews."""
+    preview_dir = VIDGEN_DIR / "previews"
+    previews = sorted(preview_dir.glob(f"{topic}_scene_*.png")) if preview_dir.exists() else []
+    if not previews:
+        return _section("animation_coverage", "WARN", [{"check": "previews", "status": "WARN", "detail": "No preview PNGs for animation coverage"}], 0, 1)
+
+    try:
+        from qa_animation_coverage import analyze_topic
+        result = analyze_topic(topic)
+        checks = result.get('checks', [])
+        fails = sum(1 for c in checks if c['status'] == 'FAIL')
+        warns = sum(1 for c in checks if c['status'] == 'WARN')
+        status = "FAIL" if fails else "WARN" if warns else "PASS"
+        return _section("animation_coverage", status, checks, fails, warns)
+    except Exception as e:
+        return _section("animation_coverage", "WARN", [{"check": "animation_coverage", "status": "WARN", "detail": f"Animation coverage error: {e}"}], 0, 1)
+
+
 def _run_raycast_qa(topic: str) -> dict:
     """Run pixel-level raycasting QA on preview PNGs."""
     preview_dir = VIDGEN_DIR / "previews"
@@ -226,12 +259,14 @@ def run_all_qa(topic: str, skip_previews: bool = False) -> dict:
     # Manifest validation (Remotion only)
     if fmt in ("legacy", "word-triggered"):
         sections.append(_run_manifest_validation(topic))
+        sections.append(_run_manifest_deep(topic))
 
     # Preview-based checks
     if not skip_previews:
         sections.append(_run_layout_qa(topic))
         sections.append(_run_visibility_qa(topic))
         sections.append(_run_raycast_qa(topic))
+        sections.append(_run_animation_coverage(topic))
 
     # Format-specific sync checks
     if fmt == "legacy":
