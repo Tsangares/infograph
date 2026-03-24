@@ -1,0 +1,155 @@
+{
+  "topic": "stress_bar_charts",
+  "ttsScript": "Scene one shows only two bars. Scene two has ten bars crammed together. Scene three has a bar with a massive value next to tiny ones. Scene four has extremely long label names. Scene five shows bars where all values are nearly identical. Scene six has huge numbers with units.",
+  "colors": {
+    "bg": "#080A10",
+    "accent": "#FFD700",
+    "secondary": "#3B82F6"
+  },
+  "scenes": [
+    {
+      "id": "bar_two",
+      "label": "TWO BARS",
+      "type": "barChart",
+      "scene_anchor": "Scene one",
+      "scene_end_anchor": "bars.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "JUST TWO BARS",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "Scene one"
+        },
+        {
+          "type": "bar",
+          "label": "Winner",
+          "value": 95,
+          "color": "#FFD700",
+          "anchor": "two",
+          "zone": "MID"
+        },
+        {
+          "type": "bar",
+          "label": "Loser",
+          "value": 12,
+          "color": "#EF4444",
+          "anchor": "bars",
+          "zone": "MID"
+        }
+      ]
+    },
+    {
+      "id": "bar_ten",
+      "label": "TEN BARS",
+      "type": "barChart",
+      "scene_anchor": "Scene two",
+      "scene_end_anchor": "together.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "TEN BARS CRAMMED",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "Scene two"
+        },
+        { "type": "bar", "label": "USA", "value": 850, "color": "#FFD700", "anchor": "ten", "zone": "MID" },
+        { "type": "bar", "label": "China", "value": 720, "color": "#EF4444", "anchor": "ten", "zone": "MID" },
+        { "type": "bar", "label": "Japan", "value": 510, "color": "#3B82F6", "anchor": "ten", "zone": "MID" },
+        { "type": "bar", "label": "Germany", "value": 430, "color": "#22C55E", "anchor": "ten", "zone": "MID" },
+        { "type": "bar", "label": "UK", "value": 380, "color": "#A855F7", "anchor": "ten", "zone": "MID" },
+        { "type": "bar", "label": "India", "value": 350, "color": "#F97316", "anchor": "ten", "zone": "MID" },
+        { "type": "bar", "label": "France", "value": 310, "color": "#06B6D4", "anchor": "ten", "zone": "MID" },
+        { "type": "bar", "label": "Brazil", "value": 280, "color": "#EC4899", "anchor": "ten", "zone": "MID" },
+        { "type": "bar", "label": "Canada", "value": 220, "color": "#84CC16", "anchor": "ten", "zone": "MID" },
+        { "type": "bar", "label": "Australia", "value": 180, "color": "#F59E0B", "anchor": "ten", "zone": "MID" }
+      ]
+    },
+    {
+      "id": "bar_extreme_ratio",
+      "label": "EXTREME RATIO",
+      "type": "barChart",
+      "scene_anchor": "Scene three",
+      "scene_end_anchor": "ones.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "EXTREME VALUE RATIO",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "Scene three"
+        },
+        { "type": "bar", "label": "Giant", "value": 10000, "color": "#FFD700", "anchor": "massive", "zone": "MID" },
+        { "type": "bar", "label": "Medium", "value": 500, "color": "#3B82F6", "anchor": "massive", "zone": "MID" },
+        { "type": "bar", "label": "Small", "value": 50, "color": "#EF4444", "anchor": "massive", "zone": "MID" },
+        { "type": "bar", "label": "Tiny", "value": 5, "color": "#22C55E", "anchor": "tiny", "zone": "MID" }
+      ]
+    },
+    {
+      "id": "bar_long_labels",
+      "label": "LONG LABELS",
+      "type": "barChart",
+      "scene_anchor": "Scene four",
+      "scene_end_anchor": "names.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "EXTREMELY LONG BAR LABELS",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "Scene four"
+        },
+        { "type": "bar", "label": "United States of America", "value": 800, "color": "#FFD700", "anchor": "long", "zone": "MID" },
+        { "type": "bar", "label": "People's Republic of China", "value": 650, "color": "#EF4444", "anchor": "long", "zone": "MID" },
+        { "type": "bar", "label": "United Kingdom of Great Britain", "value": 450, "color": "#3B82F6", "anchor": "long", "zone": "MID" },
+        { "type": "bar", "label": "Democratic Republic of the Congo", "value": 120, "color": "#22C55E", "anchor": "long", "zone": "MID" }
+      ]
+    },
+    {
+      "id": "bar_near_equal",
+      "label": "NEARLY EQUAL",
+      "type": "barChart",
+      "scene_anchor": "Scene five",
+      "scene_end_anchor": "identical.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "NEARLY IDENTICAL VALUES",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "Scene five"
+        },
+        { "type": "bar", "label": "A", "value": 101, "color": "#FFD700", "anchor": "nearly", "zone": "MID" },
+        { "type": "bar", "label": "B", "value": 100, "color": "#3B82F6", "anchor": "nearly", "zone": "MID" },
+        { "type": "bar", "label": "C", "value": 99, "color": "#EF4444", "anchor": "nearly", "zone": "MID" },
+        { "type": "bar", "label": "D", "value": 98, "color": "#22C55E", "anchor": "nearly", "zone": "MID" },
+        { "type": "bar", "label": "E", "value": 100, "color": "#A855F7", "anchor": "nearly", "zone": "MID" }
+      ]
+    },
+    {
+      "id": "bar_huge_numbers",
+      "label": "HUGE NUMBERS",
+      "type": "barChart",
+      "scene_anchor": "Scene six",
+      "scene_end_anchor": "units.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "HUGE NUMBERS",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "Scene six"
+        },
+        { "type": "bar", "label": "GDP", "value": 25462000, "color": "#FFD700", "anchor": "huge", "zone": "MID" },
+        { "type": "bar", "label": "Pop", "value": 8045000, "color": "#3B82F6", "anchor": "huge", "zone": "MID" },
+        { "type": "bar", "label": "Area", "value": 3796000, "color": "#EF4444", "anchor": "huge", "zone": "MID" }
+      ]
+    }
+  ]
+}

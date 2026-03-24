@@ -1,0 +1,203 @@
+{
+  "topic": "stress_pie_charts",
+  "ttsScript": "First, a perfectly split pie chart with only two segments. Second, a tiny sliver among giants barely visible. Third, ten segments crammed into one donut. Fourth, a solid pie with no donut hole at all. Fifth, extremely long category names overflow the legend. Finally, one dominant segment crushes the rest.",
+  "colors": {
+    "bg": "#080A10",
+    "accent": "#FFD700",
+    "secondary": "#3B82F6"
+  },
+  "scenes": [
+    {
+      "id": "pie_two",
+      "label": "TWO SEGMENTS",
+      "type": "pie_chart",
+      "scene_anchor": "First,",
+      "scene_end_anchor": "segments.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "TWO SEGMENTS ONLY",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "First,"
+        },
+        {
+          "type": "pie_chart",
+          "segments": [
+            { "value": 50, "label": "Yes", "color": "#FFD700" },
+            { "value": 50, "label": "No", "color": "#EF4444" }
+          ],
+          "zone": "MID",
+          "size": 300,
+          "innerRadius": 0.55,
+          "centerLabel": "SPLIT",
+          "centerValue": "50/50",
+          "anchor": "split"
+        }
+      ]
+    },
+    {
+      "id": "pie_tiny_sliver",
+      "label": "TINY SLIVER",
+      "type": "pie_chart",
+      "scene_anchor": "Second,",
+      "scene_end_anchor": "visible.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "TINY SLIVER (1%) VS GIANTS",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "Second,"
+        },
+        {
+          "type": "pie_chart",
+          "segments": [
+            { "value": 1, "label": "Tiny", "color": "#22C55E" },
+            { "value": 49, "label": "Medium", "color": "#3B82F6" },
+            { "value": 50, "label": "Big", "color": "#EF4444" }
+          ],
+          "zone": "MID",
+          "size": 300,
+          "innerRadius": 0.55,
+          "centerLabel": "RATIO",
+          "centerValue": "1:99",
+          "anchor": "sliver"
+        }
+      ]
+    },
+    {
+      "id": "pie_ten",
+      "label": "TEN SEGMENTS",
+      "type": "pie_chart",
+      "scene_anchor": "Third,",
+      "scene_end_anchor": "donut.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "TEN SEGMENTS",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "Third,"
+        },
+        {
+          "type": "pie_chart",
+          "segments": [
+            { "value": 18, "label": "Alpha", "color": "#FFD700" },
+            { "value": 15, "label": "Beta", "color": "#3B82F6" },
+            { "value": 12, "label": "Gamma", "color": "#EF4444" },
+            { "value": 11, "label": "Delta", "color": "#22C55E" },
+            { "value": 10, "label": "Epsilon", "color": "#A855F7" },
+            { "value": 9, "label": "Zeta", "color": "#F97316" },
+            { "value": 8, "label": "Eta", "color": "#06B6D4" },
+            { "value": 7, "label": "Theta", "color": "#EC4899" },
+            { "value": 6, "label": "Iota", "color": "#84CC16" },
+            { "value": 4, "label": "Kappa", "color": "#F59E0B" }
+          ],
+          "zone": "MID",
+          "size": 300,
+          "innerRadius": 0.55,
+          "centerLabel": "ALL",
+          "centerValue": "100%",
+          "anchor": "crammed"
+        }
+      ]
+    },
+    {
+      "id": "pie_full",
+      "label": "FULL PIE NO DONUT",
+      "type": "pie_chart",
+      "scene_anchor": "Fourth,",
+      "scene_end_anchor": "all.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "FULL PIE (NO DONUT)",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "Fourth,"
+        },
+        {
+          "type": "pie_chart",
+          "segments": [
+            { "value": 40, "label": "Dominant", "color": "#FFD700" },
+            { "value": 35, "label": "Runner-up", "color": "#3B82F6" },
+            { "value": 25, "label": "Third", "color": "#EF4444" }
+          ],
+          "zone": "MID",
+          "size": 340,
+          "innerRadius": 0,
+          "anchor": "solid"
+        }
+      ]
+    },
+    {
+      "id": "pie_long_labels",
+      "label": "LONG LABELS",
+      "type": "pie_chart",
+      "scene_anchor": "Fifth,",
+      "scene_end_anchor": "legend.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "EXTREMELY LONG LABELS",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "Fifth,"
+        },
+        {
+          "type": "pie_chart",
+          "segments": [
+            { "value": 30, "label": "Cardiovascular Disease & Related Complications", "color": "#FFD700" },
+            { "value": 25, "label": "Respiratory Infections Including Pneumonia", "color": "#3B82F6" },
+            { "value": 20, "label": "Neurological Disorders & Dementia", "color": "#EF4444" },
+            { "value": 15, "label": "Metabolic Syndrome Type II", "color": "#22C55E" },
+            { "value": 10, "label": "Autoimmune Deficiency Complications", "color": "#A855F7" }
+          ],
+          "zone": "MID",
+          "size": 280,
+          "innerRadius": 0.55,
+          "centerLabel": "CAUSES",
+          "centerValue": "TOP 5",
+          "anchor": "overflow"
+        }
+      ]
+    },
+    {
+      "id": "pie_dominant",
+      "label": "ONE DOMINANT",
+      "type": "pie_chart",
+      "scene_anchor": "Finally,",
+      "scene_end_anchor": "rest.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "97% DOMINANT SEGMENT",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "Finally,"
+        },
+        {
+          "type": "pie_chart",
+          "segments": [
+            { "value": 97, "label": "Dominant", "color": "#EF4444" },
+            { "value": 2, "label": "Tiny A", "color": "#3B82F6" },
+            { "value": 1, "label": "Tiny B", "color": "#22C55E" }
+          ],
+          "zone": "MID",
+          "size": 300,
+          "innerRadius": 0.55,
+          "centerLabel": "SKEW",
+          "centerValue": "97%",
+          "anchor": "dominant"
+        }
+      ]
+    }
+  ]
+}

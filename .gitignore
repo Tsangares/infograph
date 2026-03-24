@@ -68,7 +68,15 @@ vidgen/remotion/dist/
 vidgen/remotion/public/assets/
 vidgen/remotion/public/*.mp3
 
-# Legacy
+# Legacy Manim screenplays & helpers (moved to Remotion)
+vidgen/*_manim.py
+vidgen/*_manim_final.py
+vidgen/anim_primitives.py
+vidgen/scene_templates.py
+vidgen/MANIM_VIDEO_TEMPLATE.md
+clips/templates/about_engines_manim.html
+
+# Legacy misc
 videos/
 frames/
 test_scrape.py

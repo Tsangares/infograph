@@ -1,0 +1,202 @@
+{
+  "topic": "stress_bar_race",
+  "ttsScript": "Scene one shows a bar race with just two items. Scene two crams in eight bars racing. Scene three has an extreme outlier value. Scene four uses very long label text. Scene five shows nearly identical values racing. Scene six has huge numbers with unit suffixes.",
+  "colors": {
+    "bg": "#080A10",
+    "accent": "#FFD700",
+    "secondary": "#3B82F6"
+  },
+  "scenes": [
+    {
+      "id": "race_two",
+      "label": "TWO RACERS",
+      "type": "bar_race",
+      "scene_anchor": "Scene one",
+      "scene_end_anchor": "items.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "TWO-HORSE RACE",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "Scene one"
+        },
+        {
+          "type": "bar_race",
+          "raceBars": [
+            { "label": "Gold", "value": 920, "color": "#FFD700" },
+            { "label": "Silver", "value": 880, "color": "#94A3B8" }
+          ],
+          "zone": "MID",
+          "sortAfterGrow": true,
+          "showValues": true,
+          "barUnit": "",
+          "anchor": "two"
+        }
+      ]
+    },
+    {
+      "id": "race_eight",
+      "label": "EIGHT RACERS",
+      "type": "bar_race",
+      "scene_anchor": "Scene two",
+      "scene_end_anchor": "racing.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "EIGHT BARS RACING",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "Scene two"
+        },
+        {
+          "type": "bar_race",
+          "raceBars": [
+            { "label": "Alpha", "value": 450, "color": "#FFD700" },
+            { "label": "Beta", "value": 380, "color": "#3B82F6" },
+            { "label": "Gamma", "value": 620, "color": "#EF4444" },
+            { "label": "Delta", "value": 510, "color": "#22C55E" },
+            { "label": "Epsilon", "value": 290, "color": "#A855F7" },
+            { "label": "Zeta", "value": 710, "color": "#F97316" },
+            { "label": "Eta", "value": 340, "color": "#06B6D4" },
+            { "label": "Theta", "value": 560, "color": "#EC4899" }
+          ],
+          "zone": "MID",
+          "sortAfterGrow": true,
+          "showValues": true,
+          "barUnit": "",
+          "anchor": "eight"
+        }
+      ]
+    },
+    {
+      "id": "race_outlier",
+      "label": "EXTREME OUTLIER",
+      "type": "bar_race",
+      "scene_anchor": "Scene three",
+      "scene_end_anchor": "value.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "ONE EXTREME OUTLIER",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "Scene three"
+        },
+        {
+          "type": "bar_race",
+          "raceBars": [
+            { "label": "Outlier", "value": 5000, "color": "#EF4444" },
+            { "label": "Normal A", "value": 120, "color": "#3B82F6" },
+            { "label": "Normal B", "value": 95, "color": "#22C55E" },
+            { "label": "Normal C", "value": 110, "color": "#A855F7" },
+            { "label": "Normal D", "value": 85, "color": "#F97316" }
+          ],
+          "zone": "MID",
+          "sortAfterGrow": true,
+          "showValues": true,
+          "barUnit": "",
+          "anchor": "outlier"
+        }
+      ]
+    },
+    {
+      "id": "race_long_labels",
+      "label": "LONG LABELS",
+      "type": "bar_race",
+      "scene_anchor": "Scene four",
+      "scene_end_anchor": "text.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "VERY LONG LABEL TEXT",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "Scene four"
+        },
+        {
+          "type": "bar_race",
+          "raceBars": [
+            { "label": "Cardiovascular Disease", "value": 600, "color": "#EF4444" },
+            { "label": "Lower Respiratory Infections", "value": 450, "color": "#3B82F6" },
+            { "label": "Neonatal Conditions & Birth Defects", "value": 380, "color": "#22C55E" },
+            { "label": "Chronic Obstructive Pulmonary", "value": 320, "color": "#A855F7" },
+            { "label": "Diarrheal Diseases Combined", "value": 280, "color": "#F97316" }
+          ],
+          "zone": "MID",
+          "sortAfterGrow": true,
+          "showValues": true,
+          "barUnit": "K",
+          "anchor": "long"
+        }
+      ]
+    },
+    {
+      "id": "race_near_equal",
+      "label": "NEAR-EQUAL RACE",
+      "type": "bar_race",
+      "scene_anchor": "Scene five",
+      "scene_end_anchor": "racing.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "PHOTO FINISH — NEAR EQUAL",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "Scene five"
+        },
+        {
+          "type": "bar_race",
+          "raceBars": [
+            { "label": "Team A", "value": 501, "color": "#FFD700" },
+            { "label": "Team B", "value": 499, "color": "#3B82F6" },
+            { "label": "Team C", "value": 500, "color": "#EF4444" },
+            { "label": "Team D", "value": 502, "color": "#22C55E" },
+            { "label": "Team E", "value": 498, "color": "#A855F7" }
+          ],
+          "zone": "MID",
+          "sortAfterGrow": true,
+          "showValues": true,
+          "barUnit": "",
+          "anchor": "equal"
+        }
+      ]
+    },
+    {
+      "id": "race_units",
+      "label": "WITH UNITS",
+      "type": "bar_race",
+      "scene_anchor": "Scene six",
+      "scene_end_anchor": "suffixes.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "HUGE NUMBERS + UNITS",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#FFD700",
+          "anchor": "Scene six"
+        },
+        {
+          "type": "bar_race",
+          "raceBars": [
+            { "label": "USA", "value": 25462, "color": "#FFD700" },
+            { "label": "China", "value": 17963, "color": "#EF4444" },
+            { "label": "Japan", "value": 4231, "color": "#3B82F6" },
+            { "label": "Germany", "value": 4072, "color": "#22C55E" }
+          ],
+          "zone": "MID",
+          "sortAfterGrow": false,
+          "showValues": true,
+          "barUnit": "B",
+          "anchor": "huge"
+        }
+      ]
+    }
+  ]
+}
