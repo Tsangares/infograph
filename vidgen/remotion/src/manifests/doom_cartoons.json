@@ -117,7 +117,7 @@
         },
         {
           "type": "cause_effect",
-          "zone": "MID",
+          "zone": "LOWER",
           "anchor": "killed",
           "attack": 0.3,
           "hold": "until_scene_end",
@@ -177,7 +177,7 @@
       "id": "betrayal",
       "label": "THE PORTAL",
       "type": "illustration",
-      "scene_anchor": "cartoon",
+      "scene_anchor": "portal",
       "scene_end_anchor": "alive.",
       "elements": [
         {
@@ -186,10 +186,22 @@
           "zone": "UPPER",
           "style": "headline",
           "color": "#7C3AED",
-          "anchor": "cartoon",
+          "anchor": "portal",
           "attack": 0.0,
           "enter": "fade",
           "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "clock",
+          "zone": "MID",
+          "color": "#7C3AED",
+          "anchor": "portal",
+          "attack": 0.3,
+          "enter": "pop",
+          "size": 160,
+          "holdMotion": "pulse",
+          "hold": "until_replaced"
         },
         {
           "type": "text_effect",
@@ -199,6 +211,7 @@
           "color": "#F59E0B",
           "anchor": "portal",
           "attack": 0.0,
+          "replaces_zone": true,
           "hold": "until_scene_end"
         },
         {
@@ -233,13 +246,26 @@
           "hold": "until_scene_end"
         },
         {
+          "type": "svg",
+          "svg": "hourglass",
+          "zone": "MID",
+          "color": "#F59E0B",
+          "anchor": "said",
+          "attack": 0.5,
+          "enter": "pop",
+          "size": 140,
+          "holdMotion": "float",
+          "hold": "until_replaced"
+        },
+        {
           "type": "text_effect",
           "effect": "stamp",
           "content": "BUILT FROM BEFORE",
           "zone": "MID",
           "color": "#F59E0B",
-          "anchor": "world",
+          "anchor": "so",
           "attack": 0.0,
+          "replaces_zone": true,
           "hold": "until_scene_end"
         },
         {
