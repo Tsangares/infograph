@@ -367,14 +367,45 @@ def check_color_contrast(manifest: dict) -> list[dict]:
 
 
 def check_anchor_words(manifest: dict) -> list[dict]:
-    """Validate anchor words exist in ttsScript and are in order."""
+    """Validate anchor words exist in ttsScript and/or Whisper transcript.
+
+    After TTS generation, anchors may be adjusted to match Whisper's
+    transcription (e.g., 'nineteen' → '19', 'Grammy.' → 'Grammy,').
+    So we check against BOTH the ttsScript text AND the Whisper JSON
+    if it exists. An anchor is valid if it matches either source.
+    """
     results = []
     tts = manifest.get("ttsScript", "")
     if not tts:
         return [{"check": "anchor_words", "status": "WARN", "detail": "No ttsScript found"}]
 
+    topic = manifest.get("topic", "")
     tts_lower = tts.lower()
-    tts_words = tts.split()
+
+    # Also load Whisper words if available (post-TTS anchors may differ from script)
+    whisper_words = set()
+    whisper_path = BASE / f"tts_{topic}.mp3.json"
+    if whisper_path.exists():
+        try:
+            wdata = json.loads(whisper_path.read_text())
+            for w in wdata.get("words", []):
+                whisper_words.add(w.get("text", "").lower().strip(".,!?;:'\""))
+        except Exception:
+            pass
+
+    def anchor_found(anchor: str) -> bool:
+        """Check if anchor exists in ttsScript or Whisper transcript."""
+        a_lower = anchor.lower().strip(".,!?;:'\"")
+        # Check in ttsScript
+        if a_lower in tts_lower:
+            return True
+        # Check exact or stripped form in Whisper words
+        if a_lower in whisper_words:
+            return True
+        # Check with punctuation stripped from both sides
+        if anchor.lower() in whisper_words:
+            return True
+        return False
 
     # Check element-level anchors
     for scene in manifest.get("scenes", []):
@@ -383,11 +414,14 @@ def check_anchor_words(manifest: dict) -> list[dict]:
             anchor = el.get("anchor")
             if not anchor:
                 continue
-            if anchor.lower() not in tts_lower:
+            if not anchor_found(anchor):
+                # If Whisper hasn't run yet, downgrade to WARN (will be resolved post-TTS)
+                status = "WARN" if not whisper_words else "FAIL"
                 results.append({
                     "check": "anchor_words",
-                    "status": "FAIL",
-                    "detail": f"Scene '{sid}': anchor '{anchor}' not found in ttsScript",
+                    "status": status,
+                    "detail": f"Scene '{sid}': anchor '{anchor}' not found in ttsScript" +
+                              ("" if whisper_words else " (pre-TTS, may resolve after Whisper)"),
                 })
             elif anchor.lower() in AMBIGUOUS_ANCHORS:
                 results.append({
@@ -406,12 +440,18 @@ def check_anchor_words(manifest: dict) -> list[dict]:
     last_pos = -1
     for sid, anchor in scene_anchors:
         # Find position of anchor in script
-        pos = tts_lower.find(anchor.lower())
+        a_lower = anchor.lower().strip(".,!?;:'\"")
+        pos = tts_lower.find(a_lower)
+        if pos == -1 and anchor_found(anchor):
+            # Found in Whisper but not at expected position in script — skip ordering check
+            continue
         if pos == -1:
+            status = "WARN" if not whisper_words else "FAIL"
             results.append({
                 "check": "anchor_words",
-                "status": "FAIL",
-                "detail": f"Scene '{sid}': scene_anchor '{anchor}' not found in ttsScript",
+                "status": status,
+                "detail": f"Scene '{sid}': scene_anchor '{anchor}' not found in ttsScript" +
+                          ("" if whisper_words else " (pre-TTS, may resolve after Whisper)"),
             })
         elif pos < last_pos:
             results.append({
