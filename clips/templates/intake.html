@@ -70,7 +70,7 @@
   }
   .status-pill.uploaded { background: rgba(255,245,230,0.06); color: var(--text-dim); }
   .status-pill.analyzing, .status-pill.planning { background: rgba(232,131,74,0.12); color: var(--accent); }
-  .status-pill.writing, .status-pill.tts, .status-pill.previewing { background: rgba(232,196,74,0.12); color: var(--warn); }
+  .status-pill.writing, .status-pill.tts, .status-pill.previewing, .status-pill.qa { background: rgba(232,196,74,0.12); color: var(--warn); }
   .status-pill.done, .status-pill.previewed, .status-pill.written { background: rgba(108,192,112,0.12); color: var(--success); }
   .status-pill.error { background: rgba(209,90,80,0.12); color: var(--fail); }
   .status-pill.planned { background: rgba(255,245,230,0.06); color: var(--text-dim); }
@@ -120,12 +120,107 @@
     color: var(--accent);
     margin-bottom: 12px;
   }
+  .active-step .tool-label {
+    color: var(--text-dim);
+    font-size: 12px;
+    font-style: italic;
+  }
+
+  .item-step-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: var(--accent);
+    margin-left: 8px;
+  }
+  .item-step-badge .mini-spinner {
+    width: 10px; height: 10px;
+    border: 1.5px solid rgba(232,131,74,0.3);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   .empty-state {
     text-align: center;
     padding: 40px;
     color: var(--text-muted);
     font-size: 14px;
+  }
+
+  /* Tab bar */
+  .tab-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .tab-btn:hover { color: var(--text-dim); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* Research panel */
+  .research-textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 12px;
+    resize: vertical;
+  }
+  .research-textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .research-textarea::placeholder { color: var(--text-muted); }
+  .research-preview {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 500px;
+    overflow-y: auto;
+    color: var(--text-dim);
+  }
+  .research-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .research-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .char-count {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: right;
+    margin-top: 4px;
   }
 </style>
 {% endblock %}
@@ -135,11 +230,52 @@
   <h1>Intake</h1>
 </div>
 
-<div class="drop-zone" id="dropZone">
-  <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-  <p>Drop a .md research file here</p>
-  <div class="hint">or click to browse</div>
-  <input type="file" id="fileInput" accept=".md,.txt,.markdown">
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('upload')">Upload</button>
+  <button class="tab-btn" onclick="switchTab('research')">Research</button>
+</div>
+
+<div id="panelUpload">
+  <div class="drop-zone" id="dropZone">
+    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <p>Drop a .md research file here</p>
+    <div class="hint">or click to browse</div>
+    <input type="file" id="fileInput" accept=".md,.txt,.markdown">
+  </div>
+</div>
+
+<div id="panelResearch" style="display:none;margin-bottom:24px">
+  <!-- Input state -->
+  <div id="researchInput">
+    <textarea class="research-textarea" id="researchPrompt" rows="5"
+      placeholder="What should the essay cover? Drop in topic ideas, loose notes, angles you find interesting..."></textarea>
+    <button class="btn btn-primary" id="btnGenerate" onclick="startResearch()"
+      style="width:100%;margin-top:12px;padding:12px 24px;font-size:15px;">Generate Essay</button>
+  </div>
+
+  <!-- Generating state -->
+  <div id="researchGenerating" style="display:none">
+    <div class="research-status">
+      <span class="spinner"></span>
+      <span id="researchStatusText">Generating research essay...</span>
+    </div>
+    <div class="research-preview" id="researchPreview"></div>
+    <div class="char-count" id="researchCharCount"></div>
+    <div class="research-actions">
+      <button class="btn btn-xs btn-ghost" onclick="stopResearch()">Stop</button>
+    </div>
+  </div>
+
+  <!-- Editing state -->
+  <div id="researchEditing" style="display:none">
+    <textarea class="research-textarea" id="researchEditor" rows="20"></textarea>
+    <div class="char-count" id="editorCharCount"></div>
+    <div class="research-actions">
+      <button class="btn btn-primary" onclick="sendToIntake()">Send to Intake</button>
+      <button class="btn btn-ghost" onclick="regenerate()">Regenerate</button>
+      <button class="btn btn-ghost" onclick="copyEssay()">Copy</button>
+    </div>
+  </div>
 </div>
 
 <div id="batchList"></div>
@@ -207,7 +343,7 @@ function renderBatches(batches) {
   batchList.innerHTML = batches.map(b => {
     const isActive = !['done', 'error', 'uploaded'].includes(b.status) || b.status === 'uploaded';
     const items = (b.items || []).map(it => {
-      const link = it.screenplay_file && ['written','tts','previewed'].includes(it.status)
+      const link = it.screenplay_file && ['written','tts','previewed','complete'].includes(it.status)
         ? `<a href="/workbench?file=${it.screenplay_file}">Open</a>` : '';
       const errorLink = it.status === 'error' && it.screenplay_file
         ? `<a href="/workbench?file=${it.screenplay_file}">Open</a>` : '';
@@ -217,13 +353,13 @@ function renderBatches(batches) {
         <span class="topic">${it.title || it.topic.replace(/_/g, ' ')}</span>
         <span style="display:flex;align-items:center;gap:8px;">
           <span class="status-pill ${it.status}">${it.status}</span>
-          ${link || errorLink}
+          <span class="link-area">${link || errorLink}</span>
         </span>
         ${errorHtml}
       </div>`;
     }).join('');
 
-    const showStop = ['analyzing','planning','writing','tts','previewing'].includes(b.status);
+    const showStop = ['analyzing','planning','writing','tts','qa','previewing'].includes(b.status);
     const showRetry = b.status === 'error';
     const showDelete = ['done','error'].includes(b.status);
 
@@ -247,7 +383,7 @@ function renderBatches(batches) {
 
   // Start polling for active batches
   batches.forEach(b => {
-    const isActive = ['analyzing','planning','writing','tts','previewing','uploaded'].includes(b.status);
+    const isActive = ['analyzing','planning','writing','tts','qa','previewing','uploaded'].includes(b.status);
     if (isActive && !_pollIntervals[b.id]) {
       _pollIntervals[b.id] = setInterval(() => pollBatch(b.id), 2000);
       pollBatch(b.id);
@@ -259,17 +395,36 @@ async function pollBatch(batchId) {
   try {
     const res = await fetch(`/api/intake/batches/${batchId}/poll`);
     const data = await res.json();
+
+    // Update active step with tool activity
     const el = document.getElementById(`active-step-${batchId}`);
-    if (el && data.live) {
-      const step = data.current_step || '';
+    if (el && (data.live || data.status !== 'done')) {
+      const stepLabels = {
+        analyze: 'Analyzing research',
+        plan: 'Planning videos',
+        write: 'Writing manifest',
+        tts: 'Generating TTS',
+        preview: 'Rendering previews',
+        render: 'Full render',
+        meta: 'Generating metadata',
+      };
+      const step = stepLabels[data.current_step] || data.current_step || '';
       const item = data.current_item ? data.current_item.replace(/_/g, ' ') : '';
       const elapsed = data.elapsed ? `${Math.floor(data.elapsed/60)}m ${data.elapsed%60}s` : '';
-      el.innerHTML = `<div class="active-step">
-        <span class="spinner"></span>
-        ${step}${item ? ': ' + item : ''} ${elapsed ? '(' + elapsed + ')' : ''}
-      </div>`;
+      const toolHtml = data.tool_activity
+        ? `<span class="tool-label">${esc(data.tool_activity)}</span>` : '';
+      if (step || item) {
+        el.innerHTML = `<div class="active-step">
+          <span class="spinner"></span>
+          ${step}${item ? ': ' + item : ''} ${elapsed ? '(' + elapsed + ')' : ''}
+          ${toolHtml}
+        </div>`;
+      }
+    } else if (el) {
+      el.innerHTML = '';
     }
-    // Update status pill
+
+    // Update status pill on the batch card
     const card = document.getElementById(`batch-${batchId}`);
     if (card) {
       const pill = card.querySelector('.batch-meta .status-pill');
@@ -278,6 +433,62 @@ async function pollBatch(batchId) {
         pill.textContent = data.status;
       }
     }
+
+    // Update item rows live without full re-render
+    if (data.items && card) {
+      const itemList = card.querySelector('.item-list');
+      if (itemList) {
+        data.items.forEach(it => {
+          // Find existing row or skip
+          const rows = itemList.querySelectorAll('.item-row');
+          for (const row of rows) {
+            const topicEl = row.querySelector('.topic');
+            if (!topicEl) continue;
+            const rowTopic = topicEl.textContent.trim();
+            const itemTopic = (it.title || it.topic.replace(/_/g, ' ')).trim();
+            if (rowTopic !== itemTopic) continue;
+            // Update status pill
+            const pill = row.querySelector('.status-pill');
+            if (pill && pill.textContent !== it.status) {
+              pill.className = 'status-pill ' + it.status;
+              pill.textContent = it.status;
+            }
+            // Show active indicator on the item currently being processed
+            let badge = row.querySelector('.item-step-badge');
+            const isActive = data.current_item === it.topic &&
+              ['writing','tts','previewing','rendering'].includes(data.status);
+            if (isActive && !badge) {
+              badge = document.createElement('span');
+              badge.className = 'item-step-badge';
+              badge.innerHTML = '<span class="mini-spinner"></span>';
+              topicEl.after(badge);
+            } else if (!isActive && badge) {
+              badge.remove();
+            }
+            // Add open link when available
+            const linkArea = row.querySelector('.link-area');
+            if (linkArea && it.screenplay_file && ['written','tts','previewed','complete'].includes(it.status)) {
+              if (!linkArea.querySelector('a')) {
+                linkArea.innerHTML = `<a href="/workbench?file=${it.screenplay_file}">Open</a>`;
+              }
+            }
+            // Show error
+            if (it.status === 'error' && it.error) {
+              let errDiv = row.querySelector('.item-error');
+              if (!errDiv) {
+                errDiv = document.createElement('div');
+                errDiv.className = 'item-error';
+                row.classList.add('has-error');
+                row.appendChild(errDiv);
+              }
+              errDiv.textContent = it.error;
+            }
+            break;
+          }
+        });
+      }
+    }
+
     // Refresh full list when done or error
     if (['done', 'error'].includes(data.status)) {
       clearInterval(_pollIntervals[batchId]);
@@ -312,6 +523,148 @@ async function deleteBatch(batchId) {
 }
 
 function esc(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+// --- Tab switching ---
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', (tab === 'upload' && i === 0) || (tab === 'research' && i === 1));
+  });
+  document.getElementById('panelUpload').style.display = tab === 'upload' ? '' : 'none';
+  document.getElementById('panelResearch').style.display = tab === 'research' ? '' : 'none';
+}
+
+// --- Research generation ---
+let _researchId = null;
+let _researchPoll = null;
+let _researchPromptText = '';
+
+function _showResearchState(state) {
+  document.getElementById('researchInput').style.display = state === 'input' ? '' : 'none';
+  document.getElementById('researchGenerating').style.display = state === 'generating' ? '' : 'none';
+  document.getElementById('researchEditing').style.display = state === 'editing' ? '' : 'none';
+}
+
+async function startResearch() {
+  const prompt = document.getElementById('researchPrompt').value.trim();
+  if (!prompt) { showToast('Enter a topic or some notes first', 'error'); return; }
+  _researchPromptText = prompt;
+
+  try {
+    const res = await fetch('/api/intake/research', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({prompt}),
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.error || 'Failed to start research', 'error'); return; }
+    _researchId = data.research_id;
+    document.getElementById('researchPreview').textContent = '';
+    document.getElementById('researchCharCount').textContent = '';
+    _showResearchState('generating');
+    _researchPoll = setInterval(pollResearch, 500);
+  } catch (e) {
+    showToast('Failed to start: ' + e.message, 'error');
+  }
+}
+
+async function pollResearch() {
+  if (!_researchId) return;
+  try {
+    const res = await fetch(`/api/intake/research/${_researchId}/poll`);
+    const data = await res.json();
+
+    // Update preview
+    const preview = document.getElementById('researchPreview');
+    if (data.content) {
+      preview.textContent = data.content;
+      preview.scrollTop = preview.scrollHeight;
+      const lines = data.content.split('\n').length;
+      document.getElementById('researchCharCount').textContent =
+        `${data.content.length} chars, ${lines} lines`;
+    }
+
+    // Update status
+    const elapsed = data.elapsed ? `${Math.floor(data.elapsed/60)}m ${data.elapsed%60}s` : '';
+    document.getElementById('researchStatusText').textContent =
+      `Generating research essay... ${elapsed}`;
+
+    if (data.status === 'done') {
+      clearInterval(_researchPoll);
+      _researchPoll = null;
+      // Move to editing state
+      document.getElementById('researchEditor').value = data.content;
+      _updateEditorCount();
+      _showResearchState('editing');
+      showToast('Research essay ready', 'success');
+    } else if (data.status === 'error') {
+      clearInterval(_researchPoll);
+      _researchPoll = null;
+      showToast(data.error || 'Research generation failed', 'error');
+      _showResearchState('input');
+    }
+  } catch (e) {}
+}
+
+async function stopResearch() {
+  if (_researchId) {
+    await fetch(`/api/intake/research/${_researchId}/stop`, { method: 'POST' });
+  }
+  if (_researchPoll) { clearInterval(_researchPoll); _researchPoll = null; }
+  showToast('Research stopped', 'info');
+  _showResearchState('input');
+}
+
+function regenerate() {
+  document.getElementById('researchPrompt').value = _researchPromptText;
+  _showResearchState('input');
+}
+
+function _updateEditorCount() {
+  const text = document.getElementById('researchEditor').value;
+  const lines = text.split('\n').length;
+  document.getElementById('editorCharCount').textContent =
+    `${text.length} chars, ${lines} lines`;
+}
+
+// Update count as user edits
+document.getElementById('researchEditor').addEventListener('input', _updateEditorCount);
+
+async function sendToIntake() {
+  const text = document.getElementById('researchEditor').value.trim();
+  if (!text) { showToast('Essay is empty', 'error'); return; }
+
+  // Derive name from first heading or first line
+  const firstLine = text.split('\n')[0].replace(/^#+\s*/, '').trim();
+  const name = firstLine.substring(0, 80) || 'Research Essay';
+
+  try {
+    const res = await fetch('/api/intake/submit-text', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({text, name}),
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.error || 'Submit failed', 'error'); return; }
+    showToast(`Started batch: ${data.name}`, 'success');
+    // Switch to upload tab to see the batch
+    switchTab('upload');
+    _showResearchState('input');
+    document.getElementById('researchPrompt').value = '';
+    loadBatches();
+  } catch (e) {
+    showToast('Submit failed: ' + e.message, 'error');
+  }
+}
+
+async function copyEssay() {
+  const text = document.getElementById('researchEditor').value;
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast('Copied to clipboard', 'success');
+  } catch (e) {
+    showToast('Copy failed', 'error');
+  }
+}
 
 // Initial load
 loadBatches();

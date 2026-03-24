@@ -1,26 +1,26 @@
 /**
  * TKK vertical zone system — pixel coordinates for 1080×1920 portrait.
  *
- * Manim uses a coordinate system where y ranges from -8 to +8 (16 units tall).
- * Convert: pixel_y = (8 - manim_y) / 16 * 1920
+ * The zone system uses a unit coordinate system where y ranges from -8 to +8
+ * (16 units tall). Convert: pixel_y = (8 - unit_y) / 16 * 1920
  */
 
 export const WIDTH = 1080;
 export const HEIGHT = 1920;
 export const FPS = 30;
 
-/** Convert Manim y-coordinate to pixel y (top-down). */
-export function manimToPixelY(manimY: number): number {
-  return ((8 - manimY) / 16) * HEIGHT;
+/** Convert unit y-coordinate (-8 to +8 range) to pixel y (top-down). */
+export function unitToPixelY(unitY: number): number {
+  return ((8 - unitY) / 16) * HEIGHT;
 }
 
-/** Named vertical zones matching anim_primitives.py */
+/** Named vertical zones for content layout. */
 export const ZONES = {
-  TITLE:  { y: manimToPixelY(6.2),  range: [manimToPixelY(7.0), manimToPixelY(5.5)] },
-  UPPER:  { y: manimToPixelY(3.5),  range: [manimToPixelY(5.5), manimToPixelY(1.5)] },
-  MID:    { y: manimToPixelY(0.0),  range: [manimToPixelY(1.5), manimToPixelY(-1.5)] },
-  LOWER:  { y: manimToPixelY(-3.5), range: [manimToPixelY(-1.5), manimToPixelY(-5.5)] },
-  FOOTER: { y: manimToPixelY(-6.0), range: [manimToPixelY(-5.5), manimToPixelY(-6.4)] },
+  TITLE:  { y: unitToPixelY(6.2),  range: [unitToPixelY(7.0), unitToPixelY(5.5)] },
+  UPPER:  { y: unitToPixelY(3.5),  range: [unitToPixelY(5.5), unitToPixelY(1.5)] },
+  MID:    { y: unitToPixelY(0.0),  range: [unitToPixelY(1.5), unitToPixelY(-1.5)] },
+  LOWER:  { y: unitToPixelY(-3.5), range: [unitToPixelY(-1.5), unitToPixelY(-5.5)] },
+  FOOTER: { y: unitToPixelY(-6.0), range: [unitToPixelY(-5.5), unitToPixelY(-6.4)] },
 } as const;
 
 export type ZoneName = keyof typeof ZONES;

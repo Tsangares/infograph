@@ -312,7 +312,7 @@ def parallel_render_scenes(script, scene_count=6, topic=None, media_dir=None,
     """Render all scenes in parallel using ProcessPoolExecutor.
 
     Args:
-        script: Absolute path to the *_manim.py screenplay file.
+        script: Absolute path to the screenplay file.
         scene_count: Number of scenes (default 6).
         topic: Topic prefix for fallback file search (e.g. "chariot_bronze_age").
                If None, derived from script filename.

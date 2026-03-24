@@ -10,7 +10,7 @@ At 150 WPM (measured Fish Audio ELITE average):
 
 Usage:
     python3 audit_tts.py                           # audit all, table output
-    python3 audit_tts.py some_topic_manim.py       # audit one with per-sentence breakdown
+    python3 audit_tts.py some_topic.json           # audit one with per-sentence breakdown
     python3 audit_tts.py --json                    # JSON output for tooling
 """
 
@@ -172,19 +172,39 @@ def _get_posted_stems() -> set[str]:
 
 
 def audit_all(include_posted: bool = False) -> list[dict]:
-    """Audit every *_manim.py with a TTS_SCRIPT. Sort by word_count desc.
+    """Audit every Remotion manifest with a TTS_SCRIPT. Sort by word_count desc.
 
+    Scans remotion/src/manifests/*.json. Also checks *_manim.py for backward compat.
     By default, skips videos marked as posted in video_metadata.json.
     """
     posted = _get_posted_stems() if not include_posted else set()
+    manifests_dir = VIDGEN / "remotion" / "src" / "manifests"
+    seen_stems = set()
     results = []
+
+    # Primary: Remotion manifests
+    if manifests_dir.exists():
+        for f in sorted(manifests_dir.glob("*.json")):
+            stem = f.stem
+            if stem in posted:
+                continue
+            seen_stems.add(stem)
+            # Look for a corresponding screenplay that has TTS_SCRIPT
+            screenplay = VIDGEN / f"{stem}_manim.py"
+            if screenplay.exists():
+                r = audit_one(screenplay)
+                if r["status"] != "SKIP":
+                    results.append(r)
+
+    # Backward compat: *_manim.py not covered by a manifest
     for f in sorted(VIDGEN.glob("*_manim.py")):
         stem = f.stem.replace("_manim", "")
-        if stem in posted:
+        if stem in posted or stem in seen_stems:
             continue
         r = audit_one(f)
         if r["status"] != "SKIP":
             results.append(r)
+
     results.sort(key=lambda r: r["word_count"], reverse=True)
     return results
 

@@ -68,11 +68,19 @@ vidgen/remotion/dist/
 vidgen/remotion/public/assets/
 vidgen/remotion/public/*.mp3
 
-# Legacy Manim screenplays & helpers (moved to Remotion)
+# Legacy Manim (replaced by Remotion — see vidgen/MANIM_ARCHIVE.md)
 vidgen/*_manim.py
 vidgen/*_manim_final.py
 vidgen/anim_primitives.py
 vidgen/scene_templates.py
+vidgen/anim_assets.py
+vidgen/geo_utils.py
+vidgen/geo_locations.py
+vidgen/radium_visual_proto.py
+vidgen/bronze_age_3d_prototype.py
+vidgen/enhance_animations.py
+vidgen/migrate_duration.py
+vidgen/produce.py
 vidgen/MANIM_VIDEO_TEMPLATE.md
 clips/templates/about_engines_manim.html
 

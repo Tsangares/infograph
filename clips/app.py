@@ -62,10 +62,10 @@ REMOTION_MANIFESTS_DIR = VIDGEN_DIR / "remotion" / "src" / "manifests"
 
 
 def _engine_from_filename(filename: str) -> str:
-    """Detect framework from filename: .json → remotion, _manim.py/.py → manim."""
+    """Detect framework from filename: .json → remotion, otherwise legacy."""
     if filename.endswith(".json"):
         return "remotion"
-    return "manim"
+    return "legacy"
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 app.mount("/videos", StaticFiles(directory=str(VIDGEN_DIR)), name="videos")
 app.mount("/thumbs", StaticFiles(directory=str(THUMBS_DIR)), name="thumbs")
@@ -472,7 +472,7 @@ async def dashboard(request: Request, all: bool = False):
     videos = get_video_list(show_all=all)
     total = len(list(VIDGEN_DIR.glob("*.mp4")))
     # Remotion migration stats
-    total_screenplays = len(list(VIDGEN_DIR.glob("*_manim.py")))
+    total_screenplays = len(list(REMOTION_MANIFESTS_DIR.glob("*.json"))) if REMOTION_MANIFESTS_DIR.exists() else 0
     remotion_dir = REMOTION_MANIFESTS_DIR
     remotion_count = len(list(remotion_dir.glob("*.json"))) if remotion_dir.exists() else 0
     return templates.TemplateResponse("dashboard.html", {
@@ -678,9 +678,7 @@ def _parse_screenplay_version(stem):
 
 
 def _get_grouped_screenplays() -> list[dict]:
-    """Return screenplay list with status groups and version collapsing.
-    Includes both Manim (_manim.py) and Remotion (.json manifest) screenplays.
-    """
+    """Return screenplay list with status groups and version collapsing."""
     # Load posted status from video_metadata.json
     meta_json = VIDGEN_DIR / "video_metadata.json"
     all_meta = {}
@@ -732,46 +730,6 @@ def _get_grouped_screenplays() -> list[dict]:
                 "has_remotion": True,
             })
 
-    # 2. Manim screenplays (only those without a corresponding Remotion manifest)
-    for f in sorted(VIDGEN_DIR.glob("*_manim.py"), key=lambda p: p.stat().st_mtime, reverse=True):
-        stem = f.stem.replace("_manim", "")
-        if stem in seen_stems:
-            continue  # Already listed via Remotion entry
-        seen_stems.add(stem)
-        base_stem, version = _parse_screenplay_version(stem)
-        has_tts = (VIDGEN_DIR / f"tts_{stem}.mp3").exists()
-        has_preview = (PREVIEWS_DIR / f"{stem}_scene_1.png").exists()
-        has_final = (VIDGEN_DIR / f"{stem}_final.mp4").exists()
-        has_short = (VIDGEN_DIR / f"{stem}_short.mp4").exists()
-
-        posted = False
-        video_key = f"{stem}_final.mp4"
-        if video_key in all_meta:
-            posted = bool(all_meta[video_key].get("posted", False))
-
-        if has_final:
-            group = "complete"
-        elif has_tts or has_preview:
-            group = "progress"
-        else:
-            group = "draft"
-
-        screenplays.append({
-            "filename": f.name,
-            "name": stem.replace("_", " ").title(),
-            "stem": stem,
-            "base_stem": base_stem,
-            "version": version,
-            "group": group,
-            "engine": "manim",
-            "has_tts": has_tts,
-            "has_preview": has_preview,
-            "has_final": has_final,
-            "has_short": has_short,
-            "posted": posted,
-            "has_remotion": False,
-        })
-
     return screenplays
 
 
@@ -797,7 +755,7 @@ def _about_stats():
     """Shared stats dict for all about pages."""
     return {
         "video_count": len(list(VIDGEN_DIR.glob("*_final.mp4"))),
-        "screenplay_count": len(list(VIDGEN_DIR.glob("*_manim.py"))),
+        "screenplay_count": len(list(REMOTION_MANIFESTS_DIR.glob("*.json"))) if REMOTION_MANIFESTS_DIR.exists() else 0,
         "remotion_count": len(list(REMOTION_MANIFESTS_DIR.glob("*.json")))
             if REMOTION_MANIFESTS_DIR.exists() else 0,
     }
@@ -811,11 +769,6 @@ async def about_page(request: Request):
 @app.get("/about/engines", response_class=HTMLResponse)
 async def about_engines(request: Request):
     return templates.TemplateResponse("about_engines.html", {"request": request, **_about_stats()})
-
-
-@app.get("/about/engines/manim", response_class=HTMLResponse)
-async def about_engines_manim(request: Request):
-    return templates.TemplateResponse("about_engines_manim.html", {"request": request, **_about_stats()})
 
 
 @app.get("/about/engines/remotion", response_class=HTMLResponse)
@@ -2141,54 +2094,196 @@ async def api_screenplay_preview_render(filename: str):
             return {"success": False, "error": "Preview render timed out"}
 
 
+@app.post("/api/screenplay/{filename}/debug-preview")
+async def api_screenplay_debug_preview(filename: str):
+    """Render debug-QA preview PNGs with envelope overlays."""
+    stem = filename.replace("_manim.py", "").replace(".py", "").replace(".json", "")
+
+    resolved = VIDGEN_DIR / f"{stem}_resolved.json"
+    if not resolved.exists():
+        return {"success": False, "error": f"No resolved manifest for {stem}. Run TTS + resolver first."}
+
+    try:
+        result = subprocess.run(
+            ["/usr/bin/npx", "tsx", "renderDebug.mts", stem],
+            capture_output=True, text=True, timeout=300,
+            cwd=str(VIDGEN_DIR / "remotion"),
+        )
+        previews = []
+        for i in range(1, 9):
+            for pct in [50, 75]:
+                name = f"{stem}_debug_scene_{i}_{pct}.png"
+                if (PREVIEWS_DIR / name).exists():
+                    previews.append(name)
+
+        # Read envelope data for overlap counts
+        overlaps = {}
+        total_overlaps = 0
+        envelope_path = VIDGEN_DIR / f"{stem}_envelopes.json"
+        if envelope_path.exists():
+            import json as _json
+            try:
+                env_data = _json.loads(envelope_path.read_text())
+                for scene in env_data.get("scenes", []):
+                    elems = scene.get("elements", [])
+                    scene_overlaps = 0
+                    for a_idx in range(len(elems)):
+                        for b_idx in range(a_idx + 1, len(elems)):
+                            a_bb = elems[a_idx].get("envelope", {}).get("aabb", {})
+                            b_bb = elems[b_idx].get("envelope", {}).get("aabb", {})
+                            if not a_bb or not b_bb:
+                                continue
+                            if (a_bb["x"] < b_bb["x"] + b_bb["w"] and
+                                b_bb["x"] < a_bb["x"] + a_bb["w"] and
+                                a_bb["y"] < b_bb["y"] + b_bb["h"] and
+                                b_bb["y"] < a_bb["y"] + a_bb["h"]):
+                                scene_overlaps += 1
+                    overlaps[scene["id"]] = scene_overlaps
+                    total_overlaps += scene_overlaps
+            except Exception:
+                pass
+
+        return {
+            "success": result.returncode == 0,
+            "previews": previews,
+            "overlaps": overlaps,
+            "total_overlaps": total_overlaps,
+            "stdout": result.stdout[-500:] if result.stdout else "",
+            "stderr": result.stderr[-500:] if result.stderr else "",
+        }
+    except subprocess.TimeoutExpired:
+        return {"success": False, "error": "Debug preview render timed out"}
+
+
 # --- Studio (AI chat for video production) ---
 
 CLAUDE_BIN = "/usr/bin/claude"
 MCP_CONFIG = str(VIDGEN_DIR / "mcp_config.json")
 STUDIO_SYSTEM_PROMPT = """You are the TKK video production assistant at clips.applesauce.chat.
-You help create TikTok educational videos (28-45s, vertical, 6-scene mystery arc).
+You help create TikTok educational videos (28-45s, vertical 1080x1920, 6-scene mystery arc).
 
 ## Your Tools
 You have TWO sets of tools:
-1. **Built-in tools**: Read, Bash, Edit, Write, Grep, Glob — use these to read files, explore the filesystem, run commands
+1. **Built-in tools**: Read, Bash, Edit, Write, Grep, Glob — read files, explore, run commands
 2. **TKK MCP tools** (via tkk-studio):
-   - **Pipeline**: list_screenplays, pipeline_status, production_stats, batch_check
-   - **Screenplays**: read_screenplay, write_screenplay, write_remotion_manifest, search_screenplays
-   - **Production**: read_production_guide, generate_tts, render_preview, render_full, run_qa
-   - **Management**: list_videos, save_video_metadata, get_video_metadata, list_uploads, get_queue, update_queue
+   - **Manifests**: list_remotion_manifests, read_remotion_manifest, write_remotion_manifest, list_screenplays, search_screenplays
+   - **SVG Library**: search_svg (search by keyword), list_svg_library, import_svg, add_custom_svg_icon
+   - **Pipeline**: generate_tts, render_preview, run_qa, render_full
+   - **Word-Triggered**: resolve_word_triggers_tool, audit_word_triggered
+   - **Debug QA**: compute_envelopes, debug_render, collision_stats_tool
+   - **Management**: list_videos, save_video_metadata, get_video_metadata, pipeline_status, production_stats
+   - **Reference**: read_production_guide (READ THIS before writing your first manifest)
 
-## Key Paths
-- Remotion manifests: /opt/tkk/vidgen/remotion/src/manifests/*.json (primary)
-- Manim screenplays: /opt/tkk/vidgen/*_manim.py (legacy)
-- Production guide: /opt/tkk/vidgen/PRODUCTION_GUIDE.md (READ THIS before writing screenplays)
-- TTS audio: /opt/tkk/vidgen/tts_*.mp3
-- Final videos: /opt/tkk/vidgen/*_final.mp4
-- Uploaded files: /opt/tkk/clips/uploads/
-
-## Workflow (Remotion — default for new videos)
+## Workflow (step by step)
 1. Discuss topic with user. If they attach a file, READ it with your Read tool.
-2. Read the production guide (read_production_guide) to understand the format
-3. Write a Remotion manifest JSON with 6 scenes, ttsScript, and colors
-4. Generate TTS with Fish Audio using generate_tts (ALWAYS use Fish Audio)
-5. Render preview PNGs and run QA using render_preview then run_qa
-6. If QA passes, full render using render_full
+2. Read an existing manifest (read_remotion_manifest) to see the format — e.g. "antibiotics" or "henrietta"
+3. Search for SVGs you need: search_svg("bacteria"), search_svg("brain"), etc. If nothing fits, use add_custom_svg_icon to create one.
+4. Write a word-triggered manifest using write_remotion_manifest (see format below)
+5. generate_tts — this creates Fish Audio TTS AND auto-resolves word triggers
+6. render_preview — renders preview PNGs of each scene
+7. run_qa — runs all checks (manifest validation, layout, visibility, collision, envelope collision)
+8. If QA has collision warnings: debug_render to see envelope overlays, then fix and re-render
+9. render_full — final MP4
 
-## Remotion Manifest Format
-New videos use Remotion JSON manifests at /opt/tkk/vidgen/remotion/src/manifests/{topic}.json.
-Each manifest has: topic, ttsScript (full narration), colors (bg/accent/secondary), and scenes array.
-Scene types: headline, counter, barChart, timeline, kenburns, map, iconRow, populationDrop, splitCompare, videoClip.
-See existing manifests for examples. The ttsScript field contains the full narration for TTS generation.
+## Word-Triggered Manifest Format (REQUIRED for all new videos)
+Manifests go to /opt/tkk/vidgen/remotion/src/manifests/{topic}.json.
 
-## Legacy: Manim Screenplays
-Manim (_manim.py) screenplays still work but are legacy. For Manim, plan_screenplay() is required
-before write_screenplay(). Use Remotion for all new work unless the user specifically asks for Manim.
+```json
+{
+  "topic": "antibiotics",
+  "ttsScript": "Full narration text here. Every anchor word must appear in this text.",
+  "colors": { "bg": "#080A10", "accent": "#22C55E", "secondary": "#3B82F6" },
+  "scenes": [
+    {
+      "id": "hook",
+      "label": "THE PILL",
+      "type": "illustration",
+      "scene_anchor": "antibiotic",
+      "scene_end_anchor": "everywhere.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "NOT A GUIDED MISSILE",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#22C55E",
+          "anchor": "antibiotic",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "capsules",
+          "zone": "MID",
+          "size": 180,
+          "color": "#22C55E",
+          "anchor": "dissolves",
+          "enter": "pop",
+          "holdMotion": "pulse",
+          "hold": "until_scene_end"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Key fields:
+- **scene_anchor** / **scene_end_anchor**: words from ttsScript that mark when the scene starts/ends
+- **anchor**: word from ttsScript that triggers this element's entrance
+- **attack**: delay in seconds after anchor word (usually 0.0-0.3)
+- **enter**: entrance animation — fadeIn, slideLeft, slideRight, slideUp, pop, drop, stamp, grow, shatter
+- **holdMotion**: continuous motion — float (default), drift, pulse, breathe, orbit, none, tremble, swing, glow
+- **hold**: "until_scene_end" or "until_replaced"
+- **zone**: TITLE, UPPER, MID, LOWER, FOOTER
+- **style** (text only): headline, caption, stat, label
+
+## Element Types (23 available)
+- **Text & Numbers**: text, counter, number_ticker, text_effect
+- **SVG & Graphics**: svg, custom_svg, svg_morph, path_draw
+- **Data Viz**: bar, bar_race, gauge, pie_chart, progress_ring, timeline_marker
+- **Layouts**: flow_diagram, scale_comparison, split_screen, stacked_accumulation
+- **Effects**: transform, cause_effect, population_drop, emphasis_line, map_highlight
+
+## Zone Layout (1080x1920)
+| Zone | Use | Safe for content |
+|------|-----|-----------------|
+| TITLE | Scene label pills | Yes |
+| UPPER | Hero visuals, headlines | Yes |
+| MID | Central focal point (default) | Yes |
+| LOWER | Supporting visuals | Yes |
+| FOOTER | Captions, sources | Partially (near platform UI) |
+
+Safe area: 820x1320px usable (top 200px = platform UI, bottom 400px = captions, right 140px = like/share buttons).
+
+## Critical Rules for Good Videos
+- **Anchor words MUST exist in ttsScript** — if anchor "dissolves" isn't in the narration, the element never appears
+- **Headline text max 25 chars** (FAIL >40, WARN >25). Caption max 60 chars.
+- **Max 2-3 elements per zone per scene** — more causes collisions
+- **Every scene needs scene_anchor and scene_end_anchor** — these must be words from ttsScript
+- **Use diverse element types** — don't make every scene just text + svg. Use counters, bars, gauges, transforms, etc.
+- **Use diverse entrance animations** — don't use "fade" for everything. Pop for impact, stamp for drama, slideUp for reveals.
+- **SVG names must exist in the library** — use search_svg to check before using. Create with add_custom_svg_icon if needed.
+- **6 scenes, mystery arc**: hook → wrong answer → contradiction → proof → betrayal → punch
+- **Colors**: bg should be dark (#080A10), accent is the primary color, secondary for contrast
+
+## Common Mistakes to Avoid
+- Using anchor words that appear multiple times in ttsScript (ambiguous timing)
+- Putting too many elements in one zone (causes overlap/collision)
+- Making text too long for the style (headline should be punchy, not a sentence)
+- Forgetting holdMotion (elements look dead/static without it)
+- Not checking SVG names against the library (causes render errors)
+- Using the same entrance animation for every element (looks monotonous)
 
 ## Rules
 - Be concise. The user sees your response in a chat bubble.
 - When the user attaches a file, use your Read tool to read it from the given path.
 - Never suggest the user run terminal commands — you can run them yourself with Bash.
-- Use MCP tools for pipeline operations (TTS, render, QA, screenplay CRUD).
-- If you're working on a long task (multiple screenplays), give progress updates between each one.
+- Use MCP tools for all pipeline operations.
+- Always use Fish Audio for TTS (generate_tts handles this automatically).
+- If QA reports collisions, use debug_render to visualize them before fixing.
+- If you're working on a long task, give progress updates between steps.
 - If you hit a budget or time limit, tell the user what's done and what's left."""
 
 # Background studio state (fire-and-forget + poll)
@@ -2227,6 +2322,20 @@ _TOOL_LABELS = {
     "update_queue": ("Updating queue", None),
     "production_stats": ("Getting stats", None),
     "batch_check": ("Batch check", None),
+    "resolve_word_triggers_tool": ("Resolving word triggers", "topic"),
+    "audit_word_triggered": ("Auditing word triggers", "topic"),
+    "compute_envelopes": ("Computing envelopes", "topic"),
+    "debug_render": ("Rendering debug preview", "topic"),
+    "collision_stats_tool": ("Checking collision stats", "topic"),
+    "list_remotion_manifests": ("Listing manifests", None),
+    "read_remotion_manifest": ("Reading manifest", "topic"),
+    "write_remotion_manifest": ("Writing manifest", "topic"),
+    "search_svg": ("Searching SVGs", "query"),
+    "list_svg_library": ("Listing SVG library", None),
+    "add_custom_svg_icon": ("Adding custom SVG", "name"),
+    "import_svg": ("Importing SVG", "name"),
+    "audit_tts": ("Auditing TTS", "filename"),
+    "analyze_enhancements": ("Analyzing enhancements", "topic"),
 }
 
 
@@ -2811,6 +2920,106 @@ async def api_create_short(filename: str):
 _intake_lock = threading.Lock()
 _intake_state: dict = {}  # batch_id -> {status, current_item, current_step, elapsed, error, proc}
 
+# --- Research generation (prompt → essay) ---
+_research_lock = threading.Lock()
+_research_state: dict = {}  # research_id -> {status, buffer, started, error, proc}
+
+_RESEARCH_SYSTEM_PROMPT = """\
+Write a dense educational research essay optimized for extracting short-form TikTok video topics.
+
+Requirements:
+- Write 150-250 lines of markdown with an H1 title and H2 sections
+- Pack in surprising facts, specific numbers, dates, and statistics
+- Include contradictions, betrayals, and mysteries — things that seem wrong but are true
+- Focus on "wait, what?" moments that make good 30-second video hooks
+- Include mechanistic explanations (how things actually work, not just what happened)
+- Name specific people, places, institutions, and measurements
+- Every paragraph should contain at least one concrete, surprising detail
+- Write in clear educational prose, not listicle format
+- Do NOT include citations, references, or URLs — just the content
+
+The user's topic and notes:
+"""
+
+
+def _run_research(research_id: str, user_prompt: str):
+    """Background thread: run Claude to generate a research essay, stream text into state."""
+    with _research_lock:
+        _research_state[research_id] = {
+            "status": "running",
+            "buffer": "",
+            "started": time.time(),
+            "error": None,
+            "proc": None,
+        }
+
+    s = get_settings()
+    cmd = [
+        CLAUDE_BIN, "-p", "--output-format", "stream-json", "--verbose",
+        "--model", s["studio_model"],
+        "--permission-mode", "bypassPermissions",
+        "--max-budget-usd", "1.00",
+    ]
+    full_prompt = _RESEARCH_SYSTEM_PROMPT + user_prompt
+
+    try:
+        proc = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            stdin=subprocess.PIPE, text=True, cwd=str(VIDGEN_DIR),
+        )
+        with _research_lock:
+            _research_state[research_id]["proc"] = proc
+        try:
+            proc.stdin.write(full_prompt)
+            proc.stdin.close()
+        except Exception:
+            pass
+
+        for line in iter(proc.stdout.readline, ""):
+            # Check cancellation
+            with _research_lock:
+                st = _research_state.get(research_id)
+                if st and st.get("cancelled"):
+                    proc.kill()
+                    return
+
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            etype = event.get("type")
+            if etype == "assistant":
+                for block in event.get("message", {}).get("content", []):
+                    if block.get("type") == "text":
+                        text = block.get("text", "")
+                        if text:
+                            with _research_lock:
+                                st = _research_state.get(research_id)
+                                if st:
+                                    st["buffer"] += text
+            elif etype == "result":
+                r = event.get("result", "")
+                if r and isinstance(r, str):
+                    with _research_lock:
+                        st = _research_state.get(research_id)
+                        if st and not st["buffer"].strip():
+                            st["buffer"] = r
+
+        proc.wait(timeout=300)
+        with _research_lock:
+            st = _research_state.get(research_id)
+            if st and st["status"] == "running":
+                st["status"] = "done"
+    except Exception as e:
+        with _research_lock:
+            st = _research_state.get(research_id)
+            if st:
+                st["status"] = "error"
+                st["error"] = str(e)
+
 
 def _update_batch_status(batch_id: str, status: str, error: str | None = None, video_count: int | None = None):
     with clips_db.db_session() as conn:
@@ -2840,8 +3049,13 @@ def _update_item_status(item_id: str, status: str, error: str | None = None, scr
             )
 
 
-def _run_claude_step(prompt: str, use_mcp: bool = False, timeout: int = 300) -> str:
-    """Run a fresh Claude -p session, return text output."""
+def _run_claude_step(prompt: str, use_mcp: bool = False, timeout: int = 300,
+                     batch_id: str | None = None) -> str:
+    """Run a fresh Claude -p session, return text output.
+
+    If batch_id is provided, live tool activity is pushed into _intake_state
+    so the poll endpoint can surface what the LLM is doing.
+    """
     s = get_settings()
     cmd = [
         CLAUDE_BIN, "-p", "--output-format", "stream-json", "--verbose",
@@ -2861,7 +3075,6 @@ def _run_claude_step(prompt: str, use_mcp: bool = False, timeout: int = 300) -> 
     except Exception:
         pass
 
-    # Store proc for cancellation
     result_text = ""
     for line in iter(proc.stdout.readline, ""):
         line = line.strip()
@@ -2871,11 +3084,22 @@ def _run_claude_step(prompt: str, use_mcp: bool = False, timeout: int = 300) -> 
             event = json.loads(line)
         except json.JSONDecodeError:
             continue
-        if event.get("type") == "assistant":
+        etype = event.get("type")
+        if etype == "assistant":
             for block in event.get("message", {}).get("content", []):
-                if block.get("type") == "text":
+                btype = block.get("type", "")
+                if btype == "text":
                     result_text += block.get("text", "")
-        elif event.get("type") == "result":
+                elif btype == "tool_use" and batch_id:
+                    tool_name = block.get("name", "")
+                    tool_input = block.get("input", {})
+                    label = _tool_activity_label(tool_name, tool_input)
+                    with _intake_lock:
+                        st = _intake_state.get(batch_id)
+                        if st:
+                            st["tool_activity"] = label
+                            st["tool_name"] = tool_name
+        elif etype == "result":
             r = event.get("result", "")
             if r and isinstance(r, str) and not result_text.strip():
                 result_text = r
@@ -2887,6 +3111,13 @@ def _run_claude_step(prompt: str, use_mcp: bool = False, timeout: int = 300) -> 
         except Exception:
             pass
         raise RuntimeError(f"Claude exited {proc.returncode}: {err}")
+    # Clear tool activity when step finishes
+    if batch_id:
+        with _intake_lock:
+            st = _intake_state.get(batch_id)
+            if st:
+                st["tool_activity"] = None
+                st["tool_name"] = None
     return result_text.strip()
 
 
@@ -2944,7 +3175,7 @@ Return ONLY the JSON array. No markdown fences, no explanation.
 Document:
 {source_content[:15000]}"""
 
-        analyze_result = _run_claude_step(analyze_prompt, use_mcp=False, timeout=120)
+        analyze_result = _run_claude_step(analyze_prompt, use_mcp=False, timeout=120, batch_id=batch_id)
         if _is_cancelled():
             return
 
@@ -2978,7 +3209,7 @@ Document:
         # Build a single Claude call that plans all videos
         topics_summary = "\n".join(f"- {t['topic']}: {t.get('title','')} — {t.get('hook','')}" for t in topics)
         plan_prompt = f"""You are a TikTok video producer. Read the production guide first (call read_production_guide),
-then call plan_screenplay() for EACH of these topics. Use the source material below for factual content.
+then plan each of these topics. For each topic, think through the mystery arc (hook → wrong answer → contradiction → proof → betrayal → punch).
 
 Topics to plan:
 {topics_summary}
@@ -2987,13 +3218,14 @@ Source material (first 12000 chars):
 {source_content[:12000]}
 
 For each topic, call plan_screenplay with a complete creative brief following the mystery arc structure.
-Include specific facts from the source material. Each plan needs real content for all 6 scenes."""
+Include specific facts from the source material. Each plan needs real content for all 6 scenes.
+IMPORTANT: These will be word-triggered Remotion manifests, NOT Manim screenplays."""
 
-        _run_claude_step(plan_prompt, use_mcp=True, timeout=600)
+        _run_claude_step(plan_prompt, use_mcp=True, timeout=600, batch_id=batch_id)
         if _is_cancelled():
             return
 
-        # --- STEPS 3-6: Per-video pipeline ---
+        # --- STEPS 3-6: Per-video Remotion pipeline ---
         with clips_db.db_session() as conn:
             items = [dict(r) for r in conn.execute(
                 "SELECT * FROM intake_items WHERE batch_id=? ORDER BY sort_order", (batch_id,)
@@ -3001,19 +3233,23 @@ Include specific facts from the source material. Each plan needs real content fo
 
         _update_batch_status(batch_id, "writing")
 
+        REMOTION_MANIFESTS = VIDGEN_DIR / "remotion" / "src" / "manifests"
+        venv_python = VIDGEN_DIR / ".venv" / "bin" / "python3"
+        python_cmd = str(venv_python) if venv_python.exists() else "python3"
+
         for item in items:
             if _is_cancelled():
                 return
 
             topic = item["topic"]
             item_id = item["id"]
-            filename = f"{topic}_manim.py"
+            manifest_file = f"{topic}.json"
 
             # Skip items that are already past writing (for retries)
             if item["status"] in ("written", "tts", "previewed", "rendered", "complete"):
                 continue
 
-            # --- WRITE ---
+            # --- WRITE MANIFEST ---
             with _intake_lock:
                 st = _intake_state.get(batch_id)
                 if st:
@@ -3024,47 +3260,28 @@ Include specific facts from the source material. Each plan needs real content fo
             _update_item_status(item_id, "writing")
 
             try:
-                write_prompt = f"""Write the screenplay for topic "{topic}".
-First call get_plan("{topic}") to retrieve the plan, then call write_screenplay to create the file.
-The screenplay MUST include TTS_SCRIPT with the full narration text.
-Follow the production guide exactly. The filename should be {filename}."""
+                write_prompt = f"""Write a word-triggered Remotion manifest for topic "{topic}".
+First call get_plan("{topic}") to retrieve the plan, then call write_remotion_manifest to create the file.
+The manifest MUST use the word-triggered format with scene_anchor/scene_end_anchor on scenes
+and anchor words on elements. Include a ttsScript with the full narration.
+Follow the production guide exactly. Use search_svg and list_svg_library to find appropriate icons."""
 
-                _run_claude_step(write_prompt, use_mcp=True, timeout=600)
+                _run_claude_step(write_prompt, use_mcp=True, timeout=600, batch_id=batch_id)
 
-                # Verify the file was created
-                sp_path = VIDGEN_DIR / filename
-                if not sp_path.exists():
-                    raise FileNotFoundError(f"{filename} was not created")
+                # Verify the manifest was created
+                manifest_path = REMOTION_MANIFESTS / manifest_file
+                if not manifest_path.exists():
+                    raise FileNotFoundError(f"Manifest {manifest_file} was not created")
 
-                # --- VALIDATE: syntax check + dry-import the screenplay ---
-                venv_python = VIDGEN_DIR / ".venv" / "bin" / "python3"
-                python_cmd = str(venv_python) if venv_python.exists() else "python3"
-                val_result = subprocess.run(
-                    [python_cmd, "-c", f"import py_compile; py_compile.compile({str(sp_path)!r}, doraise=True)"],
-                    capture_output=True, text=True, timeout=15, cwd=str(VIDGEN_DIR),
-                )
-                if val_result.returncode != 0:
-                    err_msg = val_result.stderr.strip().split('\n')[-1][:300] if val_result.stderr else "Syntax error"
-                    # Ask Claude to fix the syntax error
-                    fix_prompt = f"""The screenplay {filename} has a syntax error:
-{val_result.stderr[:500]}
+                # Validate manifest JSON
+                try:
+                    manifest_data = json.loads(manifest_path.read_text())
+                    if "ttsScript" not in manifest_data:
+                        raise ValueError("Manifest missing ttsScript")
+                except json.JSONDecodeError as je:
+                    raise ValueError(f"Invalid JSON in manifest: {je}")
 
-Fix the syntax error by calling write_screenplay with corrected code. Read the file first to see the full content."""
-                    try:
-                        _run_claude_step(fix_prompt, use_mcp=True, timeout=300)
-                        # Re-check syntax after fix attempt
-                        val2 = subprocess.run(
-                            [python_cmd, "-c", f"import py_compile; py_compile.compile({str(sp_path)!r}, doraise=True)"],
-                            capture_output=True, text=True, timeout=15, cwd=str(VIDGEN_DIR),
-                        )
-                        if val2.returncode != 0:
-                            raise SyntaxError(f"Still has syntax errors after fix attempt: {val2.stderr[-200:]}")
-                    except SyntaxError:
-                        raise
-                    except Exception:
-                        raise SyntaxError(f"Syntax error in {filename}: {err_msg}")
-
-                _update_item_status(item_id, "written", screenplay_file=filename)
+                _update_item_status(item_id, "written", screenplay_file=manifest_file)
             except Exception as e:
                 _update_item_status(item_id, "error", error=str(e)[:500])
                 continue
@@ -3072,7 +3289,7 @@ Fix the syntax error by calling write_screenplay with corrected code. Read the f
             if _is_cancelled():
                 return
 
-            # --- TTS ---
+            # --- TTS + WORD TRIGGER RESOLUTION ---
             with _intake_lock:
                 st = _intake_state.get(batch_id)
                 if st:
@@ -3080,13 +3297,11 @@ Fix the syntax error by calling write_screenplay with corrected code. Read the f
             _update_batch_status(batch_id, "tts")
 
             try:
-                venv_python = VIDGEN_DIR / ".venv" / "bin" / "python3"
-                python_cmd = str(venv_python) if venv_python.exists() else "python3"
+                manifest_path = REMOTION_MANIFESTS / manifest_file
                 tts_script = VIDGEN_DIR / "generate_tts.py"
-                sp_path = VIDGEN_DIR / filename
                 result = subprocess.run(
-                    [python_cmd, str(tts_script), str(sp_path)],
-                    capture_output=True, text=True, timeout=120, cwd=str(VIDGEN_DIR),
+                    [python_cmd, str(tts_script), str(manifest_path)],
+                    capture_output=True, text=True, timeout=180, cwd=str(VIDGEN_DIR),
                 )
                 if result.returncode != 0:
                     _update_item_status(item_id, "error", error=f"TTS failed: {result.stderr[:300]}")
@@ -3099,151 +3314,49 @@ Fix the syntax error by calling write_screenplay with corrected code. Read the f
             if _is_cancelled():
                 return
 
-            # --- PREVIEW (with auto-fix retry) ---
+            # --- QA ---
+            with _intake_lock:
+                st = _intake_state.get(batch_id)
+                if st:
+                    st["current_step"] = "qa"
+            _update_batch_status(batch_id, "qa")
+
+            try:
+                qa_script = VIDGEN_DIR / "qa_all.py"
+                if qa_script.exists():
+                    result = subprocess.run(
+                        [python_cmd, str(qa_script), topic],
+                        capture_output=True, text=True, timeout=120, cwd=str(VIDGEN_DIR),
+                    )
+                    # QA FAILs are logged but non-blocking for intake
+            except Exception:
+                pass
+
+            # --- PREVIEW ---
             with _intake_lock:
                 st = _intake_state.get(batch_id)
                 if st:
                     st["current_step"] = "preview"
             _update_batch_status(batch_id, "previewing")
 
-            preview_ok = False
-            last_err = ""
-            for _attempt in range(2):  # Try once, then fix + retry
-                try:
-                    sp_path = VIDGEN_DIR / filename
-                    result = subprocess.run(
-                        ["python3", str(sp_path), "--preview"],
-                        capture_output=True, text=True, timeout=180, cwd=str(VIDGEN_DIR),
-                    )
-                    if result.returncode == 0:
-                        scene_pngs = sorted((VIDGEN_DIR / "previews").glob(f"{topic}_scene_*.png"))
-                        if len(scene_pngs) >= 1:
-                            preview_ok = True
-                            break
-                        last_err = "Preview exited OK but produced no scene PNGs"
-                    else:
-                        last_err = (result.stderr or result.stdout or "")[-500:]
-                except subprocess.TimeoutExpired:
-                    last_err = "Preview timed out after 180s"
-                except Exception as e:
-                    last_err = str(e)[:500]
-
-                # First failure: ask Claude to fix the Manim code, then retry
-                if _attempt == 0:
-                    try:
-                        fix_prompt = f"""The screenplay {filename} failed during Manim preview rendering.
-
-Error output:
-{last_err}
-
-Read the file, diagnose the Manim error, and fix it using write_screenplay.
-Common issues:
-- VGroup() only accepts VMobject — use Group() for mixed mobject types
-- FadeOut(VGroup(*self.mobjects[2:])) fails when LaggedStart leaves Group objects — use FadeOut(Group(*self.mobjects[2:])) instead
-- Don't call run_preview_qa() from inside --preview (it scans all previews and times out)
-- Make sure all mobjects are properly constructed before animating"""
-                        _run_claude_step(fix_prompt, use_mcp=True, timeout=300)
-                    except Exception:
-                        pass
-
-            if not preview_ok:
-                _update_item_status(item_id, "error", error=f"Preview failed after auto-fix: {last_err[:300]}")
-                continue
-
-            # --- QA ---
             try:
-                stem = topic
-                preview_dir = VIDGEN_DIR / "previews"
-                previews = sorted(preview_dir.glob(f"{stem}_scene_*.png"))
-                if previews:
-                    qa_script = VIDGEN_DIR / "qa_layout.py"
-                    if qa_script.exists():
-                        subprocess.run(
-                            ["python3", str(qa_script), str(preview_dir), "--json"],
-                            capture_output=True, text=True, timeout=60, cwd=str(VIDGEN_DIR),
-                        )
-            except Exception:
-                pass  # QA is non-blocking
-
-            _update_item_status(item_id, "previewed")
-
-            if _is_cancelled():
-                return
-
-            # --- FULL RENDER ---
-            with _intake_lock:
-                st = _intake_state.get(batch_id)
-                if st:
-                    st["current_step"] = "render"
-            _update_batch_status(batch_id, "rendering")
-
-            try:
-                s = get_settings()
-                render_env = {
-                    **os.environ,
-                    "TKK_RENDER_CRF": s.get("render_crf", "23"),
-                    "TKK_RENDER_PRESET": s.get("render_preset", "fast"),
-                    "TKK_SILENCE_THRESHOLD_DB": s.get("silence_threshold_db", "-30"),
-                    "TKK_SILENCE_MIN_DURATION": s.get("silence_min_duration", "0.3"),
-                    "TKK_SHORT_MAX_DURATION": s.get("short_max_duration", "30"),
-                    "TKK_SHORT_FADE_DURATION": s.get("short_fade_duration", "1.5"),
-                    "TKK_FISH_BITRATE": s.get("fish_bitrate", "192"),
-                }
-                sp_path = VIDGEN_DIR / filename
+                preview_script = VIDGEN_DIR / "remotion" / "preview.mts"
                 result = subprocess.run(
-                    ["python3", str(sp_path)],
-                    capture_output=True, text=True, timeout=600, cwd=str(VIDGEN_DIR),
-                    env=render_env,
+                    ["npx", "tsx", str(preview_script), topic],
+                    capture_output=True, text=True, timeout=180, cwd=str(VIDGEN_DIR),
                 )
                 if result.returncode != 0:
-                    _update_item_status(item_id, "error", error=f"Render failed: {result.stderr[-300:]}")
+                    _update_item_status(item_id, "error", error=f"Preview failed: {(result.stderr or result.stdout)[-300:]}")
                     continue
-                _update_item_status(item_id, "rendered")
-
-                # Auto-generate short
-                try:
-                    timings_file = VIDGEN_DIR / f"tts_{topic}_timings.json"
-                    final_path = VIDGEN_DIR / f"{topic}_final.mp4"
-                    if timings_file.exists() and final_path.exists():
-                        timings_data = json.loads(timings_file.read_text())
-                        scene_ends = [round(sum(timings_data["scene_durations"][:i+1]), 3)
-                                      for i in range(len(timings_data["scene_durations"]))]
-                        sys.path.insert(0, str(VIDGEN_DIR))
-                        from render_utils import make_short
-                        make_short(str(final_path), scene_ends,
-                                   max_duration=float(s.get("short_max_duration", "30")),
-                                   fade_dur=float(s.get("short_fade_duration", "1.5")))
-                except Exception:
-                    pass  # Short generation is optional
-
+                _update_item_status(item_id, "previewed")
             except subprocess.TimeoutExpired:
-                _update_item_status(item_id, "error", error="Render timed out after 10 minutes")
+                _update_item_status(item_id, "error", error="Preview timed out after 180s")
                 continue
             except Exception as e:
-                _update_item_status(item_id, "error", error=f"Render error: {str(e)[:300]}")
+                _update_item_status(item_id, "error", error=f"Preview error: {str(e)[:300]}")
                 continue
 
-            if _is_cancelled():
-                return
-
-            # --- METADATA GENERATION ---
-            with _intake_lock:
-                st = _intake_state.get(batch_id)
-                if st:
-                    st["current_step"] = "meta"
-            _update_batch_status(batch_id, "metadata")
-
-            video_filename = f"{topic}_final.mp4"
-            if (VIDGEN_DIR / video_filename).exists():
-                try:
-                    base = re.sub(r'_(v\d+|final|render|output|s\d+.*)$', '', topic)
-                    _run_meta_gen(video_filename, base)
-                    _update_item_status(item_id, "complete")
-                except Exception as e:
-                    # Meta failure is non-blocking — video is still usable
-                    _update_item_status(item_id, "complete")
-            else:
-                _update_item_status(item_id, "complete")
+            # Intake stops at previewed — full render is user-triggered from workbench
 
         # --- DONE ---
         _update_batch_status(batch_id, "done")
@@ -3319,19 +3432,23 @@ async def api_intake_batches():
 
 @app.get("/api/intake/batches/{batch_id}/poll")
 async def api_intake_poll(batch_id: str):
-    """Poll for live progress on a batch."""
+    """Poll for live progress on a batch. Always returns items for live UI updates."""
+    live_state = None
     with _intake_lock:
         st = _intake_state.get(batch_id)
         if st:
-            return {
+            live_state = {
                 "status": st["status"],
                 "current_item": st.get("current_item"),
                 "current_step": st.get("current_step"),
                 "elapsed": int(time.time() - st["started"]),
                 "error": st.get("error"),
+                "tool_activity": st.get("tool_activity"),
+                "tool_name": st.get("tool_name"),
                 "live": True,
             }
-    # Fall back to DB
+
+    # Always fetch items from DB so frontend can update them live
     with clips_db.db_session() as conn:
         batch = conn.execute("SELECT * FROM intake_batches WHERE id=?", (batch_id,)).fetchone()
         if not batch:
@@ -3339,12 +3456,19 @@ async def api_intake_poll(batch_id: str):
         items = [dict(r) for r in conn.execute(
             "SELECT * FROM intake_items WHERE batch_id=? ORDER BY sort_order", (batch_id,)
         ).fetchall()]
+
+    if live_state:
+        live_state["items"] = items
+        return live_state
+
     return {
         "status": dict(batch)["status"],
         "current_item": None,
         "current_step": None,
         "elapsed": 0,
         "error": dict(batch).get("error"),
+        "tool_activity": None,
+        "tool_name": None,
         "live": False,
         "items": items,
     }
@@ -3400,6 +3524,86 @@ async def api_intake_delete(batch_id: str):
         conn.execute("DELETE FROM intake_items WHERE batch_id=?", (batch_id,))
         conn.execute("DELETE FROM intake_batches WHERE id=?", (batch_id,))
     return {"deleted": batch_id}
+
+
+# --- Research generation endpoints ---
+
+@app.post("/api/intake/research")
+async def api_intake_research(request: Request):
+    """Start research essay generation from a prompt."""
+    body = await request.json()
+    prompt = (body.get("prompt") or "").strip()
+    if not prompt:
+        raise HTTPException(400, "No prompt provided")
+    research_id = str(uuid.uuid4())
+    thread = threading.Thread(target=_run_research, args=(research_id, prompt), daemon=True)
+    thread.start()
+    return {"research_id": research_id}
+
+
+@app.get("/api/intake/research/{research_id}/poll")
+async def api_intake_research_poll(research_id: str):
+    """Poll for research generation progress."""
+    with _research_lock:
+        st = _research_state.get(research_id)
+        if not st:
+            raise HTTPException(404, "Research session not found")
+        return {
+            "status": st["status"],
+            "content": st["buffer"],
+            "elapsed": int(time.time() - st["started"]),
+            "error": st.get("error"),
+        }
+
+
+@app.post("/api/intake/research/{research_id}/stop")
+async def api_intake_research_stop(research_id: str):
+    """Cancel a running research generation."""
+    with _research_lock:
+        st = _research_state.get(research_id)
+        if st:
+            st["cancelled"] = True
+            st["status"] = "error"
+            st["error"] = "Stopped by user"
+            proc = st.get("proc")
+            if proc:
+                try:
+                    proc.kill()
+                except Exception:
+                    pass
+    return {"stopped": True}
+
+
+@app.post("/api/intake/submit-text")
+async def api_intake_submit_text(request: Request):
+    """Submit raw markdown text as a new intake batch (used by research tab)."""
+    body = await request.json()
+    text = (body.get("text") or "").strip()
+    name = (body.get("name") or "").strip()
+    if not text:
+        raise HTTPException(400, "No text provided")
+    if not name:
+        # Derive from first line
+        first_line = text.split("\n")[0].strip().lstrip("# ").strip()
+        name = first_line[:80] if first_line else "Research Essay"
+
+    safe_name = re.sub(r'[^\w\-.]', '_', name.lower().replace(' ', '_'))[:200]
+    if not safe_name.endswith('.md'):
+        safe_name += '.md'
+    dest = UPLOADS_DIR / safe_name
+    dest.write_text(text, encoding="utf-8")
+
+    batch_id = str(uuid.uuid4())
+    batch_name = name.replace('_', ' ').title()[:100]
+    with clips_db.db_session() as conn:
+        conn.execute(
+            "INSERT INTO intake_batches (id, name, source_file, status) VALUES (?, ?, ?, 'uploaded')",
+            (batch_id, batch_name, str(dest)),
+        )
+
+    thread = threading.Thread(target=_run_intake_batch, args=(batch_id,), daemon=True)
+    thread.start()
+    return {"batch_id": batch_id, "name": batch_name, "status": "uploaded"}
 
 
 if __name__ == "__main__":

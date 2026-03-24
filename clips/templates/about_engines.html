@@ -154,60 +154,43 @@
 </div>
 
 <div class="about-section">
-  <p>TKK uses two rendering engines. <strong>Manim</strong> is the original engine that powers all {{ video_count }} published videos. <strong>Remotion</strong> is a newer React-based engine currently in migration — {{ remotion_count }} manifests built so far.</p>
+  <p>TKK uses <strong>Remotion</strong>, a React-based rendering engine — {{ remotion_count }} manifests built so far.</p>
 </div>
 
 <div class="about-section">
-  <h2>Comparison</h2>
+  <h2>Remotion</h2>
   <div class="card" style="overflow-x: auto;">
     <table class="compare-table">
       <thead>
         <tr>
           <th></th>
-          <th>Manim</th>
           <th>Remotion</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td>Language</td>
-          <td>Python</td>
           <td>React / TypeScript</td>
         </tr>
         <tr>
           <td>Video Model</td>
-          <td>Scene classes with construct()</td>
           <td>JSON manifest &rarr; components</td>
         </tr>
         <tr>
           <td>Animation</td>
-          <td>Imperative (play, wait, FadeIn)</td>
           <td>Declarative (spring, interpolate)</td>
         </tr>
         <tr>
           <td>Per-Video Code</td>
-          <td>~600 lines Python per video</td>
           <td>Zero — JSON manifest only</td>
         </tr>
         <tr>
           <td>Render Speed</td>
-          <td>1-2 min</td>
           <td>~30s (target)</td>
         </tr>
         <tr>
           <td>Videos</td>
-          <td>{{ video_count }}+ published</td>
           <td>{{ remotion_count }} manifests</td>
-        </tr>
-        <tr>
-          <td>QA</td>
-          <td>Layout + readability + sync</td>
-          <td>In progress</td>
-        </tr>
-        <tr>
-          <td>Status</td>
-          <td>Production</td>
-          <td>Migration in progress</td>
         </tr>
       </tbody>
     </table>
@@ -215,32 +198,12 @@
 </div>
 
 <div class="about-section">
-  <h2>Migration Progress</h2>
-  {% set total = 60 %}
-  {% set pct = (remotion_count / total * 100) | int %}
-  <div class="progress-bar">
-    <div class="progress-label">
-      <span>Remotion migration</span>
-      <span>{{ remotion_count }}/{{ total }}</span>
-    </div>
-    <div class="progress-track">
-      <div class="progress-fill" style="width: {{ pct }}%"></div>
-    </div>
-  </div>
-</div>
-
-<div class="about-section">
-  <h2>Deep Dives</h2>
+  <h2>Deep Dive</h2>
   <div class="engine-cards">
-    <a href="/about/engines/manim" class="card engine-card">
-      <h3>Manim</h3>
-      <div class="engine-tag">Python / Community Edition</div>
-      <p>The original engine. Scene classes, zone layout, imperative animations, full QA pipeline. Powers every published video.</p>
-    </a>
     <a href="/about/engines/remotion" class="card engine-card">
       <h3>Remotion</h3>
       <div class="engine-tag">React / TypeScript</div>
-      <p>The new engine. Manifest-driven, component library, spring animations, declarative video composition. Migration in progress.</p>
+      <p>Manifest-driven, component library, spring animations, declarative video composition.</p>
     </a>
   </div>
 </div>

@@ -67,10 +67,9 @@ def _render_env() -> dict:
 
 mcp = FastMCP("tkk-studio", instructions="""TKK Video Production Pipeline.
 
-You help produce TikTok educational videos. Two frameworks are available:
+You help produce TikTok educational videos using **Remotion** (React/TypeScript).
 
-**Remotion (default for new work)** — React/TypeScript manifests at remotion/src/manifests/{topic}.json.
-Two manifest formats:
+Manifests live at remotion/src/manifests/{topic}.json. Two formats:
 - **Word-triggered (preferred)**: scenes declare anchor words from narration. resolve_word_triggers.py
   computes exact frame timing from Whisper data. Workflow:
   write_remotion_manifest() → generate_tts() → resolve_word_triggers() → audit_word_triggered() → render_preview() → render_full()
@@ -80,11 +79,7 @@ Two manifest formats:
 Word-triggered manifests have `scene_anchor` and `scene_end_anchor` on each scene, plus `anchor` on each element.
 generate_tts() auto-detects the format and runs the appropriate resolver.
 
-**Manim (legacy)** — Python screenplays at {topic}_manim.py.
-Workflow: plan_screenplay() → write_screenplay() → generate_tts() → render_preview() → QA → render_full()
-
-Use Remotion for new screenplays unless the user specifically requests Manim.
-Use list_screenplays() to see both frameworks' screenplays and their status.
+Use list_screenplays() to see all manifests and their status.
 
 REMOTION DESIGN RULES (from remotion/REMOTION_DESIGN_GUIDE.md):
 - Font sizes must be 3-4× web defaults: hero stats 160-220px, headlines 80-120px, body 40-56px minimum
@@ -95,12 +90,8 @@ REMOTION DESIGN RULES (from remotion/REMOTION_DESIGN_GUIDE.md):
 - Audio-first timing: no frame numbers in manifests, derive all timing from TTS audio duration
 - Layered backgrounds: gradient + noise texture + vignette + content (not flat backgrounds)
 
-CRITICAL: For new Manim screenplays, you MUST call plan_screenplay() before write_screenplay().
-This forces a creative pass on the story arc and visual design BEFORE writing 600 lines of code.
-Each scene field needs a real paragraph describing the visual storytelling, not a placeholder.
-
 IMPORTANT: Always use Fish Audio for TTS (it's the default).
-Read the PRODUCTION_GUIDE with read_production_guide before writing screenplays.
+Read the PRODUCTION_GUIDE with read_production_guide before writing manifests.
 """)
 
 
@@ -156,16 +147,13 @@ def _extract_tts_script(content: str) -> str:
 
 @mcp.tool()
 def list_screenplays() -> str:
-    """List all screenplays (Remotion and Manim) with production status."""
+    """List all screenplays (Remotion manifests) with production status."""
     results = []
-    seen_stems = set()
 
-    # Remotion manifests (primary engine)
     manifest_dir = VIDGEN_DIR / "remotion" / "src" / "manifests"
     if manifest_dir.exists():
         for m in sorted(manifest_dir.glob("*.json")):
             stem = m.stem
-            seen_stems.add(stem)
             try:
                 mdata = json.loads(m.read_text())
                 is_wt = bool(mdata.get("scenes") and "scene_anchor" in mdata["scenes"][0])
@@ -186,16 +174,6 @@ def list_screenplays() -> str:
                 entry["has_resolved"] = (VIDGEN_DIR / f"{stem}_resolved.json").exists()
             results.append(entry)
 
-    # Manim screenplays (legacy, only those without a Remotion manifest)
-    for s in sorted(VIDGEN_DIR.glob("*_manim.py")):
-        stem = s.stem.replace("_manim", "")
-        if stem in seen_stems:
-            continue
-        status = _screenplay_status(s)
-        status["engine"] = "manim"
-        seen_stems.add(stem)
-        results.append(status)
-
     return json.dumps(results, indent=2)
 
 
@@ -204,7 +182,7 @@ def read_screenplay(filename: str) -> str:
     """Read a screenplay file's source code and extracted metadata.
 
     Args:
-        filename: The screenplay filename (e.g., "aral_sea.json" or "aztec_manim.py")
+        filename: The screenplay filename (e.g., "aral_sea.json")
     """
     fp = VIDGEN_DIR / filename
     if not fp.exists():
@@ -237,121 +215,14 @@ def read_production_guide() -> str:
 
 
 @mcp.tool()
-def plan_screenplay(topic: str, hook: str, mystery: str, wrong_answer: str,
-                    contradiction: str, proof: str, betrayal: str, punch: str,
-                    shapes: str, tts_script: str) -> str:
-    """Plan a screenplay's creative direction BEFORE writing code. This is REQUIRED before write_screenplay.
-
-    Forces a full creative pass on the story arc and visual design. Each field must be
-    a substantive paragraph, not a placeholder. The plan is saved as {topic}_bible.json
-    and write_screenplay will check for it.
-
-    Args:
-        topic: Topic slug (e.g., "superbug_clock") — becomes {topic}_manim.py
-        hook: Scene 1 — The opening hook. What question or image grabs attention in 3 seconds? What do we SHOW?
-        mystery: Scene 2 — Set up the mystery. What does the audience think they know? What visual establishes the world?
-        wrong_answer: Scene 3 — The obvious/wrong explanation. What do people assume? How do we visualize that assumption?
-        contradiction: Scene 4 — The twist. What fact breaks the assumption? What visual moment makes the audience go "wait..."?
-        proof: Scene 5 — The real answer with evidence. What data/visual proves the truth? (bars, numbers, animated diagram)
-        betrayal: Scene 6 — The gut punch / emotional landing. What's the human cost or ironic consequence? Final image that sticks.
-        shapes: Comma-separated list of 2-4 custom domain shapes to build (e.g., "moai_side, palm_stump, island_outline, stick_fig"). Each must be a recognizable visual, not generic geometry.
-        tts_script: The full narration script (28-45 seconds when spoken). This is what the narrator SAYS — none of this text goes on screen.
-    """
-    # Validate substantive content
-    fields = {
-        "hook": hook, "mystery": mystery, "wrong_answer": wrong_answer,
-        "contradiction": contradiction, "proof": proof, "betrayal": betrayal,
-    }
-    problems = []
-    for name, val in fields.items():
-        if len(val.strip()) < 40:
-            problems.append(f"{name}: too short ({len(val.strip())} chars) — needs a real creative description, not a placeholder")
-    if len(tts_script.strip()) < 100:
-        problems.append(f"tts_script: too short ({len(tts_script.strip())} chars) — need full narration (28-45s spoken)")
-
-    shape_list = [s.strip() for s in shapes.split(",") if s.strip()]
-    if len(shape_list) < 2:
-        problems.append(f"shapes: need at least 2 domain shapes, got {len(shape_list)}")
-
-    if problems:
-        return "Plan rejected — flesh these out:\n" + "\n".join(f"  - {p}" for p in problems)
-
-    bible = {
-        "topic": topic,
-        "filename": f"{topic}_manim.py",
-        "arc": {
-            "scene1_hook": hook,
-            "scene2_mystery": mystery,
-            "scene3_wrong_answer": wrong_answer,
-            "scene4_contradiction": contradiction,
-            "scene5_proof": proof,
-            "scene6_betrayal": betrayal,
-        },
-        "shapes": shape_list,
-        "tts_script": tts_script,
-        "word_count": len(tts_script.split()),
-    }
-
-    bible_path = VIDGEN_DIR / f"{topic}_bible.json"
-    bible_path.write_text(json.dumps(bible, indent=2))
-    return (f"Plan saved: {bible_path.name}\n"
-            f"  Scenes: 6 (all filled)\n"
-            f"  Shapes: {', '.join(shape_list)}\n"
-            f"  Narration: {bible['word_count']} words\n\n"
-            f"You can now call write_screenplay('{topic}_manim.py', ...) to build it.")
-
-
-@mcp.tool()
-def get_plan(topic: str) -> str:
-    """Read a screenplay's story bible / creative plan.
-
-    Args:
-        topic: Topic slug (e.g., "superbug_clock")
-    """
-    bible_path = VIDGEN_DIR / f"{topic}_bible.json"
-    if not bible_path.exists():
-        return f"No plan found for '{topic}'. Call plan_screenplay first."
-    return bible_path.read_text()
-
-
-@mcp.tool()
-def write_screenplay(filename: str, content: str) -> str:
-    """Write or update a screenplay file. Requires plan_screenplay to be called first for new screenplays.
-
-    Args:
-        filename: The screenplay filename (e.g., "library_alexandria_manim.py")
-        content: The full Python source code for the screenplay
-    """
-    if not filename.endswith("_manim.py"):
-        return "Error: Filename must end with _manim.py"
-
-    fp = VIDGEN_DIR / filename
-
-    # For new screenplays, require a plan
-    if not fp.exists():
-        stem = filename.replace("_manim.py", "")
-        bible_path = VIDGEN_DIR / f"{stem}_bible.json"
-        if not bible_path.exists():
-            return (f"Error: No plan found for '{stem}'. "
-                    f"Call plan_screenplay('{stem}', ...) first to design the story arc and visuals. "
-                    f"This ensures each screenplay gets a full creative pass before code is written.")
-
-    existed = fp.exists()
-    fp.write_text(content)
-
-    action = "Updated" if existed else "Created"
-    return f"{action} {fp} ({len(content)} chars, {content.count(chr(10)) + 1} lines)"
-
-
-@mcp.tool()
 def generate_tts(filename: str) -> str:
-    """Generate TTS audio for a screenplay using Fish Audio.
+    """Generate TTS audio for a manifest using Fish Audio.
 
     This is the ONLY approved TTS method. Do not use edge-tts, kokoro, or piper.
-    Voice is configured in Settings (default: Him-phm).
+    Voice is configured in Settings (default: ELITE).
 
     Args:
-        filename: The screenplay filename (e.g., "aral_sea.json" or "aztec_manim.py")
+        filename: The manifest filename (e.g., "aral_sea.json")
     """
     fp = VIDGEN_DIR / filename
     if not fp.exists():
@@ -411,33 +282,21 @@ def generate_tts(filename: str) -> str:
 
 @mcp.tool()
 def render_preview(filename: str) -> str:
-    """Render preview PNGs for a screenplay's scenes. Fast (~10s).
-
-    For Remotion manifests (both word-triggered and legacy), uses npx tsx preview.mts.
-    For Manim screenplays, uses python {file} --preview.
+    """Render preview PNGs for a manifest's scenes. Fast (~10s).
 
     Args:
-        filename: The screenplay filename (e.g., "aral_sea.json" or "aztec_manim.py")
+        filename: The manifest filename (e.g., "aral_sea.json")
     """
     fp = VIDGEN_DIR / filename
     if not fp.exists():
         return f"Error: {filename} not found"
 
     stem = fp.stem.replace("_manim", "")
-
-    if fp.suffix == '.json':
-        # Remotion manifest — use preview.mts
-        cmd = ["npx", "tsx", "remotion/preview.mts", stem]
-        r = subprocess.run(
-            cmd,
-            capture_output=True, text=True, timeout=300, cwd=str(VIDGEN_DIR),
-        )
-    else:
-        # Manim screenplay
-        r = subprocess.run(
-            [VENV_PYTHON, str(fp), "--preview"],
-            capture_output=True, text=True, timeout=300, cwd=str(VIDGEN_DIR),
-        )
+    cmd = ["npx", "tsx", "remotion/preview.mts", stem]
+    r = subprocess.run(
+        cmd,
+        capture_output=True, text=True, timeout=300, cwd=str(VIDGEN_DIR),
+    )
 
     output = r.stdout + r.stderr
     if r.returncode != 0:
@@ -452,35 +311,24 @@ def render_preview(filename: str) -> str:
 
 @mcp.tool()
 def render_full(filename: str) -> str:
-    """Full render: scenes → final MP4. Takes 1-2 minutes.
+    """Full render: manifest → final MP4. Takes 1-2 minutes.
 
-    For Remotion manifests, uses render_remote.sh (tries llama → juno → local fallback).
-    For Manim screenplays, uses python {file}.
+    Uses render_remote.sh (tries llama → juno → local fallback).
 
     Args:
-        filename: The screenplay filename (e.g., "aral_sea.json" or "aztec_manim.py")
+        filename: The manifest filename (e.g., "aral_sea.json")
     """
     fp = VIDGEN_DIR / filename
     if not fp.exists():
         return f"Error: {filename} not found"
 
     stem = fp.stem.replace("_manim", "")
-
-    if fp.suffix == '.json':
-        # Remotion manifest — use render_remote.sh (auto-picks best host, falls back to local)
-        cmd = ["bash", str(VIDGEN_DIR / "render_remote.sh"), stem]
-        r = subprocess.run(
-            cmd,
-            capture_output=True, text=True, timeout=600, cwd=str(VIDGEN_DIR),
-            env=_render_env(),
-        )
-    else:
-        # Manim screenplay
-        r = subprocess.run(
-            [VENV_PYTHON, str(fp)],
-            capture_output=True, text=True, timeout=600, cwd=str(VIDGEN_DIR),
-            env=_render_env(),
-        )
+    cmd = ["bash", str(VIDGEN_DIR / "render_remote.sh"), stem]
+    r = subprocess.run(
+        cmd,
+        capture_output=True, text=True, timeout=600, cwd=str(VIDGEN_DIR),
+        env=_render_env(),
+    )
 
     output = r.stdout + r.stderr
     if r.returncode != 0:
@@ -499,12 +347,12 @@ def render_full(filename: str) -> str:
 
 @mcp.tool()
 def run_qa(filename: str) -> str:
-    """Run all QA checks on a screenplay or manifest. Returns unified PASS/WARN/FAIL report.
+    """Run all QA checks on a manifest. Returns unified PASS/WARN/FAIL report.
 
     Runs manifest validation, layout QA, sync checks, and format-specific audits.
 
     Args:
-        filename: The screenplay filename (e.g., "aral_sea.json" or "aztec_manim.py")
+        filename: The manifest filename (e.g., "aral_sea.json")
     """
     fp = VIDGEN_DIR / filename
     if not fp.exists():
@@ -580,21 +428,29 @@ def update_queue(task_description: str, new_status: str) -> str:
 
 @mcp.tool()
 def pipeline_status() -> str:
-    """Get structured status of all screenplays: which have TTS, previews, final MP4, and QA results."""
-    scripts = sorted(VIDGEN_DIR.glob("*_manim.py"))
+    """Get structured status of all manifests: which have TTS, previews, final MP4, and QA results."""
+    manifest_dir = VIDGEN_DIR / "remotion" / "src" / "manifests"
     results = []
-    for s in scripts:
-        info = _screenplay_status(s)
-        stem = s.stem.replace("_manim", "")
-        # Add duration/size for TTS and final if they exist
-        tts_path = VIDGEN_DIR / f"tts_{stem}.mp3"
-        if tts_path.exists():
-            info["tts_duration"] = _ffprobe_duration(tts_path)
-        final_path = VIDGEN_DIR / f"{stem}_final.mp4"
-        if final_path.exists():
-            info["final_size_mb"] = round(final_path.stat().st_size / 1024 / 1024, 1)
-            info["final_duration"] = _ffprobe_duration(final_path)
-        results.append(info)
+    if manifest_dir.exists():
+        for m in sorted(manifest_dir.glob("*.json")):
+            stem = m.stem
+            info = {
+                "filename": m.name,
+                "topic": stem,
+                "has_tts": (VIDGEN_DIR / f"tts_{stem}.mp3").exists(),
+                "has_final": (VIDGEN_DIR / f"{stem}_final.mp4").exists(),
+                "has_previews": any((VIDGEN_DIR / "previews").glob(f"{stem}_scene_*.png"))
+                    if (VIDGEN_DIR / "previews").exists() else False,
+                "size_kb": m.stat().st_size // 1024,
+            }
+            tts_path = VIDGEN_DIR / f"tts_{stem}.mp3"
+            if tts_path.exists():
+                info["tts_duration"] = _ffprobe_duration(tts_path)
+            final_path = VIDGEN_DIR / f"{stem}_final.mp4"
+            if final_path.exists():
+                info["final_size_mb"] = round(final_path.stat().st_size / 1024 / 1024, 1)
+                info["final_duration"] = _ffprobe_duration(final_path)
+            results.append(info)
     return json.dumps(results, indent=2)
 
 
@@ -663,33 +519,35 @@ def list_uploads() -> str:
 
 @mcp.tool()
 def search_screenplays(query: str) -> str:
-    """Search all screenplay files for a keyword. Returns matching filenames and context.
+    """Search all Remotion manifests for a keyword. Returns matching filenames and context.
 
     Args:
         query: Search term (case-insensitive)
     """
-    scripts = sorted(VIDGEN_DIR.glob("*_manim.py"))
+    manifest_dir = VIDGEN_DIR / "remotion" / "src" / "manifests"
     results = []
-    for s in scripts:
-        content = s.read_text()
-        lines = content.splitlines()
-        matches = []
-        for i, line in enumerate(lines):
-            if query.lower() in line.lower():
-                matches.append({"line": i + 1, "text": line.strip()})
-                if len(matches) >= 5:
-                    break
-        if matches:
-            results.append({"filename": s.name, "matches": matches})
+    if manifest_dir.exists():
+        for m in sorted(manifest_dir.glob("*.json")):
+            content = m.read_text()
+            lines = content.splitlines()
+            matches = []
+            for i, line in enumerate(lines):
+                if query.lower() in line.lower():
+                    matches.append({"line": i + 1, "text": line.strip()})
+                    if len(matches) >= 5:
+                        break
+            if matches:
+                results.append({"filename": m.name, "matches": matches})
     if not results:
-        return f"No screenplays contain '{query}'"
+        return f"No manifests contain '{query}'"
     return json.dumps(results, indent=2)
 
 
 @mcp.tool()
 def production_stats() -> str:
-    """Get production statistics: total videos, total duration, screenplays by status, recent renders."""
-    scripts = sorted(VIDGEN_DIR.glob("*_manim.py"))
+    """Get production statistics: total videos, total duration, manifests by status, recent renders."""
+    manifest_dir = VIDGEN_DIR / "remotion" / "src" / "manifests"
+    manifests = sorted(manifest_dir.glob("*.json")) if manifest_dir.exists() else []
     finals = sorted(VIDGEN_DIR.glob("*_final.mp4"), key=lambda p: p.stat().st_mtime, reverse=True)
 
     total_duration = 0.0
@@ -700,11 +558,9 @@ def production_stats() -> str:
             total_duration += d
         total_size_mb += v.stat().st_size / 1024 / 1024
 
-    # Count statuses
-    has_tts = sum(1 for s in scripts if (VIDGEN_DIR / f"tts_{s.stem.replace('_manim', '')}.mp3").exists())
+    has_tts = sum(1 for m in manifests if (VIDGEN_DIR / f"tts_{m.stem}.mp3").exists())
     has_final = len(finals)
 
-    # Recent renders (last 5)
     recent = []
     for v in finals[:5]:
         d = _ffprobe_duration(v)
@@ -715,10 +571,10 @@ def production_stats() -> str:
         })
 
     stats = {
-        "total_screenplays": len(scripts),
+        "total_manifests": len(manifests),
         "with_tts": has_tts,
         "with_final": has_final,
-        "needs_tts": len(scripts) - has_tts,
+        "needs_tts": len(manifests) - has_tts,
         "needs_render": has_tts - has_final,
         "total_duration_s": round(total_duration, 1),
         "total_duration_min": round(total_duration / 60, 1),
@@ -731,10 +587,10 @@ def production_stats() -> str:
 
 @mcp.tool()
 def batch_check(filenames: str) -> str:
-    """Check pipeline status for specific screenplays (comma-separated filenames).
+    """Check pipeline status for specific manifests (comma-separated filenames).
 
     Args:
-        filenames: Comma-separated screenplay filenames (e.g., "aztec_manim.py,bog_bodies_manim.py")
+        filenames: Comma-separated manifest filenames (e.g., "antibiotics.json,chernobyl.json")
     """
     names = [f.strip() for f in filenames.split(",") if f.strip()]
     results = []
@@ -770,8 +626,8 @@ def audit_tts(filename: str = None) -> str:
       - FAIL: >90 words
 
     Args:
-        filename: Optional screenplay filename for detailed single-file audit.
-                  If None, audits all screenplays and returns fleet summary.
+        filename: Optional manifest filename for detailed single-file audit.
+                  If None, audits all manifests and returns fleet summary.
     """
     from audit_tts import audit_one, audit_all, suggest_cuts
 
@@ -804,79 +660,9 @@ def audit_tts(filename: str = None) -> str:
                 "avg_words": round(avg, 1),
                 "target_words": 70, "wpm": 150,
             },
-            "screenplays": out,
+            "manifests": out,
         }
         return json.dumps(summary, indent=2)
-
-
-@mcp.tool()
-def analyze_enhancements(filename: str) -> str:
-    """Analyze dead time in scenes and suggest animation enhancements.
-
-    Read-only analysis: detects scenes where animations end before the scene's
-    audio share, and suggests template-based enhancements from a proven-safe menu.
-
-    Args:
-        filename: The screenplay filename (e.g., "bog_bodies_manim.py")
-    """
-    from enhance_animations import analyze_dead_time, list_enhancements
-
-    fp = VIDGEN_DIR / filename
-    if not fp.exists():
-        return f"Error: {filename} not found"
-
-    results = analyze_dead_time(fp)
-    if not results:
-        return f"Could not analyze {filename} — missing scene durations or code"
-
-    total_dead = sum(r["dead_seconds"] for r in results)
-    scenes_with_dead = sum(1 for r in results if r["dead_seconds"] >= 1.0)
-
-    output = {
-        "filename": filename,
-        "total_dead_seconds": round(total_dead, 1),
-        "scenes_with_dead_time": scenes_with_dead,
-        "scenes": results,
-        "enhancement_menu": {k: v["description"] for k, v in list_enhancements().items()},
-    }
-    return json.dumps(output, indent=2)
-
-
-@mcp.tool()
-def apply_enhancement(filename: str, scene_idx: int, enhancement_type: str,
-                      params: str, run_time: float = None) -> str:
-    """Apply one animation enhancement to a scene. Returns modified code for review.
-
-    Uses template-based code generation — each enhancement is guaranteed to render.
-
-    Args:
-        filename: The screenplay filename (e.g., "bog_bodies_manim.py")
-        scene_idx: Scene index (0-based)
-        enhancement_type: Enhancement type from menu (e.g., "slow_zoom", "pulse_glow")
-        params: JSON string of parameters (e.g., '{"target_var": "title", "scale_factor": 1.1}')
-        run_time: Optional duration override (clamped to valid range)
-    """
-    from enhance_animations import generate_enhancement, ENHANCEMENT_MENU
-
-    fp = VIDGEN_DIR / filename
-    if not fp.exists():
-        return f"Error: {filename} not found"
-
-    if enhancement_type not in ENHANCEMENT_MENU:
-        return (f"Error: Unknown enhancement '{enhancement_type}'. "
-                f"Available: {', '.join(ENHANCEMENT_MENU.keys())}")
-
-    try:
-        params_dict = json.loads(params)
-    except json.JSONDecodeError as e:
-        return f"Error: Invalid JSON params: {e}"
-
-    code = generate_enhancement(enhancement_type, params_dict, run_time)
-
-    return (f"Generated enhancement code for {filename} Scene {scene_idx}:\n\n"
-            f"{code}\n\n"
-            f"To apply: insert this code into {filename}'s Scene{scene_idx + 1} "
-            f"construct() method, before the FadeOut cleanup line.")
 
 
 # ---------------------------------------------------------------------------
@@ -1099,6 +885,90 @@ def add_custom_svg_icon(name: str, svg_markup: str) -> str:
     """
     from svg_tools import add_custom_svg
     return add_custom_svg(name, svg_markup)
+
+
+@mcp.tool()
+def compute_envelopes(topic: str) -> str:
+    """Compute animation envelopes for a word-triggered manifest.
+
+    Traces every element's transform (entrance, hold motion, exit) across all
+    frames and computes the convex hull envelope. Used by debug-QA for
+    higher-sensitivity collision detection.
+
+    Args:
+        topic: Manifest topic name (e.g., "antibiotics")
+    """
+    resolved = VIDGEN_DIR / f"{topic}_resolved.json"
+    if not resolved.exists():
+        return f"ERROR: {topic}_resolved.json not found. Run resolve_word_triggers_tool first."
+
+    try:
+        result = subprocess.run(
+            ["npx", "tsx", "remotion/computeEnvelopes.mts", topic],
+            cwd=str(VIDGEN_DIR), capture_output=True, text=True, timeout=30,
+        )
+        output = (result.stdout + result.stderr).strip()
+        if result.returncode != 0:
+            return f"ERROR: {output}"
+        return output
+    except Exception as e:
+        return f"ERROR: {e}"
+
+
+@mcp.tool()
+def debug_render(topic: str, video: bool = False) -> str:
+    """Render debug-QA previews or video with envelope overlays.
+
+    Shows convex hull bounding boxes, collision intersection highlights,
+    element labels, zone templates, and frame info.
+
+    Args:
+        topic: Manifest topic name
+        video: If True, render full debug MP4 (slower). Default: preview PNGs only.
+    """
+    resolved = VIDGEN_DIR / f"{topic}_resolved.json"
+    if not resolved.exists():
+        return f"ERROR: {topic}_resolved.json not found."
+
+    cmd = ["npx", "tsx", "remotion/renderDebug.mts", topic]
+    if video:
+        cmd.append("--video")
+
+    try:
+        result = subprocess.run(
+            cmd, cwd=str(VIDGEN_DIR), capture_output=True, text=True, timeout=300,
+        )
+        output = (result.stdout + result.stderr).strip()
+        if result.returncode != 0:
+            return f"ERROR: {output}"
+        return output
+    except Exception as e:
+        return f"ERROR: {e}"
+
+
+@mcp.tool()
+def collision_stats_tool(command: str = "hotspots", topic: str = None, days: int = 30) -> str:
+    """Query collision statistics collected across renders.
+
+    Args:
+        command: One of "hotspots", "trends", "history"
+        topic: Required for "history" command
+        days: Number of days for "trends" (default 30)
+    """
+    try:
+        from collision_stats import get_hotspots, get_trends, get_topic_history
+        if command == "hotspots":
+            return json.dumps(get_hotspots(), indent=2)
+        elif command == "trends":
+            return json.dumps(get_trends(days), indent=2)
+        elif command == "history":
+            if not topic:
+                return "ERROR: topic required for history command"
+            return json.dumps({"topic": topic, "runs": get_topic_history(topic)}, indent=2)
+        else:
+            return f"ERROR: Unknown command '{command}'. Use hotspots, trends, or history."
+    except Exception as e:
+        return f"ERROR: {e}"
 
 
 if __name__ == "__main__":

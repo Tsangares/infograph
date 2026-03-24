@@ -217,9 +217,9 @@
       <div class="step-num">1</div>
       <div class="step-body">
         <h3>Write a Screenplay</h3>
-        <p>A Python file defines 6 scenes following the mystery arc: hook, wrong answer, contradiction, proof, betrayal, punch.</p>
+        <p>A JSON manifest defines 6 scenes following the mystery arc: hook, wrong answer, contradiction, proof, betrayal, punch.</p>
         <div class="step-detail">
-          Each scene is a Manim <code>Scene</code> class with a <code>construct()</code> method. The file includes VTT timing cues mapping narration segments to scenes, a <code>TTS_SCRIPT</code> with the full narration text, and <code>DURATION</code> constants controlling time allocation. Target: <strong>150 words per minute</strong> narration pace.
+          Each scene declares layout, elements, and word-triggered animation anchors. The manifest includes a <code>tts_script</code> with the full narration text. Target: <strong>150 words per minute</strong> narration pace.
         </div>
       </div>
     </div>
@@ -239,7 +239,7 @@
         <h3>Render Preview Frames</h3>
         <p>Quick static PNG snapshots of each scene for visual review before committing to a full render.</p>
         <div class="step-detail">
-          Run with <code>python3 {topic}_manim.py --preview</code>. Generates 6 PNGs in <code>previews/</code> (~10 seconds). Lets you check layout, text placement, zone coverage, and visual balance without waiting for a full video render.
+          Generates 6 PNGs in <code>previews/</code> (~10 seconds). Lets you check layout, text placement, zone coverage, and visual balance without waiting for a full video render.
         </div>
       </div>
     </div>
@@ -259,7 +259,7 @@
       <div class="step-num">5</div>
       <div class="step-body">
         <h3>Full Render</h3>
-        <p>Manim renders each scene as a video clip. Clips are concatenated and merged with voice audio to produce the final MP4.</p>
+        <p>Remotion renders each scene as a video clip. Clips are concatenated and merged with voice audio to produce the final MP4.</p>
         <div class="step-detail">
           Output: <strong>1080x1920, 30fps, H.264 + AAC</strong>. FFmpeg handles concatenation and audio merge. Takes 1-2 minutes. Result is saved as <code>{topic}_final.mp4</code> in the vidgen directory and appears in the clips library.
         </div>
@@ -317,8 +317,8 @@
   <h2>Tech Stack</h2>
   <div class="tech-grid">
     <div class="card tech-card">
-      <div class="tech-name">Manim CE v0.20</div>
-      <div class="tech-desc">Animation engine. Renders each scene as video frames from Python code.</div>
+      <div class="tech-name">Remotion</div>
+      <div class="tech-desc">Animation engine. React/TypeScript components render each scene from JSON manifests.</div>
     </div>
     <div class="card tech-card">
       <div class="tech-name">Fish Audio</div>

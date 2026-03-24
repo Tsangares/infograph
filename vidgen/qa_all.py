@@ -21,15 +21,13 @@ MANIFESTS_DIR = VIDGEN_DIR / "remotion" / "src" / "manifests"
 
 
 def detect_format(topic: str) -> str:
-    """Detect manifest format: 'word-triggered', 'legacy', or 'manim'."""
+    """Detect manifest format: 'word-triggered', 'legacy', or 'unknown'."""
     manifest_path = MANIFESTS_DIR / f"{topic}.json"
     if manifest_path.exists():
         data = json.loads(manifest_path.read_text())
         if data.get("scenes") and "scene_anchor" in data["scenes"][0]:
             return "word-triggered"
         return "legacy"
-    if (VIDGEN_DIR / f"{topic}_manim.py").exists():
-        return "manim"
     return "unknown"
 
 
@@ -240,6 +238,97 @@ def _run_raycast_qa(topic: str) -> dict:
         return _section("raycast", "WARN", [{"check": "raycast", "status": "WARN", "detail": f"Raycast QA error: {e}"}], 0, 1)
 
 
+def _run_envelope_collision(topic: str) -> dict:
+    """Run envelope-based collision detection (debug-QA).
+    Computes animation envelopes via TypeScript, then detects collisions in Python."""
+    import subprocess
+
+    checks = []
+    fails = 0
+    warns = 0
+
+    # 1. Compute envelopes if missing or stale
+    envelopes_path = VIDGEN_DIR / f"{topic}_envelopes.json"
+    resolved_path = VIDGEN_DIR / f"{topic}_resolved.json"
+
+    if not resolved_path.exists():
+        return _section("envelope_collision", "WARN",
+                        [{"check": "resolved_json", "status": "WARN",
+                          "detail": f"{topic}_resolved.json not found"}], 0, 1)
+
+    # Recompute if envelopes are older than resolved manifest
+    needs_compute = not envelopes_path.exists()
+    if not needs_compute and envelopes_path.stat().st_mtime < resolved_path.stat().st_mtime:
+        needs_compute = True
+
+    if needs_compute:
+        try:
+            subprocess.run(
+                ["npx", "tsx", "remotion/computeEnvelopes.mts", topic],
+                cwd=str(VIDGEN_DIR), capture_output=True, text=True, timeout=30,
+            )
+        except Exception as e:
+            return _section("envelope_collision", "WARN",
+                            [{"check": "compute_envelopes", "status": "WARN",
+                              "detail": f"Envelope computation failed: {e}"}], 0, 1)
+
+    if not envelopes_path.exists():
+        return _section("envelope_collision", "WARN",
+                        [{"check": "compute_envelopes", "status": "WARN",
+                          "detail": "Envelopes not generated"}], 0, 1)
+
+    # 2. Run envelope collision detection
+    try:
+        from envelope_collision import audit_envelope_collisions, get_summary
+        collisions = audit_envelope_collisions(envelopes_path)
+
+        critical = [c for c in collisions if c.severity == "CRITICAL"]
+        warn_items = [c for c in collisions if c.severity == "WARN"]
+
+        for c in critical:
+            a = c.elem_a
+            detail = f"CRITICAL {c.collision_type}: [{a['index']}] {a['type']} ({a['zone']})"
+            if c.collision_type == "element_overlap":
+                b = c.elem_b
+                detail += f" ↔ [{b['index']}] {b['type']} ({b['zone']}) — {c.overlap_pct:.0f}%"
+            checks.append({"check": "envelope_collision", "status": "FAIL", "detail": detail})
+            fails += 1
+
+        for c in warn_items:
+            a = c.elem_a
+            detail = f"{c.collision_type}: [{a['index']}] {a['type']} ({a['zone']})"
+            if c.collision_type == "element_overlap":
+                b = c.elem_b
+                detail += f" ↔ [{b['index']}] {b['type']} ({b['zone']}) — {c.overlap_pct:.0f}%"
+            elif c.collision_type == "zone_bleed":
+                detail += f" bleeds outside zone"
+            elif c.collision_type == "safe_area_violation":
+                violations = c.elem_b.get("violations", [])
+                detail += f" in unsafe area: {', '.join(violations)}"
+            checks.append({"check": "envelope_collision", "status": "WARN", "detail": detail})
+            warns += 1
+
+        if not critical and not warn_items:
+            checks.append({"check": "envelope_collision", "status": "PASS",
+                          "detail": "No envelope collisions detected"})
+
+        # 3. Record stats
+        try:
+            from collision_stats import record_run
+            collision_dicts = [c.to_dict() for c in collisions]
+            record_run(topic, "render", collision_dicts)
+        except Exception:
+            pass  # Stats recording is best-effort
+
+    except Exception as e:
+        checks.append({"check": "envelope_collision", "status": "WARN",
+                      "detail": f"Envelope collision error: {e}"})
+        warns += 1
+
+    status = "FAIL" if fails else "WARN" if warns else "PASS"
+    return _section("envelope_collision", status, checks, fails, warns)
+
+
 def run_all_qa(topic: str, skip_previews: bool = False) -> dict:
     """Run all applicable QA checks for a topic. Returns unified report."""
     fmt = detect_format(topic)
@@ -273,6 +362,7 @@ def run_all_qa(topic: str, skip_previews: bool = False) -> dict:
         sections.append(_run_remotion_sync(topic))
     elif fmt == "word-triggered":
         sections.append(_run_word_triggered_audits(topic))
+        sections.append(_run_envelope_collision(topic))
 
     # Aggregate
     total_fails = sum(s["fail_count"] for s in sections)
@@ -311,12 +401,10 @@ if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
 
     if "--all" in sys.argv:
-        # All Remotion manifests + all Manim screenplays
+        # All Remotion manifests
         topics = set()
         for m in MANIFESTS_DIR.glob("*.json"):
             topics.add(m.stem)
-        for s in VIDGEN_DIR.glob("*_manim.py"):
-            topics.add(s.stem.replace("_manim", ""))
         topics = sorted(topics)
     elif args:
         topics = args

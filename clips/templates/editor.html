@@ -85,10 +85,6 @@
     padding: 3px 10px;
     border-radius: 100px;
   }
-  .sp-type-badge.manim {
-    background: rgba(167, 139, 250, 0.14);
-    color: #a78bfa;
-  }
   .sp-type-badge.vidgen {
     background: rgba(108, 192, 112, 0.14);
     color: var(--success);
@@ -403,6 +399,47 @@
   .qa-status-label.fail { color: var(--fail); }
   .qa-status-label.skip { color: var(--text-muted); }
 
+  /* --- DEBUG TOGGLE --- */
+  .dbg-toggle {
+    font-size: 10px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+  .dbg-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .dbg-toggle.active {
+    background: rgba(232, 131, 74, 0.14);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* --- LIGHTBOX --- */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.92);
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img {
+    max-height: 92vh;
+    max-width: 95vw;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+
   /* --- EMPTY / LOADING --- */
   .editor-empty {
     text-align: center;
@@ -485,6 +522,10 @@
     <div class="editor-empty card">Select a screenplay to view its scenes.</div>
   </div>
 </div>
+<!-- Lightbox overlay -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lightbox-img" src="" alt="Preview">
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -518,6 +559,8 @@
       const data = await res.json();
       currentData = data;
       renderScreenplayView(data);
+      // Check if debug previews already exist and show toggles
+      setTimeout(showDebugToggles, 100);
     } catch (err) {
       content.innerHTML = `<div class="editor-empty card" style="color:var(--fail)">Failed to load: ${esc(err.message)}</div>`;
     }
@@ -530,7 +573,7 @@
     // --- Header ---
     html += '<div class="sp-header">';
     html += '<div class="sp-header-row">';
-    const typeClass = data.type === 'manim' ? 'manim' : data.type === 'vidgen' ? 'vidgen' : '';
+    const typeClass = data.type === 'vidgen' ? 'vidgen' : '';
     html += `<span class="sp-type-badge ${typeClass}">${esc(data.type || 'unknown')}</span>`;
     html += '</div>';
 
@@ -568,6 +611,11 @@
       Run QA
       <span class="action-result" id="qa-result"></span>
     </button>`;
+    html += `<button class="action-btn" id="btn-debug" onclick="renderDebugPreviews()">
+      <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Debug Preview
+      <span class="action-result" id="debug-result"></span>
+    </button>`;
     html += `<button class="action-btn primary" id="btn-render" onclick="startRender()">
       <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
       Full Render
@@ -601,9 +649,22 @@
         // Body
         html += '<div class="scene-card-body">';
 
-        // Thumbnail
+        // Thumbnail (clickable for lightbox, with debug toggle)
+        const debugPreview = `${stem}_debug_scene_${scene.index}_75.png`;
         if (scene.preview) {
-          html += `<img class="scene-thumb" src="/previews/${encodeURIComponent(scene.preview)}" alt="Scene ${scene.index} preview" loading="lazy" onerror="this.style.display='none'">`;
+          html += `<div style="position:relative">`;
+          html += `<img class="scene-thumb" id="thumb-${scene.index}" src="/previews/${encodeURIComponent(scene.preview)}"
+                    data-std="/previews/${encodeURIComponent(scene.preview)}"
+                    data-dbg="/previews/${encodeURIComponent(debugPreview)}"
+                    alt="Scene ${scene.index}" loading="lazy"
+                    onclick="openLightbox(this.src)"
+                    style="cursor:zoom-in"
+                    onerror="this.style.display='none'">`;
+          html += `<button class="dbg-toggle" id="dbg-${scene.index}"
+                    onclick="event.stopPropagation(); toggleDebug(${scene.index})"
+                    style="position:absolute;top:8px;right:8px;display:none"
+                    title="Toggle debug envelope overlay">DBG</button>`;
+          html += `</div>`;
         } else {
           html += `<div class="scene-thumb-placeholder">No preview</div>`;
         }
@@ -855,6 +916,71 @@
       setTimeout(() => loadScreenplay(file), 100);
     }
   })();
+
+  // --- Debug Preview ---
+  async function renderDebugPreviews() {
+    if (!currentFile) return;
+    const btn = document.getElementById('btn-debug');
+    const result = document.getElementById('debug-result');
+    btn.disabled = true;
+    result.innerHTML = '<span class="spinner"></span>';
+
+    try {
+      const res = await fetch(`/api/screenplay/${encodeURIComponent(currentFile)}/debug-preview`, { method: 'POST' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!data.success) throw new Error(data.stderr || data.error || 'Debug render failed');
+      result.textContent = `Done (${Math.floor(data.previews.length / 2)} scenes)`;
+      result.style.color = 'var(--success)';
+      // Show DBG toggles on scene cards
+      showDebugToggles();
+    } catch (err) {
+      result.textContent = err.message.length > 40 ? 'Failed' : err.message;
+      result.title = err.message;
+      result.style.color = 'var(--fail)';
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function showDebugToggles() {
+    // Probe for debug preview PNGs and show toggle buttons
+    if (!currentData) return;
+    const stem = currentData.filename.replace('_manim.py', '').replace('.py', '').replace('.json', '');
+    for (const scene of currentData.scenes) {
+      const toggle = document.getElementById(`dbg-${scene.index}`);
+      if (!toggle) continue;
+      const dbgSrc = `/previews/${stem}_debug_scene_${scene.index}_75.png`;
+      // Probe if image exists
+      const img = new Image();
+      img.onload = () => { toggle.style.display = 'block'; };
+      img.src = dbgSrc;
+    }
+  }
+
+  function toggleDebug(sceneIdx) {
+    const thumb = document.getElementById(`thumb-${sceneIdx}`);
+    const toggle = document.getElementById(`dbg-${sceneIdx}`);
+    if (!thumb || !toggle) return;
+    const isDebug = toggle.classList.toggle('active');
+    thumb.src = isDebug ? thumb.dataset.dbg : thumb.dataset.std;
+  }
+
+  // --- Lightbox ---
+  function openLightbox(src) {
+    const lb = document.getElementById('lightbox');
+    const img = document.getElementById('lightbox-img');
+    img.src = src;
+    lb.classList.add('open');
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeLightbox();
+  });
 
   function pollRender(jobId) {
     const text = document.getElementById('render-status-text');

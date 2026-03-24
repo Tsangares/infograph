@@ -1,18 +1,18 @@
 # TKK Video Production Guide
 
-This documents the **proven working process** that produced 10+ successful videos on March 17-18, 2026. Do NOT deviate from this pattern without explicit approval.
+This documents the **proven working process** for TKK video production. Do NOT deviate from this pattern without explicit approval.
 
 ## Working Architecture
 
 ```
-Manim screenplay (.py)  →  6 Scene classes  →  FFmpeg concat  →  Audio merge  →  _final.mp4
+Remotion manifest (.json)  →  word-triggered scenes  →  Remotion render  →  _final.mp4
 ```
 
-Each video is a **single self-contained Python script** (~550 lines) that:
-1. Defines 6 Scene classes (one per story beat)
-2. Renders each scene independently via `--scene N`
-3. Concatenates with FFmpeg
-4. Merges with TTS audio
+Each video is a **JSON manifest** (`remotion/src/manifests/{topic}.json`) that:
+1. Declares scenes with word-triggered timing anchored to narration
+2. References design tokens, layout zones, and animation presets
+3. Is resolved against Whisper timestamps to compute exact frame timing
+4. Renders via Remotion (React/TypeScript) into a final mp4
 
 ## Visual-First Rules
 
@@ -25,109 +25,48 @@ Every TKK video must follow these visual-first principles. Voice carries the nar
 5. **Custom domain shapes = gold standard** — Build topic-specific shapes from Polygon/VGroup (moai_side, palm_stump, ice_pick). Reference: `easter_island_v16.py`.
 6. **Hierarchy**: custom shapes > SVG icons + animation > geometric primitives > text (last resort).
 
-## Script Structure (MUST follow this order)
+## Manifest Structure
+
+Each Remotion manifest is a JSON file at `remotion/src/manifests/{topic}.json` containing:
 
 ```
-Lines 1-10:     Shebang, docstring with VTT cues
-Lines 11-20:    Venv auto-switch
-Lines 21-40:    Imports (manim, numpy, subprocess)
-Lines 41-60:    TTS_SCRIPT variable (REQUIRED — full narration text)
-Lines 61-80:    Manim config (1080x1920, 30fps, portrait)
-Lines 81-100:   Color palette constants
-Lines 101-160:  Helper functions (gradient_bg, grid_lines, safe_text, label_pill, domain shapes)
-Lines 161-520:  6 Scene classes (Scene1 through Scene6)
-Lines 521-end:  Render pipeline (__main__ block with --scene, --preview, concat)
+{
+  "title":      "Video Title",
+  "ttsScript":  "Full narration text (sent to Fish Audio)",
+  "scenes": [
+    {
+      "scene_anchor":     "distinctive_word",    // word that starts this scene
+      "scene_end_anchor": "another_word",         // word that ends this scene
+      "beat":             "hook|wrong_answer|contradiction|proof|betrayal|punch",
+      "elements": [
+        {
+          "type":    "text|counter|svg|bar|timeline_marker",
+          "zone":    "TITLE|UPPER|MID|LOWER|FOOTER",
+          "anchor":  "trigger_word",              // word that triggers entrance
+          "attack":  0.0,                         // delay after anchor (seconds)
+          ...type-specific fields
+        }
+      ]
+    }
+  ]
+}
 ```
 
-## Required Boilerplate
+The agent picks from enums (beat types, layout zones, animation presets). It never writes CSS or frame numbers — all timing derives from TTS audio.
 
-### Venv Switch (lines 11-13)
-```python
-VENV_PYTHON = Path(__file__).parent / ".venv" / "bin" / "python3"
-if not sys.prefix.startswith(str(Path(__file__).parent / ".venv")):
-    os.execv(str(VENV_PYTHON), [str(VENV_PYTHON), __file__] + sys.argv[1:])
-```
+## Remotion Design Reference
 
-### Manim Config (lines 41-48)
-```python
-config.pixel_width = 1080
-config.pixel_height = 1920
-config.frame_rate = 30
-config.frame_width = 9
-config.frame_height = 16
-config.background_color = "#080A10"
-config.disable_caching = True
-```
+All visual rules, component APIs, safe zones, font sizes, animation presets, and layered background specs are defined in:
 
-### Color Palette (define ALL colors as constants)
-```python
-BG = "#080A10"
-GRID = "#1A2030"
-SURFACE = "#15192A"
-WHITE_SOFT = "#F0F0F0"
-GOLD = "#FFD700"
-# + 3-5 topic-specific colors
-```
+**`remotion/REMOTION_DESIGN_GUIDE.md`** — the canonical reference for Remotion manifests.
 
-### Core Helpers (MUST include)
-```python
-def gradient_bg(c=BG, g="#121828"):
-    bg = Rectangle(width=12, height=20, fill_color=c, fill_opacity=1, stroke_width=0)
-    glow = Circle(radius=5, fill_color=g, fill_opacity=0.08, stroke_width=0).move_to(UP * 2)
-    return VGroup(bg, glow)
-
-def grid_lines(opacity=0.04):
-    lines = VGroup()
-    for i in range(13):
-        y = -8 + i * 16 / 12
-        lines.add(Line(LEFT*5, RIGHT*5, color=GRID, stroke_width=0.5).move_to(UP*y).set_opacity(opacity))
-    for j in range(7):
-        x = -4.5 + j * 9 / 6
-        lines.add(Line(DOWN*8, UP*8, color=GRID, stroke_width=0.5).move_to(RIGHT*x).set_opacity(opacity))
-    return lines
-
-SAFE_W = 8.0    # Max text width before auto-scale
-SAFE_TOP = 7.2  # Top 5% — status bar/clock (y must be <= this)
-SAFE_BOT = -6.4 # Bottom 10% — TikTok description/buttons (y must be >= this)
-
-# Vertical layout zones — USE THESE for all positioning
-# The frame is 16 units tall. You MUST fill the full vertical space.
-ZONE_TITLE  = 6.2    # y 5.5–7.0  — scene label pills
-ZONE_UPPER  = 3.5    # y 1.5–5.5  — hero visual top portion
-ZONE_MID    = 0.0    # y -1.5–1.5 — central focal point, big numbers
-ZONE_LOWER  = -3.5   # y -5.5–-1.5 — supporting visuals, bars, icons
-ZONE_FOOTER = -6.0   # y -6.4–-5.5 — captions, source labels
-
-def safe_text(content, **kwargs):
-    t = Text(content, **kwargs)
-    if t.width > SAFE_W:
-        t.scale(SAFE_W / t.width)
-    return t
-
-def label_pill(txt, color=GOLD, bg=SURFACE, fs=28):
-    t = Text(txt, font="Inter", font_size=fs, color=color, weight="BOLD")
-    if t.width > SAFE_W:
-        t.scale(SAFE_W / t.width)
-    p = RoundedRectangle(
-        width=t.width + 0.5, height=t.height + 0.3,
-        corner_radius=0.15, fill_color=bg, fill_opacity=0.9, stroke_width=0
-    ).move_to(t)
-    return VGroup(p, t)
-```
-
-### Domain Shape Helpers (REQUIRED: 2-4 per video)
-Each video MUST define topic-specific shape functions. These are the visual vocabulary of the story.
-
-**Required**: At minimum 2 domain shapes per video. Aim for 4.
-
-Examples from shipped videos:
-- **Easter Island**: `moai_side()`, `palm_stump()`, `island_outline()`, `stick_fig()` — 4 shapes
-- **Radium Girls**: `jaw_teeth()`, `paint_brush()`, `watch_dial()` — 3 shapes
-- **Lobotomy**: `ice_pick()`, `nobel_medal()` — 2 shapes minimum
-- **Henrietta Lacks**: `cell_cluster()`, `petri_dish()`, `chromosome()` — 3 shapes
-
-These are simple VGroups of Rectangles, Circles, Polygons, Lines. 15-40 lines each.
-They must be recognizable at small sizes (0.5-1.0 height) and large (3-5 height).
+Key points:
+- Font sizes 3-4x web defaults (hero stats 160-220px, headlines 80-120px, body 40-56px minimum)
+- Safe zones: top 200px, bottom 400px, right 140px, left 120px
+- Full-height layout: content MUST fill the vertical frame using zone-based distribution
+- Animations: `spring()` + `useCurrentFrame()` only, never CSS transitions
+- Layered backgrounds: gradient + noise texture + vignette + content (not flat backgrounds)
+- SVG icons referenced by name from the shared `svg_assets/` library
 
 ## Vertical Layout (CRITICAL — Fill the Frame)
 
@@ -749,3 +688,9 @@ npx tsx remotion/render.mts {topic}
 3. Element anchors must fall between their scene's start and end anchors
 4. Avoid common words ("the", "is") as anchors — use distinctive words for reliable matching
 5. If a word appears multiple times in the script, use the first occurrence after the scene start
+
+---
+
+## Legacy Manim Reference
+
+The original 48+ videos were produced with Manim Community v0.20.1 (January–March 2026). For details on the legacy Manim pipeline, screenplay structure, and helper modules, see **[MANIM_ARCHIVE.md](MANIM_ARCHIVE.md)**.

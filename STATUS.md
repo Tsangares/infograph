@@ -1,6 +1,6 @@
 # TKK Project Status
 
-**Last updated**: 2026-03-19
+**Last updated**: 2026-03-24
 **Working directory**: `/opt/tkk/`
 
 ---
@@ -13,7 +13,7 @@ TikTok short-form video production pipeline. Generates mystery-arc narrated vide
 
 | Component | Location | Notes |
 |-----------|----------|-------|
-| Render engine | **manim** (Community v0.20.1) | Only renderer |
+| Render engine | **Remotion** (React/TypeScript) | Only renderer |
 | TTS primary | **Fish Audio** (ELITE voice) | API key in `.env` |
 | TTS fallback | **edge-tts** (en-US-ChristopherNeural) | Free, word-level VTT timestamps |
 | Dashboard | **clips.applesauce.chat** (port 8020) | Library, editor, studio chat |
@@ -26,12 +26,13 @@ TikTok short-form video production pipeline. Generates mystery-arc narrated vide
 Single Claude Code session using MCP tools:
 
 ```
-1. Write screenplay (6 scenes, mystery arc, manim Scene classes)
+1. Write manifest (word-triggered JSON, mystery arc)
 2. Fish Audio generates TTS mp3
-3. Preview PNGs rendered for all scenes
-4. QA checks previews (layout + readability)
-5. Full render (all scenes → ffmpeg concat + audio)
-6. Manual TikTok upload
+3. Word triggers resolved from Whisper timestamps
+4. Preview PNGs rendered for all scenes
+5. QA checks previews (layout + readability)
+6. Full render (Remotion → ffmpeg → _final.mp4)
+7. Manual TikTok upload
 ```
 
 ## OpenClaw Agents (DISCONTINUED 2026-03-19)
@@ -46,7 +47,7 @@ Agent workspaces archived in `/opt/tkk/archive/workspaces-2026-03-19.tar.gz`.
 
 ## Rules (Non-Negotiable)
 
-1. **Manim only** — NEVER use vidgen.py (archived).
+1. **Remotion only** — All new videos use Remotion manifests.
 2. **Fish Audio TTS** — Primary voice. edge-tts as fallback only.
 3. **No SFX** — No whoosh, impact, or transition sounds. Voice only.
 4. **Preview before render** — Every scene gets a PNG preview, QA'd before full animation.
@@ -57,15 +58,16 @@ Agent workspaces archived in `/opt/tkk/archive/workspaces-2026-03-19.tar.gz`.
 ```
 /opt/tkk/
 ├── vidgen/
-│   ├── *_manim.py                # Manim screenplays (48+ videos)
-│   ├── generate_tts.py           # Fish Audio TTS generation
-│   ├── mcp_server.py             # MCP server for Claude Code
-│   ├── qa_layout.py              # Layout QA
-│   ├── qa_readability.py         # Readability QA
-│   ├── anim_primitives.py        # Shared manim components
-│   ├── scene_templates.py        # Base scene classes
-│   └── PRODUCTION_GUIDE.md       # Canonical screenplay reference
-├── clips/                        # Dashboard (clips.applesauce.chat)
-├── archive/                      # Archived agent workspaces + deprecated code
-└── CLAUDE.md                     # Project context for Claude Code
+│   ├── remotion/src/manifests/    # Remotion manifests (word-triggered JSON)
+│   ├── generate_tts.py            # Fish Audio TTS generation
+│   ├── resolve_word_triggers.py   # Whisper-based word trigger resolution
+│   ├── mcp_server.py              # MCP server for Claude Code
+│   ├── qa_layout.py               # Layout QA
+│   ├── qa_readability.py          # Readability QA
+│   ├── qa_remotion_sync.py        # Remotion sync QA
+│   ├── PRODUCTION_GUIDE.md        # Canonical production reference
+│   └── MANIM_ARCHIVE.md           # Legacy Manim reference
+├── clips/                         # Dashboard (clips.applesauce.chat)
+├── archive/                       # Archived agent workspaces + deprecated code
+└── CLAUDE.md                      # Project context for Claude Code
 ```

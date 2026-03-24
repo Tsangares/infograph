@@ -6,9 +6,9 @@ Fallback engines (edge-tts, kokoro, piper) exist but should NOT be used
 for final videos. Fish Audio is the TKK standard voice.
 
 Usage:
-    python generate_tts.py easter_island_manim.py                   # Fish Audio (default)
-    python generate_tts.py easter_island_manim.py --engine fish     # explicit
-    python generate_tts.py easter_island_manim.py --engine edge     # fallback only
+    python generate_tts.py aral_sea.json                            # Fish Audio (default)
+    python generate_tts.py aral_sea.json --engine fish              # explicit
+    python generate_tts.py aral_sea.json --engine edge              # fallback only
     python generate_tts.py --text "Hello world" --output test.mp3
     python generate_tts.py --status
 

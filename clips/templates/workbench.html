@@ -224,7 +224,6 @@
     padding: 3px 10px;
     border-radius: 100px;
   }
-  .sp-type-badge.manim { background: rgba(167, 139, 250, 0.14); color: #a78bfa; }
   .sp-type-badge.vidgen { background: rgba(108, 192, 112, 0.14); color: var(--success); }
   .sp-type-badge.remotion { background: rgba(56, 189, 248, 0.14); color: #38bdf8; }
 
@@ -238,21 +237,17 @@
   .engine-pill:hover { border-color: var(--text-muted); }
   .engine-pill.active { color: var(--fg); border-color: var(--fg); background: var(--surface); }
   .engine-pill.active[data-engine="remotion"] { color: #38bdf8; border-color: rgba(56,189,248,0.5); background: rgba(56,189,248,0.08); }
-  .engine-pill.active[data-engine="manim"] { color: #a78bfa; border-color: rgba(167,139,250,0.5); background: rgba(167,139,250,0.08); }
 
   /* Engine dot on file items */
   .engine-dot {
     display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 4px; flex-shrink: 0;
   }
-  .engine-dot.manim { background: #a78bfa; }
   .engine-dot.remotion { background: #38bdf8; }
 
   /* New button split */
   .new-btn-group { display: flex; gap: 4px; flex: 1; }
   .new-btn-remotion { background: rgba(56,189,248,0.12); color: #38bdf8; border: 1px solid rgba(56,189,248,0.25); }
   .new-btn-remotion:hover { background: rgba(56,189,248,0.2); border-color: rgba(56,189,248,0.4); }
-  .new-btn-manim { background: var(--surface); color: var(--text-dim); border: 1px solid var(--border); font-size: 11px; }
-  .new-btn-manim:hover { color: #a78bfa; border-color: rgba(167,139,250,0.4); }
 
   .sp-meta {
     display: flex;
@@ -457,6 +452,188 @@
     font-size: 11px;
     font-family: var(--font-mono);
   }
+  /* --- DEBUG TOGGLE --- */
+  .dbg-toggle {
+    font-size: 9px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 7px;
+    border-radius: 100px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+  .dbg-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .dbg-toggle.active {
+    background: rgba(232, 131, 74, 0.14);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* --- DEBUG PANEL --- */
+  .debug-panel {
+    margin-top: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .debug-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .debug-panel-header h3 {
+    margin: 0;
+    font-size: 13px;
+    font-family: var(--font-mono);
+    color: var(--text);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .debug-panel-header .debug-run-btn {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    padding: 3px 10px;
+    border-radius: 100px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+  .debug-panel-header .debug-run-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .debug-panel-header .debug-run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .debug-summary-badge {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 100px;
+    margin-left: auto;
+  }
+  .debug-summary-badge.ok { background: rgba(74, 222, 128, 0.15); color: #4ADE80; }
+  .debug-summary-badge.warn { background: rgba(251, 191, 36, 0.15); color: #FBBF24; }
+  .debug-summary-badge.fail { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+  .debug-scenes-list {
+    padding: 0;
+  }
+  .debug-scene-row {
+    border-bottom: 1px solid var(--border);
+    padding: 12px 14px;
+  }
+  .debug-scene-row:last-child { border-bottom: none; }
+  .debug-scene-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .debug-scene-label {
+    font-size: 12px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--text);
+  }
+  .debug-scene-duration {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+  }
+  .debug-overlap-pill {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 100px;
+    margin-left: auto;
+  }
+  .debug-overlap-pill.ok { background: rgba(74, 222, 128, 0.12); color: #4ADE80; }
+  .debug-overlap-pill.warn { background: rgba(251, 191, 36, 0.12); color: #FBBF24; }
+  .debug-overlap-pill.fail { background: rgba(239, 68, 68, 0.12); color: #EF4444; }
+  .debug-tab-bar {
+    display: flex;
+    gap: 0;
+    margin-bottom: 8px;
+  }
+  .debug-tab {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    padding: 3px 10px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+  .debug-tab:first-child { border-radius: 4px 0 0 4px; }
+  .debug-tab:last-child { border-radius: 0 4px 4px 0; border-left: none; }
+  .debug-tab.active {
+    background: rgba(232, 131, 74, 0.14);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .debug-img-pair {
+    display: flex;
+    gap: 8px;
+  }
+  .debug-img-wrap {
+    flex: 1;
+    position: relative;
+  }
+  .debug-img-wrap img {
+    width: 100%;
+    border-radius: var(--radius-sm);
+    display: block;
+    background: var(--surface);
+    aspect-ratio: 9/16;
+    object-fit: cover;
+    cursor: zoom-in;
+  }
+  .debug-img-wrap .debug-pct-label {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    font-size: 9px;
+    font-family: var(--font-mono);
+    color: #ffffffaa;
+    background: #000000aa;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  .debug-empty {
+    padding: 24px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-family: var(--font-mono);
+  }
+
+  /* --- LIGHTBOX --- */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.92);
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img {
+    max-height: 92vh;
+    max-width: 95vw;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+
   .zone-indicator {
     display: flex;
     flex-direction: column;
@@ -1219,8 +1396,7 @@
     <div class="wb-sidebar-header">
       <div class="wb-sidebar-actions">
         <div class="new-btn-group">
-          <button class="new-btn new-btn-remotion" onclick="startNewScreenplay('remotion')" style="flex:1">+ Remotion</button>
-          <button class="new-btn new-btn-manim" onclick="startNewScreenplay('manim')" style="padding:7px 10px">+ Manim</button>
+          <button class="new-btn new-btn-remotion" onclick="startNewScreenplay('remotion')" style="flex:1">+ New Screenplay</button>
         </div>
         <span class="ready-count" id="ready-count" title="Videos ready to post" style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--accent);padding:7px 10px;background:var(--accent-subtle);border:1px solid rgba(232,131,74,0.2);border-radius:var(--radius-sm);white-space:nowrap;display:none"></span>
       </div>
@@ -1230,7 +1406,6 @@
       </div>
       <div class="engine-filters">
         <button class="engine-pill active" data-engine="remotion" onclick="toggleEngineFilter('remotion')">Remotion</button>
-        <button class="engine-pill" data-engine="manim" onclick="toggleEngineFilter('manim')">Manim</button>
       </div>
     </div>
     <div class="wb-file-list" id="wb-file-list">
@@ -1296,6 +1471,10 @@
 <button class="wb-chat-fab" id="chat-fab" onclick="toggleChat()">
   <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
 </button>
+<!-- Lightbox overlay -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lightbox-img" src="" alt="Preview">
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -1425,7 +1604,7 @@
           // Show the latest (first) with version badge + expandable list
           const latest = variants[0];
           const vLabel = latest.version || `v${variants.length}`;
-          const latestEngineClass = latest.engine || (latest.has_remotion ? 'remotion' : 'manim');
+          const latestEngineClass = latest.engine || (latest.has_remotion ? 'remotion' : 'unknown');
           html += `<button class="file-item${currentFile === latest.filename ? ' active' : ''}" data-file="${latest.filename}" onclick="loadScreenplay('${latest.filename}')">
             <span class="engine-dot ${latestEngineClass}" title="${latestEngineClass}"></span>
             <span class="file-name">${esc(latest.name)}</span>
@@ -1451,7 +1630,7 @@
   }
 
   function renderFileItem(s) {
-    const engineClass = s.engine || (s.has_remotion ? 'remotion' : 'manim');
+    const engineClass = s.engine || (s.has_remotion ? 'remotion' : 'unknown');
     return `<button class="file-item${currentFile === s.filename ? ' active' : ''}" data-file="${s.filename}" onclick="loadScreenplay('${s.filename}')">
       <span class="engine-dot ${engineClass}" title="${engineClass}"></span>
       <span class="file-name">${esc(s.name)}</span>
@@ -1486,11 +1665,9 @@
     currentFile = null;
     currentData = null;
     document.querySelectorAll('.file-item').forEach(el => el.classList.remove('active'));
-    const fwLabel = framework === 'remotion' ? 'Remotion (React/TypeScript)' : 'Manim (Python)';
-    const fwColor = framework === 'remotion' ? '#38bdf8' : '#a78bfa';
     document.getElementById('wb-detail').innerHTML = mobileTopbar('Workbench') + `<div class="wb-empty"><div>
-      <p style="font-size:18px;margin-bottom:8px">New <span style="color:${fwColor}">${fwLabel}</span> Screenplay</p>
-      <p>Describe your video topic in the chat. The screenplay will be created as a ${framework === 'remotion' ? 'Remotion manifest (.json)' : 'Manim screenplay (.py)'}.</p>
+      <p style="font-size:18px;margin-bottom:8px">New <span style="color:#38bdf8">Remotion (React/TypeScript)</span> Screenplay</p>
+      <p>Describe your video topic in the chat. The screenplay will be created as a Remotion manifest (.json).</p>
     </div></div>`;
     switchChatMode('intake', null, framework);
     closeSidebar();
@@ -1524,6 +1701,7 @@
       const data = await res.json();
       currentData = data;
       renderScreenplayView(data);
+      setTimeout(() => { showDebugToggles(); checkExistingDebugImages(); }, 100);
     } catch (err) {
       detail.innerHTML = mobileTopbar(prettyName) + `<div class="wb-empty" style="color:var(--fail)">Failed to load: ${esc(err.message)}</div>`;
     }
@@ -1536,7 +1714,7 @@
 
   function renderScreenplayView(data) {
     const el = document.getElementById('wb-detail');
-    const typeClass = data.type === 'remotion' ? 'remotion' : data.type === 'manim' ? 'manim' : data.type === 'vidgen' ? 'vidgen' : '';
+    const typeClass = data.type === 'remotion' ? 'remotion' : data.type === 'vidgen' ? 'vidgen' : '';
     const prettyTitle = esc(data.filename.replace('_manim.py','').replace('.py','').replace('.json','').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()));
     const badgeHtml = `<span class="sp-type-badge ${typeClass}">${esc(data.type || 'unknown')}</span>`;
 
@@ -1623,6 +1801,13 @@
         </button>`;
       }
     }
+    // Debug button: always show when previews exist (works post-render too)
+    if (hasPreview) {
+      html += `<button class="action-btn" id="btn-debug" onclick="renderDebugPreviews()">
+        <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Debug <span class="action-result" id="debug-result"></span>
+      </button>`;
+    }
     // Render: only show once TTS exists and final doesn't
     if (hasTTS && !hasFinal) {
       html += `<button class="action-btn primary" id="btn-render" onclick="startRender()">
@@ -1666,6 +1851,20 @@
         </button>`;
       }
       html += '</div>';
+    }
+
+    // Debug QA panel — between Watch/Play and Danger zone
+    if (hasPreview) {
+      html += `<div class="debug-panel" id="debug-panel">
+        <div class="debug-panel-header">
+          <h3>Debug QA</h3>
+          <button class="debug-run-btn" id="debug-run-btn" onclick="runDebugPanel()">Run Debug</button>
+          <span class="debug-summary-badge" id="debug-summary-badge" style="display:none"></span>
+        </div>
+        <div class="debug-scenes-list" id="debug-scenes-container">
+          <div class="debug-empty" id="debug-empty-msg">Click "Run Debug" to generate envelope overlays</div>
+        </div>
+      </div>`;
     }
 
     // Danger zone — destructive actions, separated from pipeline
@@ -1776,10 +1975,24 @@
         html += '<div class="scene-card-body">';
 
         // First scene card for Remotion: embed live player instead of static preview
+        const debugPreview = `${stem}_debug_scene_${scene.index}_75.png`;
         if (data.type === 'remotion' && scene.index === 1) {
           html += `<iframe id="remotion-player-iframe" src="/remotion-player/" class="scene-thumb" style="border:none;background:#080A10" allow="autoplay"></iframe>`;
         } else if (scene.preview) {
-          html += `<img class="scene-thumb" src="/previews/${encodeURIComponent(scene.preview)}" alt="Scene ${scene.index}" loading="lazy" onerror="this.style.display='none'">`;
+          html += `<div style="position:relative">`;
+          html += `<img class="scene-thumb" id="thumb-${scene.index}"
+                    src="/previews/${encodeURIComponent(scene.preview)}"
+                    data-std="/previews/${encodeURIComponent(scene.preview)}"
+                    data-dbg="/previews/${encodeURIComponent(debugPreview)}"
+                    alt="Scene ${scene.index}" loading="lazy"
+                    onclick="openLightbox(this.src)"
+                    style="cursor:zoom-in"
+                    onerror="this.style.display='none'">`;
+          html += `<button class="dbg-toggle" id="dbg-${scene.index}"
+                    onclick="event.stopPropagation(); toggleDebug(${scene.index})"
+                    style="position:absolute;top:6px;right:6px;display:none"
+                    title="Toggle debug envelope overlay">DBG</button>`;
+          html += `</div>`;
         } else {
           html += `<div class="scene-thumb-placeholder">No preview</div>`;
         }
@@ -2087,6 +2300,209 @@
       showToast('Preview render failed', 'error');
     } finally { if (btn) btn.disabled = false; }
   }
+
+  // --- Debug Preview ---
+  let lastDebugOverlaps = {};
+
+  async function renderDebugPreviews() {
+    if (!currentFile) return;
+    const btn = document.getElementById('btn-debug');
+    const result = document.getElementById('debug-result');
+    if (btn) btn.disabled = true;
+    if (result) result.innerHTML = '<span class="spinner"></span>';
+
+    try {
+      const res = await fetch(`/api/screenplay/${encodeURIComponent(currentFile)}/debug-preview`, { method: 'POST' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!data.success) throw new Error(data.stderr || data.error || 'Debug render failed');
+      if (result) {
+        result.textContent = `${Math.floor(data.previews.length / 2)} scenes`;
+        result.style.color = 'var(--success)';
+      }
+      lastDebugOverlaps = data.overlaps || {};
+      showToast(`Debug previews rendered`, 'success');
+      showDebugToggles();
+      populateDebugPanel(data);
+      return data;
+    } catch (err) {
+      if (result) { result.textContent = 'Failed'; result.style.color = 'var(--fail)'; }
+      showToast('Debug render failed: ' + err.message, 'error');
+    } finally { if (btn) btn.disabled = false; }
+  }
+
+  async function runDebugPanel() {
+    const btn = document.getElementById('debug-run-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Rendering...'; }
+    const emptyMsg = document.getElementById('debug-empty-msg');
+    if (emptyMsg) emptyMsg.textContent = 'Rendering debug previews...';
+    try {
+      await renderDebugPreviews();
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = 'Run Debug'; }
+    }
+  }
+
+  function populateDebugPanel(data) {
+    if (!currentData) return;
+    const container = document.getElementById('debug-scenes-container');
+    if (!container) return;
+
+    const stem = currentData.filename.replace('_manim.py', '').replace('.py', '').replace('.json', '');
+    const scenes = currentData.scenes || [];
+    const overlaps = data.overlaps || {};
+    const totalOverlaps = data.total_overlaps || 0;
+
+    // Update summary badge
+    const badge = document.getElementById('debug-summary-badge');
+    if (badge) {
+      if (totalOverlaps < 0) {
+        // Stale data — no overlap info available
+        badge.style.display = 'none';
+      } else {
+        badge.style.display = '';
+        if (totalOverlaps === 0) {
+          badge.className = 'debug-summary-badge ok';
+          badge.textContent = '0 overlaps';
+        } else if (totalOverlaps <= 3) {
+          badge.className = 'debug-summary-badge warn';
+          badge.textContent = `${totalOverlaps} overlap${totalOverlaps > 1 ? 's' : ''}`;
+        } else {
+          badge.className = 'debug-summary-badge fail';
+          badge.textContent = `${totalOverlaps} overlaps`;
+        }
+      }
+    }
+
+    let html = '';
+    for (const scene of scenes) {
+      const sceneId = scene.id || `scene_${scene.index}`;
+      const sceneOverlaps = overlaps[sceneId] ?? 0;
+      const overlapClass = sceneOverlaps === 0 ? 'ok' : sceneOverlaps <= 2 ? 'warn' : 'fail';
+      const overlapText = sceneOverlaps === 0 ? 'clean' : `${sceneOverlaps} overlap${sceneOverlaps > 1 ? 's' : ''}`;
+
+      const stdPreview50 = `${stem}_scene_${scene.index}_50.png`;
+      const stdPreview75 = `${stem}_scene_${scene.index}_75.png`;
+      const dbgPreview50 = `${stem}_debug_scene_${scene.index}_50.png`;
+      const dbgPreview75 = `${stem}_debug_scene_${scene.index}_75.png`;
+
+      html += `<div class="debug-scene-row" id="debug-row-${scene.index}">`;
+      html += `<div class="debug-scene-header">`;
+      html += `<span class="debug-scene-label">${scene.index}. ${esc(scene.label || 'Scene ' + scene.index)}</span>`;
+      if (scene.duration != null) {
+        html += `<span class="debug-scene-duration">${scene.duration.toFixed(1)}s</span>`;
+      }
+      html += `<span class="debug-overlap-pill ${overlapClass}">${overlapText}</span>`;
+      html += `</div>`;
+
+      // Tab bar: Normal vs Debug
+      html += `<div class="debug-tab-bar">`;
+      html += `<button class="debug-tab" onclick="switchDebugView(${scene.index}, 'normal')" id="debug-tab-normal-${scene.index}">Normal</button>`;
+      html += `<button class="debug-tab active" onclick="switchDebugView(${scene.index}, 'debug')" id="debug-tab-debug-${scene.index}">Debug</button>`;
+      html += `</div>`;
+
+      // Image pair (default: debug view)
+      html += `<div class="debug-img-pair" id="debug-imgs-${scene.index}">`;
+      html += `<div class="debug-img-wrap">`;
+      html += `<img src="/previews/${encodeURIComponent(dbgPreview50)}"
+                data-dbg="/previews/${encodeURIComponent(dbgPreview50)}"
+                data-std="/previews/${encodeURIComponent(stdPreview50)}"
+                id="debug-img-50-${scene.index}"
+                onclick="openLightbox(this.src)"
+                onerror="this.style.display='none'" loading="lazy">`;
+      html += `<span class="debug-pct-label">50%</span>`;
+      html += `</div>`;
+      html += `<div class="debug-img-wrap">`;
+      html += `<img src="/previews/${encodeURIComponent(dbgPreview75)}"
+                data-dbg="/previews/${encodeURIComponent(dbgPreview75)}"
+                data-std="/previews/${encodeURIComponent(stdPreview75)}"
+                id="debug-img-75-${scene.index}"
+                onclick="openLightbox(this.src)"
+                onerror="this.style.display='none'" loading="lazy">`;
+      html += `<span class="debug-pct-label">75%</span>`;
+      html += `</div>`;
+      html += `</div>`;
+
+      html += `</div>`;
+    }
+
+    container.innerHTML = html || '<div class="debug-empty">No debug previews available</div>';
+  }
+
+  function switchDebugView(sceneIdx, mode) {
+    const img50 = document.getElementById(`debug-img-50-${sceneIdx}`);
+    const img75 = document.getElementById(`debug-img-75-${sceneIdx}`);
+    const tabNormal = document.getElementById(`debug-tab-normal-${sceneIdx}`);
+    const tabDebug = document.getElementById(`debug-tab-debug-${sceneIdx}`);
+    if (!img50 || !img75) return;
+
+    if (mode === 'normal') {
+      img50.src = img50.dataset.std;
+      img75.src = img75.dataset.std;
+      tabNormal.classList.add('active');
+      tabDebug.classList.remove('active');
+    } else {
+      img50.src = img50.dataset.dbg;
+      img75.src = img75.dataset.dbg;
+      tabDebug.classList.add('active');
+      tabNormal.classList.remove('active');
+    }
+  }
+
+  function showDebugToggles() {
+    if (!currentData) return;
+    const stem = currentData.filename.replace('_manim.py', '').replace('.py', '').replace('.json', '');
+    for (const scene of (currentData.scenes || [])) {
+      const toggle = document.getElementById(`dbg-${scene.index}`);
+      if (!toggle) continue;
+      const img = new Image();
+      img.onload = () => { toggle.style.display = 'block'; };
+      img.src = `/previews/${stem}_debug_scene_${scene.index}_75.png`;
+    }
+  }
+
+  function toggleDebug(sceneIdx) {
+    const thumb = document.getElementById(`thumb-${sceneIdx}`);
+    const toggle = document.getElementById(`dbg-${sceneIdx}`);
+    if (!thumb || !toggle) return;
+    const isDebug = toggle.classList.toggle('active');
+    thumb.src = isDebug ? thumb.dataset.dbg : thumb.dataset.std;
+  }
+
+  // Auto-populate debug panel if debug images already exist from a previous run
+  function checkExistingDebugImages() {
+    if (!currentData) return;
+    const stem = currentData.filename.replace('_manim.py', '').replace('.py', '').replace('.json', '');
+    const scenes = currentData.scenes || [];
+    if (!scenes.length) return;
+    // Probe the first scene's debug image to see if debug was already run
+    const probe = new Image();
+    probe.onload = () => {
+      // Debug images exist — populate panel with what we have (no overlap data from API)
+      populateDebugPanel({ overlaps: {}, total_overlaps: -1, previews: [] });
+      // Update summary badge to indicate stale data
+      const badge = document.getElementById('debug-summary-badge');
+      if (badge && badge.textContent === '') {
+        badge.style.display = 'none';
+      }
+    };
+    probe.src = `/previews/${stem}_debug_scene_1_75.png`;
+  }
+
+  function openLightbox(src) {
+    const lb = document.getElementById('lightbox');
+    const img = document.getElementById('lightbox-img');
+    img.src = src;
+    lb.classList.add('open');
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeLightbox();
+  });
 
   async function runQA() {
     if (!currentFile) return;
@@ -2647,7 +3063,7 @@
           loadScreenplay(currentFile);
         } else {
           // Intake mode: detect new screenplay filename in response
-          const match = responseText.match(/(\w+_manim\.py)/);
+          const match = responseText.match(/(\w+\.json)/);
           if (match) {
             setTimeout(() => loadScreenplay(match[1]), 500);
           }

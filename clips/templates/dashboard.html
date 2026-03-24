@@ -141,14 +141,12 @@
   .fw-pill:hover { border-color: var(--text-muted); }
   .fw-pill.active { color: var(--fg); border-color: var(--fg); background: var(--surface); }
   .fw-pill.active[data-engine="remotion"] { color: #38bdf8; border-color: rgba(56,189,248,0.5); background: rgba(56,189,248,0.08); }
-  .fw-pill.active[data-engine="manim"] { color: #a78bfa; border-color: rgba(167,139,250,0.5); background: rgba(167,139,250,0.08); }
   .engine-badge-m {
     position: absolute; top: 6px; left: 6px; font-size: 9px; font-weight: 700;
     font-family: var(--font-mono); padding: 2px 5px; border-radius: 4px;
     letter-spacing: 0.3px; z-index: 2;
   }
   .engine-badge-m.remotion { background: rgba(56,189,248,0.85); color: #fff; }
-  .engine-badge-m.manim { background: rgba(167,139,250,0.85); color: #fff; }
 
   .video-card .thumb .no-thumb {
     width: 100%;
@@ -293,7 +291,6 @@
 
 <div class="fw-filters">
   <button class="fw-pill active" data-engine="remotion" onclick="toggleDashEngine('remotion')">Remotion</button>
-  <button class="fw-pill active" data-engine="manim" onclick="toggleDashEngine('manim')">Manim</button>
 </div>
 
 {% if videos %}
@@ -333,8 +330,6 @@
       {% endif %}
       {% if v.engine == 'remotion' %}
       <span class="engine-badge-m remotion">R{% if v.format == 'word-triggered' %}w{% endif %}</span>
-      {% elif v.engine == 'manim' %}
-      <span class="engine-badge-m manim">M</span>
       {% endif %}
     </div>
     <div class="info">
@@ -367,7 +362,7 @@
 {% block scripts %}
 <script>
   let sortAsc = false;
-  const activeEngines = new Set(['remotion', 'manim']);
+  const activeEngines = new Set(['remotion']);
 
   function filterVideos() {
     const q = document.getElementById('search').value.toLowerCase();

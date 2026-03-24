@@ -28,15 +28,16 @@ CANVAS_W = 1080
 CANVAS_H = 1920
 
 # ── Zone pixel coordinates (from zones.ts) ──────────────────
-def manim_to_pixel_y(manim_y: float) -> float:
-    return ((8 - manim_y) / 16) * CANVAS_H
+def unit_to_pixel_y(unit_y: float) -> float:
+    """Convert unit y-coordinate (-8 to +8 range) to pixel y (top-down)."""
+    return ((8 - unit_y) / 16) * CANVAS_H
 
 ZONES = {
-    "TITLE":  {"top": manim_to_pixel_y(7.0),  "bottom": manim_to_pixel_y(5.5),  "center": manim_to_pixel_y(6.2)},
-    "UPPER":  {"top": manim_to_pixel_y(5.5),  "bottom": manim_to_pixel_y(1.5),  "center": manim_to_pixel_y(3.5)},
-    "MID":    {"top": manim_to_pixel_y(1.5),  "bottom": manim_to_pixel_y(-1.5), "center": manim_to_pixel_y(0.0)},
-    "LOWER":  {"top": manim_to_pixel_y(-1.5), "bottom": manim_to_pixel_y(-5.5), "center": manim_to_pixel_y(-3.5)},
-    "FOOTER": {"top": manim_to_pixel_y(-5.5), "bottom": manim_to_pixel_y(-6.4), "center": manim_to_pixel_y(-6.0)},
+    "TITLE":  {"top": unit_to_pixel_y(7.0),  "bottom": unit_to_pixel_y(5.5),  "center": unit_to_pixel_y(6.2)},
+    "UPPER":  {"top": unit_to_pixel_y(5.5),  "bottom": unit_to_pixel_y(1.5),  "center": unit_to_pixel_y(3.5)},
+    "MID":    {"top": unit_to_pixel_y(1.5),  "bottom": unit_to_pixel_y(-1.5), "center": unit_to_pixel_y(0.0)},
+    "LOWER":  {"top": unit_to_pixel_y(-1.5), "bottom": unit_to_pixel_y(-5.5), "center": unit_to_pixel_y(-3.5)},
+    "FOOTER": {"top": unit_to_pixel_y(-5.5), "bottom": unit_to_pixel_y(-6.4), "center": unit_to_pixel_y(-6.0)},
 }
 
 SAFE_LEFT = 120
