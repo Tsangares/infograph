@@ -1,0 +1,251 @@
+{
+  "topic": "antibiotics",
+  "ttsScript": "Your antibiotic pill does not target your infection. It dissolves in your gut, floods every tissue in your body, and kills bacteria everywhere. The drug reaches your infection only because enough concentration arrives there. Meanwhile it destroys trillions of beneficial microbes in your gut. That's why you get diarrhea, nausea, yeast infections. Bioavailability varies wildly. Metronidazole delivers nearly 100 percent to your blood. Azithromycin only 37 percent. Yet azithromycin concentrates inside white blood cells at 100 times the blood level. Every course exerts selective pressure on bacteria throughout your entire body. Resistant survivors multiply. We have used antibiotics for 80 years. The bacteria are winning.",
+  "colors": {
+    "bg": "#080A10",
+    "accent": "#22C55E",
+    "secondary": "#3B82F6"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "label": "THE PILL",
+      "type": "illustration",
+      "scene_anchor": "antibiotic",
+      "scene_end_anchor": "everywhere.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "NOT A GUIDED MISSILE",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#22C55E",
+          "anchor": "antibiotic",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "capsules",
+          "zone": "MID",
+          "color": "#22C55E",
+          "anchor": "dissolves",
+          "attack": 0.2,
+          "enter": "pop",
+          "size": 180,
+          "holdMotion": "pulse",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "Kills bacteria EVERYWHERE",
+          "zone": "LOWER",
+          "style": "caption",
+          "color": "#EAEAF0",
+          "anchor": "everywhere.",
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "wrong_answer",
+      "label": "THE WRONG ANSWER",
+      "type": "causeEffect",
+      "scene_anchor": "concentration",
+      "scene_end_anchor": "infections.",
+      "elements": [
+        {
+          "type": "text_effect",
+          "effect": "redacted",
+          "content": "COLLATERAL DAMAGE",
+          "zone": "UPPER",
+          "color": "#EF4444",
+          "anchor": "concentration",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "cause_effect",
+          "zone": "LOWER",
+          "anchor": "destroys",
+          "attack": 0.3,
+          "hold": "until_scene_end",
+          "dominoes": [
+            {"label": "Gut flooded", "icon": "droplet", "color": "#3B82F6"},
+            {"label": "Good bacteria die", "icon": "bacteria", "color": "#F97316"},
+            {"label": "Diarrhea + nausea", "icon": "warning", "color": "#EF4444"}
+          ],
+          "chainSpeed": 0.15
+        }
+      ]
+    },
+    {
+      "id": "contradiction",
+      "label": "THE CONTRADICTION",
+      "type": "barRace",
+      "scene_anchor": "Bioavailability",
+      "scene_end_anchor": "blood.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "BIOAVAILABILITY",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#3B82F6",
+          "anchor": "Bioavailability",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "bar_race",
+          "zone": "MID",
+          "anchor": "Metronidazole",
+          "attack": 0.2,
+          "hold": "until_scene_end",
+          "raceBars": [
+            {"label": "Metronidazole", "value": 100, "color": "#22C55E"},
+            {"label": "Amoxicillin", "value": 83, "color": "#3B82F6"},
+            {"label": "Cipro", "value": 75, "color": "#F59E0B"},
+            {"label": "Azithromycin", "value": 37, "color": "#EF4444"}
+          ],
+          "barUnit": "%",
+          "sortAfterGrow": true
+        },
+        {
+          "type": "text",
+          "content": "% reaching your blood",
+          "zone": "LOWER",
+          "style": "caption",
+          "color": "#94A3B8",
+          "anchor": "blood.",
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "proof",
+      "label": "THE PROOF",
+      "type": "counter",
+      "scene_anchor": "Yet,",
+      "scene_end_anchor": "level.",
+      "elements": [
+        {
+          "type": "text",
+          "content": "THE TROJAN HORSE",
+          "zone": "UPPER",
+          "style": "headline",
+          "color": "#22C55E",
+          "anchor": "Yet,",
+          "attack": 0.0,
+          "enter": "fade",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "number_ticker",
+          "zone": "MID",
+          "anchor": "100",
+          "attack": 0.2,
+          "tickerValue": 100,
+          "suffix": "×",
+          "unit": "blood concentration",
+          "color": "#22C55E",
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "Inside white blood cells",
+          "zone": "LOWER",
+          "style": "caption",
+          "color": "#EAEAF0",
+          "anchor": "white",
+          "enter": "fade",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "betrayal",
+      "label": "THE BETRAYAL",
+      "type": "illustration",
+      "scene_anchor": "selective",
+      "scene_end_anchor": "multiply.",
+      "elements": [
+        {
+          "type": "text_effect",
+          "effect": "stamp",
+          "content": "RESISTANCE",
+          "zone": "UPPER",
+          "color": "#EF4444",
+          "anchor": "selective",
+          "attack": 0.0,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "svg",
+          "svg": "bacteria",
+          "zone": "MID",
+          "color": "#EF4444",
+          "anchor": "Resistance",
+          "attack": 0.2,
+          "enter": "stamp",
+          "size": 180,
+          "shake": true,
+          "repeat": 5,
+          "stagger": 40,
+          "hold": "until_scene_end"
+        },
+        {
+          "type": "text",
+          "content": "Survivors multiply",
+          "zone": "LOWER",
+          "style": "caption",
+          "color": "#F97316",
+          "anchor": "multiply.",
+          "enter": "wordByWord",
+          "hold": "until_scene_end"
+        }
+      ]
+    },
+    {
+      "id": "punch",
+      "label": "THE PUNCH",
+      "type": "counter",
+      "scene_anchor": "antibiotics",
+      "scene_end_anchor": "winning.",
+      "elements": [
+        {
+          "type": "split_screen",
+          "zone": "MID",
+          "anchor": "80",
+          "attack": 0.0,
+          "hold": "until_scene_end",
+          "leftPanel": {
+            "label": "HUMANS",
+            "value": "80 YEARS",
+            "color": "#3B82F6",
+            "subtext": "of antibiotics"
+          },
+          "rightPanel": {
+            "label": "BACTERIA",
+            "value": "WINNING",
+            "color": "#EF4444",
+            "subtext": "resistance rising"
+          }
+        },
+        {
+          "type": "emphasis_line",
+          "zone": "LOWER",
+          "color": "#EF4444",
+          "anchor": "winning.",
+          "lineStyle": "strike",
+          "lineWidth": 0.5,
+          "hold": "until_scene_end"
+        }
+      ]
+    }
+  ]
+}
