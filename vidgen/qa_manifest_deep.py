@@ -528,6 +528,87 @@ def check_scene_duration(manifest: dict) -> list[dict]:
     return results
 
 
+def check_scene_diversity(manifest: dict) -> list[dict]:
+    """Check that adjacent scenes don't reuse the same primary component type."""
+    # Priority order: most complex first (excluding text/label)
+    TYPE_PRIORITY = [
+        "bar_race", "pie_chart", "cause_effect", "split_screen",
+        "number_ticker", "counter", "flow_diagram", "map_highlight",
+        "gauge", "stacked_accumulation", "svg", "text_effect", "text",
+    ]
+
+    def primary_type(scene: dict) -> str | None:
+        """Return the most complex non-text element type in the scene."""
+        etypes = set()
+        for el in scene.get("elements", []):
+            etype = el.get("type", "text")
+            if etype not in ("text", "label"):
+                etypes.add(etype)
+        if not etypes:
+            return None
+        for t in TYPE_PRIORITY:
+            if t in etypes:
+                return t
+        # Unknown type not in priority list — return first found
+        return next(iter(etypes))
+
+    results = []
+    scenes = manifest.get("scenes", [])
+    prev_primary = None
+    prev_id = None
+
+    for scene in scenes:
+        sid = scene.get("id", "?")
+        p = primary_type(scene)
+        if p and p == prev_primary:
+            results.append({
+                "check": "scene_diversity",
+                "status": "WARN",
+                "detail": (f"Scenes '{prev_id}' and '{sid}' both use {p} "
+                           f"— consider alternating for variety"),
+            })
+        prev_primary = p
+        prev_id = sid
+
+    if not results:
+        results.append({"check": "scene_diversity", "status": "PASS", "detail": "Adjacent scenes use varied primary element types"})
+    return results
+
+
+def check_timing_variance(manifest: dict) -> list[dict]:
+    """Check that element attack values are varied for visual rhythm."""
+    results = []
+    attack_values: list[float] = []
+
+    for scene in manifest.get("scenes", []):
+        for el in scene.get("elements", []):
+            attack_values.append(float(el.get("attack", 0.0)))
+
+    if not attack_values:
+        return [{"check": "timing_variance", "status": "PASS", "detail": "No elements to check"}]
+
+    total = len(attack_values)
+    unique = set(attack_values)
+    zero_count = sum(1 for v in attack_values if v == 0.0)
+
+    if len(unique) == 1:
+        results.append({
+            "check": "timing_variance",
+            "status": "WARN",
+            "detail": "All elements have identical attack timing — vary delays for rhythm",
+        })
+    elif zero_count / total > 0.6:
+        results.append({
+            "check": "timing_variance",
+            "status": "WARN",
+            "detail": "Most elements trigger simultaneously — add stagger with attack delays",
+        })
+
+    if not results:
+        results.append({"check": "timing_variance", "status": "PASS", "detail": f"Attack timing has good variance ({len(unique)} distinct values)"})
+    return results
+
+
 def check_element_diversity(manifest: dict) -> list[dict]:
     """Check for variety in element types and zone usage."""
     results = []
@@ -592,6 +673,8 @@ def analyze_manifest(topic: str) -> dict:
     checks.extend(check_anchor_words(manifest))
     checks.extend(check_scene_duration(manifest))
     checks.extend(check_element_diversity(manifest))
+    checks.extend(check_scene_diversity(manifest))
+    checks.extend(check_timing_variance(manifest))
 
     fail_count = sum(1 for c in checks if c["status"] == "FAIL")
     warn_count = sum(1 for c in checks if c["status"] == "WARN")

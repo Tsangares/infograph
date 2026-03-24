@@ -2,7 +2,8 @@
  * TKK Remotion Preview CLI — exports scene preview PNGs.
  *
  * Usage: npx tsx preview.mts <topic>
- *   Output: ../previews/{topic}_scene_{1-N}.png
+ *   Output: ../previews/{topic}_scene_{N}.png          (primary, 75%)
+ *           ../previews/{topic}_scene_{N}_{25,50,75,95}.png
  *
  * Supports both legacy (type-based) and word-triggered manifests.
  */
@@ -79,24 +80,43 @@ async function main() {
     composition.width = 1080;
     composition.height = 1920;
 
-    // Render one frame per scene at midpoint, accounting for TransitionSeries overlap
+    // Render 4 frames per scene at 25%, 50%, 75%, 95%, accounting for TransitionSeries overlap
     const transitionFrames = 25;
+    const capturePoints = [25, 50, 75, 95] as const;
+    const primaryPercent = 75; // used for the plain {topic}_scene_{N}.png
     let frameOffset = 0;
     for (let i = 0; i < resolvedManifest.scenes.length; i++) {
       const scene = resolvedManifest.scenes[i];
       const sceneFrames = scene.duration_frames;
       const overlapBefore = Math.min(i, resolvedManifest.scenes.length - 1) * transitionFrames;
-      const midFrame = frameOffset - overlapBefore + Math.round(sceneFrames / 2);
-      const outputPath = resolve(previewDir, `${topic}_scene_${i + 1}.png`);
+      const sceneStart = frameOffset - overlapBefore;
 
-      console.log(`  Scene ${i + 1}: frame ${midFrame} (${scene.label}) → ${outputPath}`);
-      await renderStill({
-        composition,
-        serveUrl: bundled,
-        frame: Math.max(0, Math.min(midFrame, totalFrames - 1)),
-        output: outputPath,
-        inputProps: { manifest: resolvedManifest },
-      });
+      for (const pct of capturePoints) {
+        const captureFrame = sceneStart + Math.round(sceneFrames * pct / 100);
+        const clampedFrame = Math.max(0, Math.min(captureFrame, totalFrames - 1));
+        const pctPath = resolve(previewDir, `${topic}_scene_${i + 1}_${pct}.png`);
+
+        console.log(`  Scene ${i + 1} @${pct}%: frame ${clampedFrame} (${scene.label}) → ${pctPath}`);
+        await renderStill({
+          composition,
+          serveUrl: bundled,
+          frame: clampedFrame,
+          output: pctPath,
+          inputProps: { manifest: resolvedManifest },
+        });
+
+        // Also write the primary preview as the 75% frame
+        if (pct === primaryPercent) {
+          const primaryPath = resolve(previewDir, `${topic}_scene_${i + 1}.png`);
+          await renderStill({
+            composition,
+            serveUrl: bundled,
+            frame: clampedFrame,
+            output: primaryPath,
+            inputProps: { manifest: resolvedManifest },
+          });
+        }
+      }
 
       frameOffset += sceneFrames;
     }
@@ -140,21 +160,39 @@ async function main() {
     composition.height = 1920;
 
     const transitionFrames = 25;
+    const capturePoints = [25, 50, 75, 95] as const;
+    const primaryPercent = 75;
     let frameOffset = 0;
     for (let i = 0; i < manifest.scenes.length; i++) {
       const sceneFrames = Math.round(sceneDurations[i] * 30);
       const overlapBefore = Math.min(i, manifest.scenes.length - 1) * transitionFrames;
-      const midFrame = frameOffset - overlapBefore + Math.round(sceneFrames / 2);
-      const outputPath = resolve(previewDir, `${topic}_scene_${i + 1}.png`);
+      const sceneStart = frameOffset - overlapBefore;
 
-      console.log(`  Scene ${i + 1}: frame ${midFrame} (offset=${frameOffset}, overlap=${overlapBefore}) → ${outputPath}`);
-      await renderStill({
-        composition,
-        serveUrl: bundled,
-        frame: Math.max(0, Math.min(midFrame, totalFrames - 1)),
-        output: outputPath,
-        inputProps: { manifest, sceneDurations },
-      });
+      for (const pct of capturePoints) {
+        const captureFrame = sceneStart + Math.round(sceneFrames * pct / 100);
+        const clampedFrame = Math.max(0, Math.min(captureFrame, totalFrames - 1));
+        const pctPath = resolve(previewDir, `${topic}_scene_${i + 1}_${pct}.png`);
+
+        console.log(`  Scene ${i + 1} @${pct}%: frame ${clampedFrame} (offset=${frameOffset}, overlap=${overlapBefore}) → ${pctPath}`);
+        await renderStill({
+          composition,
+          serveUrl: bundled,
+          frame: clampedFrame,
+          output: pctPath,
+          inputProps: { manifest, sceneDurations },
+        });
+
+        if (pct === primaryPercent) {
+          const primaryPath = resolve(previewDir, `${topic}_scene_${i + 1}.png`);
+          await renderStill({
+            composition,
+            serveUrl: bundled,
+            frame: clampedFrame,
+            output: primaryPath,
+            inputProps: { manifest, sceneDurations },
+          });
+        }
+      }
 
       frameOffset += sceneFrames;
     }

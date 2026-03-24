@@ -558,17 +558,17 @@ export const WordTriggeredScene: React.FC<WordTriggeredSceneProps> = ({
   return (
     <SlowZoom from={1.0} to={1.06}>
     <AbsoluteFill>
-      {/* Background layers — parallax depth for cinematic feel */}
+      {/* Background layers — parallax depth + depth-of-field blur for cinematic feel */}
       <ParallaxLayer depth={0.3} direction="diagonal" distance={25}>
-        <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0, filter: 'blur(1px)' }}>
           <GradientBg color={bgColor} accentColor={accentColor} secondaryColor={secondaryColor} />
         </div>
-        <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
+        <div style={{ position: 'absolute', inset: 0, zIndex: 1, filter: 'blur(0.5px)', opacity: 0.85 }}>
           <GridLines />
         </div>
       </ParallaxLayer>
       <ParallaxLayer depth={0.6} direction="up" distance={20}>
-        <div style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
+        <div style={{ position: 'absolute', inset: 0, zIndex: 2, filter: 'blur(0.3px)', opacity: 0.9 }}>
           <ParticleField color={accentColor} count={30} speed={1.5} />
         </div>
       </ParallaxLayer>
