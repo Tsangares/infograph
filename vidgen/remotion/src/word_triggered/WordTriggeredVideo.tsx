@@ -23,6 +23,7 @@ import type { ResolvedManifest } from './types';
 interface WordTriggeredVideoProps {
   manifest: ResolvedManifest;
   audioSrc?: string;
+  debug?: boolean;
 }
 
 /**
@@ -56,6 +57,7 @@ function getTransitionPresentation(index: number): any {
 export const WordTriggeredVideo: React.FC<WordTriggeredVideoProps> = ({
   manifest,
   audioSrc,
+  debug = false,
 }) => {
   const { fps } = useVideoConfig();
 
@@ -85,6 +87,7 @@ export const WordTriggeredVideo: React.FC<WordTriggeredVideoProps> = ({
                   bgColor={manifest.colors.bg}
                   accentColor={manifest.colors.accent}
                   secondaryColor={manifest.colors.secondary}
+                  debug={debug}
                 />
               </TransitionSeries.Sequence>
               {i < manifest.scenes.length - 1 && (

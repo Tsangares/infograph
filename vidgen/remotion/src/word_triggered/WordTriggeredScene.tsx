@@ -41,6 +41,7 @@ import { AnimatedPieChart } from '../components/AnimatedPieChart';
 import { NumberTicker } from '../components/NumberTicker';
 import { AnimatedBarRace } from '../components/AnimatedBarRace';
 import { MapHighlight } from '../components/MapHighlight';
+import { DebugOverlay } from '../components/DebugOverlay';
 import type { ResolvedScene, ResolvedElement } from './types';
 
 interface WordTriggeredSceneProps {
@@ -48,6 +49,7 @@ interface WordTriggeredSceneProps {
   bgColor?: string;
   accentColor?: string;
   secondaryColor?: string;
+  debug?: boolean;
 }
 
 /**
@@ -538,6 +540,7 @@ export const WordTriggeredScene: React.FC<WordTriggeredSceneProps> = ({
   bgColor,
   accentColor,
   secondaryColor,
+  debug = false,
 }) => {
   const { durationInFrames } = useVideoConfig();
 
@@ -624,6 +627,9 @@ export const WordTriggeredScene: React.FC<WordTriggeredSceneProps> = ({
       <div style={{ position: 'absolute', inset: 0, zIndex: 91 }}>
         <NoiseOverlay opacity={0.03} />
       </div>
+
+      {/* Debug overlay — renders zone boundaries, safe areas, frame counter */}
+      {debug && <DebugOverlay />}
     </AbsoluteFill>
     </SlowZoom>
   );

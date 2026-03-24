@@ -180,6 +180,33 @@ def _run_word_triggered_audits(topic: str) -> dict:
     return _section("word_triggered_audit", status, checks, fails, warns)
 
 
+def _run_raycast_qa(topic: str) -> dict:
+    """Run pixel-level raycasting QA on preview PNGs."""
+    preview_dir = VIDGEN_DIR / "previews"
+    previews = sorted(preview_dir.glob(f"{topic}_scene_*.png")) if preview_dir.exists() else []
+    if not previews:
+        return _section("raycast", "WARN", [{"check": "previews", "status": "WARN", "detail": "No preview PNGs for raycasting"}], 0, 1)
+
+    try:
+        from qa_raycast import analyze_scene
+        checks = []
+        fails = 0
+        warns = 0
+        for png in previews:
+            scene_num = int(png.stem.split('_scene_')[1])
+            result = analyze_scene(str(png), scene_num)
+            for c in result['checks']:
+                checks.append(c)
+                if c['status'] == 'FAIL':
+                    fails += 1
+                elif c['status'] == 'WARN':
+                    warns += 1
+        status = "FAIL" if fails else "WARN" if warns else "PASS"
+        return _section("raycast", status, checks, fails, warns)
+    except Exception as e:
+        return _section("raycast", "WARN", [{"check": "raycast", "status": "WARN", "detail": f"Raycast QA error: {e}"}], 0, 1)
+
+
 def run_all_qa(topic: str, skip_previews: bool = False) -> dict:
     """Run all applicable QA checks for a topic. Returns unified report."""
     fmt = detect_format(topic)
@@ -204,6 +231,7 @@ def run_all_qa(topic: str, skip_previews: bool = False) -> dict:
     if not skip_previews:
         sections.append(_run_layout_qa(topic))
         sections.append(_run_visibility_qa(topic))
+        sections.append(_run_raycast_qa(topic))
 
     # Format-specific sync checks
     if fmt == "legacy":
